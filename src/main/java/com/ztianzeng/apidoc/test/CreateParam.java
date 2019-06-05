@@ -2,6 +2,8 @@ package com.ztianzeng.apidoc.test;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+
 /**
  * @author zhaotianzeng
  * @version V1.0
@@ -12,9 +14,11 @@ public class CreateParam {
     /**
      * 用户名
      */
+    @NotEmpty
     private String username;
     /**
      * 手机
      */
+    @NotEmpty
     private String mobile;
 }

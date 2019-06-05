@@ -1,5 +1,6 @@
 package com.ztianzeng.apidoc.model;
 
+import com.ztianzeng.apidoc.constants.RequestMethod;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,7 +16,10 @@ public class ApiMethodDoc implements Serializable {
 
     private String url;
 
-    private String type;
+    /**
+     * HTTP请求方式
+     */
+    private RequestMethod requestMethod;
 
     private String headers;
 
@@ -23,11 +27,8 @@ public class ApiMethodDoc implements Serializable {
 
     private Map<String, String> requestParams;
 
-    private String requestUsage;
 
-    private String responseUsage;
-
-    private String responseParams;
+    private Map<String, String> responseBody;
 
 
 }

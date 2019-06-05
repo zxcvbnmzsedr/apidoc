@@ -1,10 +1,9 @@
 package com.ztianzeng.apidoc;
 
 import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.DocletTag;
-import com.thoughtworks.qdox.model.JavaAnnotation;
-import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.*;
+import com.ztianzeng.apidoc.constants.RequestMethod;
+import com.ztianzeng.apidoc.constants.SpringMvcConstants;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
 import com.ztianzeng.apidoc.utils.StringUtils;
 
@@ -74,7 +73,7 @@ public class SourceBuilder {
             apiMethodDoc.setDesc(method.getComment());
             List<JavaAnnotation> annotations = method.getAnnotations();
             String url = null;
-            String methodType = null;
+            RequestMethod methodType = null;
             int methodCounter = 0;
             // 处理方法上面的注解
             for (JavaAnnotation annotation : annotations) {
@@ -102,7 +101,7 @@ public class SourceBuilder {
                 }
                 url = url.replaceAll("\"", "").trim();
 
-                apiMethodDoc.setType(methodType);
+                apiMethodDoc.setRequestMethod(methodType);
                 if (StringUtils.isNotEmpty(baseUrl)) {
                     baseUrl = StringUtils.equals("/", baseUrl.subSequence(0, 1)) ? baseUrl : "/" + baseUrl;
                     apiMethodDoc.setUrl(this.appUrl + (baseUrl + "/" + url).replace("//", "/"));
@@ -111,9 +110,11 @@ public class SourceBuilder {
                     apiMethodDoc.setUrl(this.appUrl + (url).replace("//", "/"));
                 }
 
-                Map<String, String> comment = getCommentTag(method, "param");
+                Map<String, String> comment = getRequest(method);
+
 
                 apiMethodDoc.setRequestParams(comment);
+
                 methodDocList.add(apiMethodDoc);
 
             }
@@ -123,28 +124,49 @@ public class SourceBuilder {
     }
 
     /**
-     * 获取方法上的tag
+     * 获取方法的请求参数
      *
-     * @param method  方法
-     * @param tagName tag名字
-     * @return
+     * @param method 方法
+     * @return 查询出来的kv
      */
-    private Map<String, String> getCommentTag(JavaMethod method, String tagName) {
-        List<DocletTag> paramTags = method.getTagsByName(tagName);
-        Map<String, String> paramTagMap = new HashMap<>();
-
+    private Map<String, String> getRequest(JavaMethod method) {
+        List<DocletTag> paramTags = method.getTagsByName("param");
+        Map<String, String> paramTagMap = new HashMap<>(10);
         for (DocletTag paramTag : paramTags) {
             String value = paramTag.getValue();
-
             String pName = (value.contains(" ")) ? value.substring(0, value.indexOf(" ")) : value;
             String pValue = value.contains(" ") ? value.substring(value.indexOf(' ') + 1) : "No comments found.";
-
             paramTagMap.put(pName.trim(), pValue.trim());
+        }
+        // 获取方法的参数列表
+        List<JavaParameter> parameterList = method.getParameters();
+        for (JavaParameter javaParameter : parameterList) {
+            JavaType type = javaParameter.getType();
+            // 如果是request Body 对象，则解析对象类型
+            if (isRequestBody(javaParameter)) {
+
+
+            }
         }
 
         return paramTagMap;
     }
 
+    /**
+     * 是否是request body 对象
+     *
+     * @param javaParameter java参数
+     * @return 是否
+     */
+    private boolean isRequestBody(JavaParameter javaParameter) {
+        List<JavaAnnotation> annotations = javaParameter.getAnnotations();
+        for (JavaAnnotation annotation : annotations) {
+            if (annotation.getType().getName().equals(REQUEST_BODY)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * 获取请求的方法
@@ -152,7 +174,7 @@ public class SourceBuilder {
      * @param annotation
      * @return
      */
-    private String getRequestMappingMethod(JavaAnnotation annotation) {
+    private RequestMethod getRequestMappingMethod(JavaAnnotation annotation) {
         String methodType;
         if (null != annotation.getNamedParameter("method")) {
             methodType = annotation.getNamedParameter("method").toString();
@@ -170,7 +192,7 @@ public class SourceBuilder {
         } else {
             methodType = "GET";
         }
-        return methodType;
+        return RequestMethod.valueOf(methodType);
     }
 
     /**

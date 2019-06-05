@@ -29,7 +29,7 @@ public class SpringMvcConstants {
 
     private static final String DELETE_MAPPING_FULLY = "org.springframework.web.bind.annotation.DeleteMapping";
 
-    public static final Map<String, String> METHOD_MAP = new HashMap<>();
+    public static final Map<String, RequestMethod> METHOD_MAP = new HashMap<>();
 
     /**
      * controller注解全名称
@@ -41,15 +41,23 @@ public class SpringMvcConstants {
      */
     public static final String REST_CONTROLLER_FULLY = "org.springframework.web.bind.annotation.RestController";
 
+    /**
+     * RequestBody
+     */
+    public static final String REQUEST_BODY = "RequestBody";
+
+    /**
+     * 初始化Spring枚举到Http方法的对应
+     */
     static {
-        METHOD_MAP.put(GET_MAPPING, "GET");
-        METHOD_MAP.put(GET_MAPPING_FULLY, "GET");
-        METHOD_MAP.put(POST_MAPPING, "POST");
-        METHOD_MAP.put(POST_MAPPING_FULLY, "POST");
-        METHOD_MAP.put(PUT_MAPPING, "PUT");
-        METHOD_MAP.put(PUT_MAPPING_FULLY, "PUT");
-        METHOD_MAP.put(DELETE_MAPPING, "DELETE");
-        METHOD_MAP.put(DELETE_MAPPING_FULLY, "DELETE");
+        METHOD_MAP.put(GET_MAPPING, RequestMethod.GET);
+        METHOD_MAP.put(GET_MAPPING_FULLY, RequestMethod.GET);
+        METHOD_MAP.put(POST_MAPPING, RequestMethod.POST);
+        METHOD_MAP.put(POST_MAPPING_FULLY, RequestMethod.POST);
+        METHOD_MAP.put(PUT_MAPPING, RequestMethod.PUT);
+        METHOD_MAP.put(PUT_MAPPING_FULLY, RequestMethod.PUT);
+        METHOD_MAP.put(DELETE_MAPPING, RequestMethod.DELETE);
+        METHOD_MAP.put(DELETE_MAPPING_FULLY, RequestMethod.DELETE);
     }
 
 
