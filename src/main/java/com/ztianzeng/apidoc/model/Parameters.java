@@ -1,6 +1,5 @@
 package com.ztianzeng.apidoc.model;
 
-import com.ztianzeng.apidoc.utils.StringUtils;
 import lombok.*;
 
 /**

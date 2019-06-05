@@ -3,17 +3,18 @@ package com.ztianzeng.apidoc.model;
 import com.ztianzeng.apidoc.constants.RequestMethod;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * api文档
+ *
+ * @author tianzeng
  */
 @Data
-public class ApiMethodDoc implements Serializable {
+public class ApiMethodDoc {
 
-    private String desc;
+    private String description;
 
     private String url;
 
@@ -24,13 +25,12 @@ public class ApiMethodDoc implements Serializable {
 
     private String headers;
 
-    private String contentType = "application/x-www-form-urlencoded";
+    private String contentType = "application/json";
 
     private List<Parameters> requestParams;
 
 
     private Map<String, String> responseBody;
-
 
 
 }

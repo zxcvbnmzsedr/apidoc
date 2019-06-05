@@ -18,6 +18,7 @@ public class SourceBuilderTest {
         for (ApiMethodDoc controllerDatum : controllerData) {
             System.out.println("url->" + controllerDatum.getUrl());
             System.out.println("method->" + controllerDatum.getRequestMethod());
+            System.out.println("description->" + controllerDatum.getDescription());
             System.out.println("requestParam->");
             controllerDatum.getRequestParams().forEach(k -> System.out.println("             " + k));
             System.out.println("=======================\n\n");

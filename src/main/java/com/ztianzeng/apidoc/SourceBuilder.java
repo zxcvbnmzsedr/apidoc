@@ -70,7 +70,7 @@ public class SourceBuilder {
 
         for (JavaMethod method : methods) {
             ApiMethodDoc apiMethodDoc = new ApiMethodDoc();
-            apiMethodDoc.setDesc(method.getComment());
+            apiMethodDoc.setDescription(method.getComment());
             List<JavaAnnotation> annotations = method.getAnnotations();
             String url = null;
             RequestMethod methodType = null;
@@ -169,12 +169,11 @@ public class SourceBuilder {
         List<Parameters> parameters = new LinkedList<>();
         for (JavaField field : fields) {
             boolean required = isRequired(field);
-            parameters.add(Parameters.builder()
-                    .name(field.getName())
-                    .description(field.getComment())
-                    .required(required)
-                    .type(field.getType().getName())
-                    .build());
+            parameters.add(new Parameters(required,
+                    field.getName(),
+                    field.getComment(),
+                    field.getType().getName()
+            ));
         }
         return parameters;
     }
@@ -183,9 +182,9 @@ public class SourceBuilder {
     /**
      * 判断属性是否是必须
      *
-     * @param field
+     * @param field 属性
      */
-    public boolean isRequired(JavaField field) {
+    private boolean isRequired(JavaField field) {
         boolean isRequired = false;
         List<JavaAnnotation> annotations = field.getAnnotations();
         for (JavaAnnotation annotation : annotations) {
