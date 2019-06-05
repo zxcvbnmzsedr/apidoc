@@ -1,8 +1,8 @@
 package com.ztianzeng.apidoc.test;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -18,21 +18,20 @@ public class TestController {
 
     /**
      * 新增一个实例
-     *
-     * @param param 我是参数
      */
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public void add(String param) {
+    @PostMapping(value = "/create")
+    public void add() {
 
     }
 
     /**
      * 获取一个实例
      *
-     * @param param 我是get参数
+     * @param userId 用户ID
+     * @param sex    性别dddddddddddd
      */
     @GetMapping(value = "/get")
-    public void get(String param) {
+    public void get(String userId, String sex) {
 
     }
 }

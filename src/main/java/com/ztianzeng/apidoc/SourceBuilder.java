@@ -45,12 +45,14 @@ public class SourceBuilder {
         }
     }
 
-    public void getControllerData() {
+    public List<ApiMethodDoc> getControllerData() {
+        List<ApiMethodDoc> apiMethodDocs = new ArrayList<>();
         for (JavaClass javaClass : javaClasses) {
             if (isController(javaClass)) {
-                buildControllerMethod(javaClass);
+                apiMethodDocs.addAll(buildControllerMethod(javaClass));
             }
         }
+        return apiMethodDocs;
     }
 
     public List<ApiMethodDoc> buildControllerMethod(final JavaClass cls) {
@@ -109,7 +111,7 @@ public class SourceBuilder {
                     apiMethodDoc.setUrl(this.appUrl + (url).replace("//", "/"));
                 }
 
-                Map<String,String> comment = getCommentTag(method, "param");
+                Map<String, String> comment = getCommentTag(method, "param");
 
                 apiMethodDoc.setRequestParams(comment);
                 methodDocList.add(apiMethodDoc);
@@ -134,18 +136,10 @@ public class SourceBuilder {
         for (DocletTag paramTag : paramTags) {
             String value = paramTag.getValue();
 
-            String pName;
-            String pValue;
-            int idx = value.indexOf("\n");
-            //如果存在换行
-            if (idx > -1) {
-                pName = value.substring(0, idx);
-                pValue = value.substring(idx + 1);
-            } else {
-                pName = (value.contains(" ")) ? value.substring(0, value.indexOf(" ")) : value;
-                pValue = value.contains(" ") ? value.substring(value.indexOf(' ') + 1) : "No comments found.";
-            }
-            paramTagMap.put(pName, pValue);
+            String pName = (value.contains(" ")) ? value.substring(0, value.indexOf(" ")) : value;
+            String pValue = value.contains(" ") ? value.substring(value.indexOf(' ') + 1) : "No comments found.";
+
+            paramTagMap.put(pName.trim(), pValue.trim());
         }
 
         return paramTagMap;

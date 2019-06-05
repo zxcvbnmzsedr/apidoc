@@ -1,6 +1,9 @@
 package com.ztianzeng.apidoc;
 
+import com.ztianzeng.apidoc.model.ApiMethodDoc;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * @author zhaotianzeng
@@ -11,6 +14,15 @@ public class SourceBuilderTest {
     @Test
     public void test() {
         SourceBuilder sourceBuilder = new SourceBuilder();
-        sourceBuilder.getControllerData();
+        List<ApiMethodDoc> controllerData = sourceBuilder.getControllerData();
+        for (ApiMethodDoc controllerDatum : controllerData) {
+            System.out.println("url->" + controllerDatum.getUrl());
+            System.out.println("requestParam->");
+            controllerDatum.getRequestParams().forEach((k, v) -> {
+                System.out.println("             "+ k + ":" + v);
+
+            });
+            System.out.println("=======================\n\n");
+        }
     }
 }
