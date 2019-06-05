@@ -149,7 +149,7 @@ public class SourceBuilder {
             String fullTypeName = javaParameter.getType().getFullyQualifiedName();
             // 如果是request Body 对象，则解析对象类型
             if (isRequestBody(javaParameter)) {
-                parsingBody(fullTypeName);
+                parameters.addAll(parsingBody(fullTypeName));
             }
         }
 
@@ -158,12 +158,43 @@ public class SourceBuilder {
 
     /**
      * 解析body
+     *
+     * @param className 类名
+     * @return 返回类中的每个字段的信息
      */
-    public void parsingBody(String className) {
+    private List<Parameters> parsingBody(String className) {
         JavaClass cls = builder.getClassByName(className);
         List<JavaField> fields = cls.getFields();
 
+        List<Parameters> parameters = new LinkedList<>();
+        for (JavaField field : fields) {
+            boolean required = isRequired(field);
+            parameters.add(Parameters.builder()
+                    .name(field.getName())
+                    .description(field.getComment())
+                    .required(required)
+                    .type(field.getType().getName())
+                    .build());
+        }
+        return parameters;
+    }
 
+
+    /**
+     * 判断属性是否是必须
+     *
+     * @param field
+     */
+    public boolean isRequired(JavaField field) {
+        boolean isRequired = false;
+        List<JavaAnnotation> annotations = field.getAnnotations();
+        for (JavaAnnotation annotation : annotations) {
+            String fullyQualifiedName = annotation.getType().getFullyQualifiedName();
+            if (fullyQualifiedName.startsWith("javax.validation")) {
+                isRequired = true;
+            }
+        }
+        return isRequired;
     }
 
     /**

@@ -1,10 +1,7 @@
 package com.ztianzeng.apidoc.model;
 
 import com.ztianzeng.apidoc.utils.StringUtils;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * 参数实体
@@ -17,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class Parameters {
     /**
      * 是否必须
@@ -37,11 +35,5 @@ public class Parameters {
      * 字段类型
      */
     private String type;
-
-    public static Parameters.ParametersBuilder builder(){
-        return new Parameters.ParametersBuilder();
-    }
-
-
 
 }
