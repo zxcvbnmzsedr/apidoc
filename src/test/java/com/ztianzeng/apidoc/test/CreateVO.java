@@ -7,10 +7,10 @@ import javax.validation.constraints.NotEmpty;
 /**
  * @author zhaotianzeng
  * @version V1.0
- * @date 2019-05-27 13:37
+ * @date 2019-06-05 15:39
  */
 @Data
-public class CreateParam {
+public class CreateVO {
     /**
      * 用户名
      */

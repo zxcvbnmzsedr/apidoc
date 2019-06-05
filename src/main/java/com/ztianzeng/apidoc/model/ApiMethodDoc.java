@@ -4,7 +4,6 @@ import com.ztianzeng.apidoc.constants.RequestMethod;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * api文档
@@ -30,7 +29,7 @@ public class ApiMethodDoc {
     private List<Parameters> requestParams;
 
 
-    private Map<String, String> responseBody;
+    private List<Parameters> responseBody;
 
 
 }

@@ -2,6 +2,8 @@ package com.ztianzeng.apidoc.model;
 
 import lombok.*;
 
+import java.util.List;
+
 /**
  * 参数实体
  *
@@ -34,5 +36,10 @@ public class Parameters {
      * 字段类型
      */
     private String type;
+
+    /**
+     * 嵌套对象的详情
+     */
+    private List<Parameters> detail;
 
 }

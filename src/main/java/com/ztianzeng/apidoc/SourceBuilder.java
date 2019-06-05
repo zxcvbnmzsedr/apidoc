@@ -30,13 +30,18 @@ public class SourceBuilder {
 
     public SourceBuilder() {
         this.appUrl = "http://{server}";
-
-        loadJavaFiles();
+        loadJavaFiles("src/main/java");
     }
 
-    private void loadJavaFiles() {
+    public SourceBuilder(String uri) {
+        this.appUrl = "http://{server}";
+        loadJavaFiles(uri);
+    }
+
+    private void loadJavaFiles(String uri) {
+
         JavaProjectBuilder builder = new JavaProjectBuilder();
-        builder.addSourceTree(new File("src/main/java"));
+        builder.addSourceTree(new File(uri));
 
         this.builder = builder;
         this.javaClasses = builder.getClasses();
@@ -113,6 +118,8 @@ public class SourceBuilder {
 
                 apiMethodDoc.setRequestParams(getRequest(method));
 
+                apiMethodDoc.setResponseBody(getResponse(method));
+
                 methodDocList.add(apiMethodDoc);
 
             }
@@ -148,6 +155,15 @@ public class SourceBuilder {
 
     }
 
+    /**
+     * 获取结果对象
+     */
+    private List<Parameters> getResponse(JavaMethod method) {
+
+        JavaClass returns = method.getReturns();
+        // 如果是request Body 对象，则解析对象类型
+        return parsingBody(returns);
+    }
 
     /**
      * 获取方法的请求参数
@@ -203,9 +219,8 @@ public class SourceBuilder {
         // 获取方法的参数列表
         List<JavaParameter> parameterList = method.getParameters();
         for (JavaParameter javaParameter : parameterList) {
-            String fullTypeName = javaParameter.getType().getFullyQualifiedName();
             // 如果是request Body 对象，则解析对象类型
-            parameters.addAll(parsingBody(fullTypeName));
+            parameters.addAll(parsingBody(javaParameter.getJavaClass()));
         }
 
         return parameters;
@@ -214,12 +229,10 @@ public class SourceBuilder {
     /**
      * 解析body
      *
-     * @param className 类名
+     * @param cls 类信息
      * @return 返回类中的每个字段的信息
      */
-    private List<Parameters> parsingBody(String className) {
-
-        JavaClass cls = builder.getClassByName(className);
+    List<Parameters> parsingBody(JavaClass cls) {
 
         if (DocUtils.isPrimitive(cls.getSimpleName())) {
             return Collections.emptyList();
@@ -230,11 +243,15 @@ public class SourceBuilder {
         for (JavaField field : fields) {
             // 属性是否为require
             boolean required = DocUtils.isRequired(field);
+
             parameters.add(new Parameters(required,
                     field.getName(),
                     field.getComment(),
-                    field.getType().getName()
+                    field.getType().getName(),
+                    parsingBody(field.getType())
             ));
+
+
         }
         return parameters;
     }
@@ -312,5 +329,9 @@ public class SourceBuilder {
             }
         }
         return false;
+    }
+
+    public JavaProjectBuilder getBuilder() {
+        return builder;
     }
 }

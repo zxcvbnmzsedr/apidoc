@@ -3,6 +3,8 @@ package com.ztianzeng.apidoc.test;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 测试控制器
@@ -21,8 +23,8 @@ public class TestController {
      * @param createParam 创建对象
      */
     @PostMapping(value = "/create")
-    public void add(@RequestBody @Valid CreateParam createParam) {
-
+    public CreateVO add(@RequestBody @Valid CreateParam createParam) {
+        return new CreateVO();
     }
 
     /**
@@ -31,8 +33,8 @@ public class TestController {
      * @param createParam2 创建对象2
      */
     @PostMapping(value = "/create2")
-    public void create2(@Valid CreateParam createParam2) {
-
+    public List<CreateVO> create2(@Valid CreateParam createParam2) {
+        return new LinkedList<>();
     }
 
     /**
