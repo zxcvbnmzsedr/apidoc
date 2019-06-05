@@ -3,8 +3,8 @@ package com.ztianzeng.apidoc;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
-import com.ztianzeng.apidoc.constants.SpringMvcConstants;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
+import com.ztianzeng.apidoc.model.Parameters;
 import com.ztianzeng.apidoc.utils.StringUtils;
 
 import java.io.File;
@@ -110,7 +110,7 @@ public class SourceBuilder {
                     apiMethodDoc.setUrl(this.appUrl + (url).replace("//", "/"));
                 }
 
-                Map<String, String> comment = getRequest(method);
+                List<Parameters> comment = getRequest(method);
 
 
                 apiMethodDoc.setRequestParams(comment);
@@ -129,27 +129,41 @@ public class SourceBuilder {
      * @param method 方法
      * @return 查询出来的kv
      */
-    private Map<String, String> getRequest(JavaMethod method) {
+    private List<Parameters> getRequest(JavaMethod method) {
         List<DocletTag> paramTags = method.getTagsByName("param");
-        Map<String, String> paramTagMap = new HashMap<>(10);
+        List<Parameters> parameters = new LinkedList<>();
         for (DocletTag paramTag : paramTags) {
             String value = paramTag.getValue();
             String pName = (value.contains(" ")) ? value.substring(0, value.indexOf(" ")) : value;
             String pValue = value.contains(" ") ? value.substring(value.indexOf(' ') + 1) : "No comments found.";
-            paramTagMap.put(pName.trim(), pValue.trim());
+
+            parameters.add(Parameters.builder()
+                    .name(pName.trim())
+                    .description(pValue.trim())
+                    .build());
         }
         // 获取方法的参数列表
         List<JavaParameter> parameterList = method.getParameters();
         for (JavaParameter javaParameter : parameterList) {
             JavaType type = javaParameter.getType();
+            String fullTypeName = javaParameter.getType().getFullyQualifiedName();
             // 如果是request Body 对象，则解析对象类型
             if (isRequestBody(javaParameter)) {
-
-
+                parsingBody(fullTypeName);
             }
         }
 
-        return paramTagMap;
+        return parameters;
+    }
+
+    /**
+     * 解析body
+     */
+    public void parsingBody(String className) {
+        JavaClass cls = builder.getClassByName(className);
+        List<JavaField> fields = cls.getFields();
+
+
     }
 
     /**
