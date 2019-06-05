@@ -4,6 +4,8 @@ import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaField;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author zhaotianzeng
@@ -11,6 +13,9 @@ import java.util.List;
  * @date 2019-06-05 15:13
  */
 public class DocUtils {
+    public static final String LIST_CLASS_NAME = "<(.*?)>";
+    public static final Pattern LIST_CLASS_NAME_PATTERN = Pattern.compile(LIST_CLASS_NAME);
+
     /**
      * 是否为私有属性
      *
@@ -84,4 +89,23 @@ public class DocUtils {
         }
         return isRequired;
     }
+
+
+    /**
+     * 获取中间class 的信息
+     *
+     * @param soap 如:java.util.List<com.ztianzeng.apidoc.test.CreateParam>
+     * @return com.ztianzeng.apidoc.test.CreateParam
+     */
+    public static String getSubClassName(String soap) {
+        // 匹配的模式
+        Matcher m = LIST_CLASS_NAME_PATTERN.matcher(soap);
+        while (m.find()) {
+            return m.group(1);
+        }
+        return null;
+
+    }
+
+
 }

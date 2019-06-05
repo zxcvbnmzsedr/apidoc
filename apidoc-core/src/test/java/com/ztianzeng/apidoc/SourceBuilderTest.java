@@ -52,6 +52,21 @@ public class SourceBuilderTest {
     }
 
     /**
+     * list对象解析
+     */
+    @Test
+    public void parsingList() {
+        JavaClass cls = builder.getClassByName("com.ztianzeng.apidoc.test.ListParam");
+        List<Parameters> parameters = sourceBuilder.parsingBody(cls);
+        System.out.println(parameters);
+        for (Parameters parameter : parameters) {
+            Assert.assertNotNull(parameter.getName());
+            for (Parameters parameters1 : parameter.getDetail()) {
+                Assert.assertNotNull(parameters1.getName());
+            }
+        }
+    }
+    /**
      * 嵌套对象解析
      */
     @Test

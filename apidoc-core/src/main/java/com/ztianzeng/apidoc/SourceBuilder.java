@@ -237,6 +237,13 @@ public class SourceBuilder {
         if (DocUtils.isPrimitive(cls.getSimpleName())) {
             return Collections.emptyList();
         }
+        String genericCanonicalName = cls.getGenericCanonicalName();
+        String subClass = DocUtils.getSubClassName(genericCanonicalName);
+        if (StringUtils.isNotEmpty(subClass)) {
+            cls = builder.getClassByName(subClass);
+        }
+
+
         List<JavaField> fields = cls.getFields();
 
         List<Parameters> parameters = new LinkedList<>();
