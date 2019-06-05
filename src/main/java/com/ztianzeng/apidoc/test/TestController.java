@@ -18,17 +18,21 @@ public class TestController {
 
     /**
      * 新增一个实例
+     *
+     * @param param 我是参数
      */
-    @RequestMapping(value = "/create",method = RequestMethod.POST)
-    public void add() {
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public void add(String param) {
 
     }
 
     /**
      * 获取一个实例
+     *
+     * @param param 我是get参数
      */
     @GetMapping(value = "/get")
-    public void get() {
+    public void get(String param) {
 
     }
 }

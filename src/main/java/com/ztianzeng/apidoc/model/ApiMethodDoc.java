@@ -3,6 +3,7 @@ package com.ztianzeng.apidoc.model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * api文档
@@ -20,7 +21,7 @@ public class ApiMethodDoc implements Serializable {
 
     private String contentType = "application/x-www-form-urlencoded";
 
-    private String requestParams;
+    private Map<String, String> requestParams;
 
     private String requestUsage;
 

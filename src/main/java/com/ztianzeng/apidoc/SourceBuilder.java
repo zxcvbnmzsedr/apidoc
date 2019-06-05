@@ -1,10 +1,10 @@
 package com.ztianzeng.apidoc;
 
 import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
-import com.ztianzeng.apidoc.constants.GlobalConstants;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
 import com.ztianzeng.apidoc.utils.StringUtils;
 
@@ -84,7 +84,7 @@ public class SourceBuilder {
                 }
                 // @RequestMapping
                 if (isRequestMapping(annotation)) {
-                    methodType = getRquestMappingMethod(annotation);
+                    methodType = getRequestMappingMethod(annotation);
                     methodCounter++;
                 } else {
                     String annotationName = annotation.getType().getName();
@@ -108,11 +108,47 @@ public class SourceBuilder {
                     url = StringUtils.equals("/", url.subSequence(0, 1)) ? url : "/" + url;
                     apiMethodDoc.setUrl(this.appUrl + (url).replace("//", "/"));
                 }
+
+                Map<String,String> comment = getCommentTag(method, "param");
+
+                apiMethodDoc.setRequestParams(comment);
                 methodDocList.add(apiMethodDoc);
 
             }
         }
+
         return methodDocList;
+    }
+
+    /**
+     * 获取方法上的tag
+     *
+     * @param method  方法
+     * @param tagName tag名字
+     * @return
+     */
+    private Map<String, String> getCommentTag(JavaMethod method, String tagName) {
+        List<DocletTag> paramTags = method.getTagsByName(tagName);
+        Map<String, String> paramTagMap = new HashMap<>();
+
+        for (DocletTag paramTag : paramTags) {
+            String value = paramTag.getValue();
+
+            String pName;
+            String pValue;
+            int idx = value.indexOf("\n");
+            //如果存在换行
+            if (idx > -1) {
+                pName = value.substring(0, idx);
+                pValue = value.substring(idx + 1);
+            } else {
+                pName = (value.contains(" ")) ? value.substring(0, value.indexOf(" ")) : value;
+                pValue = value.contains(" ") ? value.substring(value.indexOf(' ') + 1) : "No comments found.";
+            }
+            paramTagMap.put(pName, pValue);
+        }
+
+        return paramTagMap;
     }
 
 
@@ -122,7 +158,7 @@ public class SourceBuilder {
      * @param annotation
      * @return
      */
-    private String getRquestMappingMethod(JavaAnnotation annotation) {
+    private String getRequestMappingMethod(JavaAnnotation annotation) {
         String methodType;
         if (null != annotation.getNamedParameter("method")) {
             methodType = annotation.getNamedParameter("method").toString();
@@ -141,7 +177,6 @@ public class SourceBuilder {
             methodType = "GET";
         }
         return methodType;
-
     }
 
     /**
