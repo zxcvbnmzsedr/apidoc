@@ -53,6 +53,8 @@ public class SpringMvcConstants {
 
     public static final String REQUEST_BODY_FULLY = "org.springframework.web.bind.annotation.RequestBody";
 
+    public static final String REQUEST_PARAM = "RequestParam";
+
 
     /**
      * 初始化Spring枚举到Http方法的对应

@@ -19,6 +19,5 @@ public class CreateParam {
     /**
      * 手机
      */
-    @NotEmpty
     private String mobile;
 }

@@ -1,5 +1,10 @@
 package com.ztianzeng.apidoc.utils;
 
+import com.thoughtworks.qdox.model.JavaAnnotation;
+import com.thoughtworks.qdox.model.JavaField;
+
+import java.util.List;
+
 /**
  * @author zhaotianzeng
  * @version V1.0
@@ -61,4 +66,22 @@ public class DocUtils {
         }
     }
 
+    /**
+     * 判断属性是否是必须
+     * <p>
+     * 是否有javax.validation中的注解
+     *
+     * @param field 属性
+     */
+    public static boolean isRequired(JavaField field) {
+        boolean isRequired = false;
+        List<JavaAnnotation> annotations = field.getAnnotations();
+        for (JavaAnnotation annotation : annotations) {
+            String fullyQualifiedName = annotation.getType().getFullyQualifiedName();
+            if (fullyQualifiedName.startsWith("javax.validation")) {
+                isRequired = true;
+            }
+        }
+        return isRequired;
+    }
 }

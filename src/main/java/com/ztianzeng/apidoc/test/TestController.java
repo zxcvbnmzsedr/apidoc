@@ -43,7 +43,8 @@ public class TestController {
      * @return 返回信息
      */
     @GetMapping(value = "/get")
-    public String get(String userId, String sex) {
+    public String get(@RequestParam(value = "userId", required = false) String userId,
+                      @RequestParam(value = "sex2") String sex) {
         return "";
     }
 }

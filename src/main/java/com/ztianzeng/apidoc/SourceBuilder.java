@@ -3,7 +3,6 @@ package com.ztianzeng.apidoc;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
-import com.ztianzeng.apidoc.constants.SpringMvcConstants;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
 import com.ztianzeng.apidoc.model.Parameters;
 import com.ztianzeng.apidoc.utils.DocUtils;
@@ -79,7 +78,6 @@ public class SourceBuilder {
             int methodCounter = 0;
             // 处理方法上面的注解
             for (JavaAnnotation annotation : annotations) {
-
                 if (null == annotation.getNamedParameter("value")) {
                     url = "/";
                 } else {
@@ -165,8 +163,40 @@ public class SourceBuilder {
             String pName = (value.contains(" ")) ? value.substring(0, value.indexOf(" ")) : value;
             String pValue = value.contains(" ") ? value.substring(value.indexOf(' ') + 1) : "No comments found.";
 
+            // 获取对应的type
+            JavaParameter parameterByName = method.getParameterByName(pName);
+
+            String type = null;
+
+            boolean required = false;
+            // 如果参数不为空
+            if (parameterByName != null) {
+                type = parameterByName.getType().getValue();
+                // 以@RequestBody为主
+                if (isRequestBody(parameterByName)) {
+                    required = true;
+                }
+                // 以@RequestParam为主
+                List<JavaAnnotation> annotations = parameterByName.getAnnotations();
+                for (JavaAnnotation annotation : annotations) {
+                    if (annotation.getType().getSimpleName().equals(REQUEST_PARAM)) {
+                        required = true;
+                        if (null != annotation.getProperty("required")) {
+                            required = Boolean.valueOf(annotation.getProperty("required").toString());
+                        }
+                        if (null != annotation.getProperty("value")) {
+                            pName = annotation.getProperty("value").toString();
+                        }
+                    }
+
+                }
+            }
+
+
             parameters.add(Parameters.builder()
                     .name(pName.trim())
+                    .type(type)
+                    .required(required)
                     .description(pValue.trim())
                     .build());
         }
@@ -198,7 +228,8 @@ public class SourceBuilder {
 
         List<Parameters> parameters = new LinkedList<>();
         for (JavaField field : fields) {
-            boolean required = isRequired(field);
+            // 属性是否为require
+            boolean required = DocUtils.isRequired(field);
             parameters.add(new Parameters(required,
                     field.getName(),
                     field.getComment(),
@@ -208,23 +239,6 @@ public class SourceBuilder {
         return parameters;
     }
 
-
-    /**
-     * 判断属性是否是必须
-     *
-     * @param field 属性
-     */
-    private boolean isRequired(JavaField field) {
-        boolean isRequired = false;
-        List<JavaAnnotation> annotations = field.getAnnotations();
-        for (JavaAnnotation annotation : annotations) {
-            String fullyQualifiedName = annotation.getType().getFullyQualifiedName();
-            if (fullyQualifiedName.startsWith("javax.validation")) {
-                isRequired = true;
-            }
-        }
-        return isRequired;
-    }
 
     /**
      * 是否是request body 对象
