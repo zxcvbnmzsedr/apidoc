@@ -243,7 +243,6 @@ public class SourceBuilder {
      * @return 返回类中的每个字段的信息
      */
     List<Parameters> parsingBody(JavaClass cls) {
-
         if (DocUtils.isPrimitive(cls.getSimpleName())) {
             return Collections.emptyList();
         }
