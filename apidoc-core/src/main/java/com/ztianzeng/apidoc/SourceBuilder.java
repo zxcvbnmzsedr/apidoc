@@ -244,6 +244,7 @@ public class SourceBuilder {
             // 属性是否为require
             boolean required = DocUtils.isRequired(field);
 
+            // 会递归获取参数的信息
             parameters.add(new Parameters(required,
                     field.getName(),
                     field.getComment(),
