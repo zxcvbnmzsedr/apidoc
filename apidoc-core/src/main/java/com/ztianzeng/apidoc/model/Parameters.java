@@ -42,4 +42,7 @@ public class Parameters {
      */
     private List<Parameters> detail;
 
+    public Parameters(String type) {
+        this.type = type;
+    }
 }

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @date 2019-06-05 15:13
  */
 public class DocUtils {
-    public static final String LIST_CLASS_NAME = "<(.*?)>";
+    public static final String LIST_CLASS_NAME = "<(\\S*)>";
     public static final Pattern LIST_CLASS_NAME_PATTERN = Pattern.compile(LIST_CLASS_NAME);
 
     /**
@@ -100,7 +100,7 @@ public class DocUtils {
     public static String getSubClassName(String soap) {
         // 匹配的模式
         Matcher m = LIST_CLASS_NAME_PATTERN.matcher(soap);
-        while (m.find()) {
+        if (m.find()) {
             return m.group(1);
         }
         return null;

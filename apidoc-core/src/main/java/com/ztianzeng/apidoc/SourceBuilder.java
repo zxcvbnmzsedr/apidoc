@@ -155,15 +155,6 @@ public class SourceBuilder {
 
     }
 
-    /**
-     * 获取结果对象
-     */
-    private List<Parameters> getResponse(JavaMethod method) {
-
-        JavaClass returns = method.getReturns();
-        // 如果是request Body 对象，则解析对象类型
-        return parsingBody(returns);
-    }
 
     /**
      * 获取方法的请求参数
@@ -227,6 +218,25 @@ public class SourceBuilder {
     }
 
     /**
+     * 获取结果对象
+     * 因为解析时会直接拿泛型的去解析，因此重新构造一个新的塞入
+     */
+    private List<Parameters> getResponse(JavaMethod method) {
+
+        JavaClass returns = method.getReturns();
+        String genericCanonicalName = returns.getGenericCanonicalName();
+        String subClass = DocUtils.getSubClassName(genericCanonicalName);
+        if (StringUtils.isNotEmpty(subClass)) {
+            returns = builder.getClassByName(subClass);
+            Parameters parameters = new Parameters("List");
+            parameters.setDetail(parsingBody(returns));
+            return Collections.singletonList(parameters);
+        }
+        // 如果是request Body 对象，则解析对象类型
+        return parsingBody(returns);
+    }
+
+    /**
      * 解析body
      *
      * @param cls 类信息
@@ -239,14 +249,23 @@ public class SourceBuilder {
         }
         String genericCanonicalName = cls.getGenericCanonicalName();
         String subClass = DocUtils.getSubClassName(genericCanonicalName);
+        List<Parameters> parameters = new LinkedList<>();
+
         if (StringUtils.isNotEmpty(subClass)) {
             cls = builder.getClassByName(subClass);
+            if (StringUtils.isNotEmpty(DocUtils.getSubClassName(subClass))) {
+                Parameters parameters1 = new Parameters("List");
+                parameters1.setDetail(parsingBody(cls));
+                parameters.add(parameters1);
+            }
         }
-
 
         List<JavaField> fields = cls.getFields();
 
-        List<Parameters> parameters = new LinkedList<>();
+        if (cls.isArray()){
+            return parsingBody(cls);
+        }
+
         for (JavaField field : fields) {
             // 属性是否为require
             boolean required = DocUtils.isRequired(field);
