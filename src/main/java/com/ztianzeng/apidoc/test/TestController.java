@@ -26,6 +26,16 @@ public class TestController {
     }
 
     /**
+     * 新增一个实例2
+     *
+     * @param createParam2 创建对象2
+     */
+    @PostMapping(value = "/create2")
+    public void create2(@Valid CreateParam createParam2) {
+
+    }
+
+    /**
      * 获取一个实例
      *
      * @param userId 用户ID

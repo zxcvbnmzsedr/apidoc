@@ -46,6 +46,14 @@ public class SpringMvcConstants {
      */
     public static final String REQUEST_BODY = "RequestBody";
 
+    public static final String JSON_CONTENT_TYPE = "application/json; charset=utf-8";
+
+    public static final String FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
+
+
+    public static final String REQUEST_BODY_FULLY = "org.springframework.web.bind.annotation.RequestBody";
+
+
     /**
      * 初始化Spring枚举到Http方法的对应
      */

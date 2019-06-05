@@ -3,8 +3,10 @@ package com.ztianzeng.apidoc;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
+import com.ztianzeng.apidoc.constants.SpringMvcConstants;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
 import com.ztianzeng.apidoc.model.Parameters;
+import com.ztianzeng.apidoc.utils.DocUtils;
 import com.ztianzeng.apidoc.utils.StringUtils;
 
 import java.io.File;
@@ -109,11 +111,9 @@ public class SourceBuilder {
                     url = StringUtils.equals("/", url.subSequence(0, 1)) ? url : "/" + url;
                     apiMethodDoc.setUrl(this.appUrl + (url).replace("//", "/"));
                 }
+                apiMethodDoc.setContentType(getContentType(method));
 
-                List<Parameters> comment = getRequest(method);
-
-
-                apiMethodDoc.setRequestParams(comment);
+                apiMethodDoc.setRequestParams(getRequest(method));
 
                 methodDocList.add(apiMethodDoc);
 
@@ -122,6 +122,34 @@ public class SourceBuilder {
 
         return methodDocList;
     }
+
+
+    /**
+     * 获取方法上的请求类型
+     *
+     * @param method 方法
+     * @return 请求类型
+     */
+    private String getContentType(JavaMethod method) {
+        List<JavaParameter> parameterList = method.getParameters();
+        for (JavaParameter parameter : parameterList) {
+            JavaType javaType = parameter.getType();
+            String typeName = javaType.getFullyQualifiedName();
+            if (!DocUtils.isMvcParams(typeName)) {
+                List<JavaAnnotation> annotations = parameter.getAnnotations();
+                for (JavaAnnotation annotation : annotations) {
+                    String annotationName = annotation.getType().getSimpleName();
+                    if (REQUEST_BODY.equals(annotationName) || REQUEST_BODY_FULLY.equals(annotationName)) {
+                        return JSON_CONTENT_TYPE;
+                    }
+                }
+
+            }
+        }
+        return FORM_CONTENT_TYPE;
+
+    }
+
 
     /**
      * 获取方法的请求参数
@@ -145,12 +173,9 @@ public class SourceBuilder {
         // 获取方法的参数列表
         List<JavaParameter> parameterList = method.getParameters();
         for (JavaParameter javaParameter : parameterList) {
-            JavaType type = javaParameter.getType();
             String fullTypeName = javaParameter.getType().getFullyQualifiedName();
             // 如果是request Body 对象，则解析对象类型
-            if (isRequestBody(javaParameter)) {
-                parameters.addAll(parsingBody(fullTypeName));
-            }
+            parameters.addAll(parsingBody(fullTypeName));
         }
 
         return parameters;
@@ -163,7 +188,12 @@ public class SourceBuilder {
      * @return 返回类中的每个字段的信息
      */
     private List<Parameters> parsingBody(String className) {
+
         JavaClass cls = builder.getClassByName(className);
+
+        if (DocUtils.isPrimitive(cls.getSimpleName())) {
+            return Collections.emptyList();
+        }
         List<JavaField> fields = cls.getFields();
 
         List<Parameters> parameters = new LinkedList<>();

@@ -19,6 +19,7 @@ public class SourceBuilderTest {
             System.out.println("url->" + controllerDatum.getUrl());
             System.out.println("method->" + controllerDatum.getRequestMethod());
             System.out.println("description->" + controllerDatum.getDescription());
+            System.out.println("contentType->" + controllerDatum.getContentType());
             System.out.println("requestParam->");
             controllerDatum.getRequestParams().forEach(k -> System.out.println("             " + k));
             System.out.println("=======================\n\n");
