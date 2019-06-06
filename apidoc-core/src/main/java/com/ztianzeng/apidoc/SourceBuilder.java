@@ -30,7 +30,7 @@ public class SourceBuilder {
 
     public SourceBuilder() {
         this.appUrl = "http://{server}";
-        loadJavaFiles("src/main/java");
+        loadJavaFiles("src");
     }
 
     public SourceBuilder(String uri) {

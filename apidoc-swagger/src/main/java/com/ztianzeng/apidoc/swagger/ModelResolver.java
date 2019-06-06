@@ -13,6 +13,8 @@ import com.ztianzeng.apidoc.swagger.models.media.Schema;
 import java.util.*;
 
 /**
+ * 模型解析器
+ *
  * @author zhaotianzeng
  * @version V1.0
  * @date 2019-06-06 13:00
@@ -24,9 +26,9 @@ public class ModelResolver implements ModelConverter {
 
     protected ObjectMapper mapper;
 
-    public ModelResolver(ObjectMapper mapper) {
+    public ModelResolver(ObjectMapper mapper,SourceBuilder sourceBuilder) {
         this.mapper = mapper;
-        sourceBuilder = new SourceBuilder("src/test/java");
+        this.sourceBuilder = sourceBuilder;
         builder = sourceBuilder.getBuilder();
     }
 

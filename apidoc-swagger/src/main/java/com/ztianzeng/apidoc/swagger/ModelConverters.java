@@ -1,6 +1,7 @@
 package com.ztianzeng.apidoc.swagger;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.ztianzeng.apidoc.SourceBuilder;
 import com.ztianzeng.apidoc.swagger.converter.AnnotatedType;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverter;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverterContextImpl;
@@ -29,8 +30,9 @@ public class ModelConverters {
     }
 
     public ModelConverters() {
+        SourceBuilder sourceBuilder = new SourceBuilder();
         converters = new CopyOnWriteArrayList<>();
-        converters.add(new ModelResolver(Json.mapper()));
+        converters.add(new ModelResolver(Json.mapper(), sourceBuilder));
     }
 
     public Map<String, Schema> readAll(Type type) {
