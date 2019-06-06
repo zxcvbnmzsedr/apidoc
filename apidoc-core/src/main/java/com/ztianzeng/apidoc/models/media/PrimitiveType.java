@@ -129,7 +129,7 @@ public enum PrimitiveType {
             return new FileSchema();
         }
     },
-    OBJECT(Object.class) {
+    OBJECT(Object.class,"object") {
         @Override
         public Schema createProperty() {
             return new Schema().type("object");
@@ -333,7 +333,7 @@ public enum PrimitiveType {
                 return entry.getValue();
             }
         }
-        return null;
+        return PrimitiveType.OBJECT;
     }
 
     public static PrimitiveType fromName(String name) {

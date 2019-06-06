@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
@@ -16,6 +17,7 @@ import com.ztianzeng.apidoc.utils.StringUtils;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.ztianzeng.apidoc.constants.GlobalConstants.IGNORE_TAG;
 import static com.ztianzeng.apidoc.constants.SpringMvcConstants.*;
@@ -253,25 +255,28 @@ public class SourceBuilder {
 
         List<JavaField> fields = cls.getFields();
 
-
+        Type targetClass = DocUtils.getTypeForName(cls.getFullyQualifiedName());
+        com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(targetClass);
+        final BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
+        Map<String, BeanPropertyDefinition> collect = beanDesc.findProperties().stream().collect(Collectors.toMap(BeanPropertyDefinition::getName, r -> r));
         for (JavaField field : fields) {
             // 属性是否为require
             boolean required = DocUtils.isRequired(field);
-            Type typeForName = DocUtils.getTypeForName(field.getType().getFullyQualifiedName());
-            com.fasterxml.jackson.databind.JavaType type = mapper.constructType(typeForName);
-            final BeanDescription beanDesc = mapper.getSerializationConfig().introspect(type);
+
 
             // 会递归获取参数的信息
-            parameters.add(new Parameters(required,
-                    field.getName(),
-                    field.getComment(),
-                    typeForName,
-                    beanDesc
-
-            ));
-
+            parameters.add(
+                    new Parameters(required,
+                            field.getName(),
+                            field.getComment(),
+                            DocUtils.getTypeForName(field.getType().getFullyQualifiedName()),
+                            collect.get(field.getName())
+                    )
+            );
 
         }
+
+
         return parameters;
     }
 

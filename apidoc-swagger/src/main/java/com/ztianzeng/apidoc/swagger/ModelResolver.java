@@ -2,6 +2,7 @@ package com.ztianzeng.apidoc.swagger;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.SourceBuilder;
@@ -12,6 +13,7 @@ import com.ztianzeng.apidoc.swagger.converter.ModelConverterContext;
 import com.ztianzeng.apidoc.models.media.MapSchema;
 import com.ztianzeng.apidoc.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.models.media.Schema;
+import com.ztianzeng.apidoc.utils.DocUtils;
 
 import java.util.*;
 
@@ -41,12 +43,13 @@ public class ModelResolver implements ModelConverter {
                           Iterator<ModelConverter> chain) {
         JavaClass classByName = builder.getClassByName(annotatedType.getType().getTypeName());
 
-        final JavaType jacksonJavaType = mapper.constructType(annotatedType.getType());
-
         List<Parameters> parameters = sourceBuilder.parsingBody(classByName);
 
         Schema schema = new Schema();
         schema.name(classByName.getName());
+        PrimitiveType parentType = PrimitiveType.fromType(DocUtils.getTypeForName(classByName.getFullyQualifiedName()));
+
+        schema.setType(parentType.getCommonName());
 
         List<String> requiredList = new LinkedList<>();
         Map<String, Schema> properties = new HashMap<>();
@@ -68,13 +71,12 @@ public class ModelResolver implements ModelConverter {
 
 
             if (type.isContainerType()) {
-                JavaType keyType = type.getKeyType();
-
-                JavaType valueType = type.getContentType();
+                BeanPropertyDefinition beanDescription = requestParam.getBeanDescription();
+                JavaType valueType = beanDescription.getPrimaryType().getContentType();
 
                 Schema addPropertiesSchema = context.resolve(
                         new AnnotatedType()
-                                .type(valueType)
+                                .type(valueType.getRawClass())
                                 .schemaProperty(annotatedType.isSchemaProperty())
                                 .skipSchemaName(true)
                                 .resolveAsRef(annotatedType.isResolveAsRef())
@@ -94,7 +96,7 @@ public class ModelResolver implements ModelConverter {
             }
             properties.put(requestParam.getName(), prop);
         }
-        schema.setType("object");
+
         schema.setProperties(properties);
         schema.setRequired(requiredList);
 
