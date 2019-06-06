@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.ztianzeng.apidoc.models.parameters.*;
-import com.ztianzeng.apidoc.utils.Json;
+import com.ztianzeng.apidoc.swagger.util.Json;
+
 
 import java.io.IOException;
 

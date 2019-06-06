@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ztianzeng.apidoc.models.PathItem;
 import com.ztianzeng.apidoc.models.callbacks.Callback;
-import com.ztianzeng.apidoc.utils.Json;
+import com.ztianzeng.apidoc.swagger.util.Json;
 
 import java.io.IOException;
 import java.util.Iterator;

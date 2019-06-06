@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ztianzeng.apidoc.models.security.OAuthFlows;
 import com.ztianzeng.apidoc.models.security.SecurityScheme;
-import com.ztianzeng.apidoc.utils.Json;
+import com.ztianzeng.apidoc.swagger.util.Json;
 
 import java.io.IOException;
 import java.util.Arrays;

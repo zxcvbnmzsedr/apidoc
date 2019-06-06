@@ -1,7 +1,10 @@
 package com.ztianzeng.apidoc;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
@@ -28,18 +31,20 @@ public class SourceBuilder {
 
     private JavaProjectBuilder builder;
 
+    protected final ObjectMapper mapper;
 
     private Collection<JavaClass> javaClasses;
 
     private String appUrl;
 
     public SourceBuilder() {
-
+        this.mapper = objectMapper();
         this.appUrl = "http://{server}";
         loadJavaFiles("src");
     }
 
     public SourceBuilder(String uri) {
+        this.mapper = objectMapper();
         this.appUrl = "http://{server}";
         loadJavaFiles(uri);
     }
@@ -244,18 +249,7 @@ public class SourceBuilder {
         if (DocUtils.isPrimitive(cls.getFullyQualifiedName()) || cls.isPrimitive()) {
             return Collections.emptyList();
         }
-//        String genericCanonicalName = cls.getGenericCanonicalName();
-//        String subClass = DocUtils.getSubClassName(genericCanonicalName);
         List<Parameters> parameters = new LinkedList<>();
-
-//        if (StringUtils.isNotEmpty(subClass)) {
-//            cls = builder.getClassByName(subClass);
-//            if (StringUtils.isNotEmpty(DocUtils.getSubClassName(subClass))) {
-//                Parameters parameters1 = new Parameters("List");
-//                parameters1.setDetail(parsingBody(cls));
-//                parameters.add(parameters1);
-//            }
-//        }
 
         List<JavaField> fields = cls.getFields();
 
@@ -263,12 +257,16 @@ public class SourceBuilder {
         for (JavaField field : fields) {
             // 属性是否为require
             boolean required = DocUtils.isRequired(field);
+            Type typeForName = DocUtils.getTypeForName(field.getType().getFullyQualifiedName());
+            com.fasterxml.jackson.databind.JavaType type = mapper.constructType(typeForName);
+            final BeanDescription beanDesc = mapper.getSerializationConfig().introspect(type);
 
             // 会递归获取参数的信息
             parameters.add(new Parameters(required,
                     field.getName(),
                     field.getComment(),
-                    DocUtils.getTypeForName(field.getType().getFullyQualifiedName()),null
+                    typeForName,
+                    beanDesc
 
             ));
 
@@ -350,6 +348,20 @@ public class SourceBuilder {
             }
         }
         return false;
+    }
+
+
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+        mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        return mapper;
     }
 
     public JavaProjectBuilder getBuilder() {

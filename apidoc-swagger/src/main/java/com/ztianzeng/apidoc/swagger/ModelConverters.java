@@ -2,11 +2,11 @@ package com.ztianzeng.apidoc.swagger;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.ztianzeng.apidoc.SourceBuilder;
+import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.swagger.converter.AnnotatedType;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverter;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverterContextImpl;
-import com.ztianzeng.apidoc.models.media.Schema;
-import com.ztianzeng.apidoc.utils.Json;
+import com.ztianzeng.apidoc.swagger.util.Json;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Type;

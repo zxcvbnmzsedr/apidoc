@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.ztianzeng.apidoc.models.media.*;
-import com.ztianzeng.apidoc.utils.Json;
+import com.ztianzeng.apidoc.swagger.util.Json;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
