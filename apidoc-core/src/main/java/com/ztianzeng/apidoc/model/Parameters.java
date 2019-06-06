@@ -2,6 +2,7 @@ package com.ztianzeng.apidoc.model;
 
 import lombok.*;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -35,14 +36,14 @@ public class Parameters {
     /**
      * 字段类型
      */
-    private String type;
+    private Type type;
 
     /**
      * 嵌套对象的详情
      */
     private List<Parameters> detail;
 
-    public Parameters(String type) {
+    public Parameters(Type type) {
         this.type = type;
     }
 }

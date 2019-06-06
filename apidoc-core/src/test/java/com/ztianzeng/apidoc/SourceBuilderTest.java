@@ -26,7 +26,7 @@ public class SourceBuilderTest {
     }
 
     @Test
-    public void test() {
+    public void test() throws ClassNotFoundException {
         List<ApiMethodDoc> controllerData = sourceBuilder.getControllerData();
         for (ApiMethodDoc controllerDatum : controllerData) {
             System.out.println("url->" + controllerDatum.getUrl());

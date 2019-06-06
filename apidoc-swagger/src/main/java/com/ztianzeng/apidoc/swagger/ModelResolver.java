@@ -8,8 +8,10 @@ import com.ztianzeng.apidoc.model.Parameters;
 import com.ztianzeng.apidoc.swagger.converter.AnnotatedType;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverter;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverterContext;
+import com.ztianzeng.apidoc.swagger.models.media.MapSchema;
 import com.ztianzeng.apidoc.swagger.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.swagger.models.media.Schema;
+import com.ztianzeng.apidoc.utils.DocUtils;
 
 import java.util.*;
 
@@ -47,15 +49,27 @@ public class ModelResolver implements ModelConverter {
         Map<String, Schema> properties = new HashMap<>();
         for (Parameters requestParam : parameters) {
             Schema prop = new Schema();
-            PrimitiveType primitiveType = PrimitiveType.fromName(requestParam.getType());
+            PrimitiveType primitiveType = PrimitiveType.fromType(requestParam.getType());
 
             if (primitiveType != null) {
                 prop = primitiveType.createProperty();
-
             } else {
                 prop.setType("object");
             }
             prop.setDescription(requestParam.getDescription());
+
+
+            if (DocUtils.isContainerType(requestParam.getType())) {
+
+                Schema addPropertiesSchema = context.resolve(
+                        new AnnotatedType().type(requestParam.getType()));
+
+                prop = new MapSchema().additionalProperties(addPropertiesSchema);
+
+            }
+
+
+
 
             if (requestParam.isRequired()) {
                 requiredList.add(requestParam.getName());

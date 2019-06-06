@@ -3,6 +3,7 @@ package com.ztianzeng.apidoc.utils;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaField;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -104,6 +105,35 @@ public class DocUtils {
             return m.group(1);
         }
         return null;
+    }
+
+    /**
+     * 是否为容器对象
+     *
+     * @return
+     */
+    public static boolean isContainerType(Type type) {
+        switch (type.getTypeName()) {
+            case "Map":
+
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 获取
+     *
+     * @param typeName
+     * @return
+     */
+    public static Type getTypeForName(String typeName) {
+        try {
+            return Class.forName(typeName);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
 
     }
 

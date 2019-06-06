@@ -9,6 +9,7 @@ import com.ztianzeng.apidoc.utils.DocUtils;
 import com.ztianzeng.apidoc.utils.StringUtils;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.*;
 
 import static com.ztianzeng.apidoc.constants.GlobalConstants.IGNORE_TAG;
@@ -162,7 +163,7 @@ public class SourceBuilder {
      * @param method 方法
      * @return 查询出来的kv
      */
-    private List<Parameters> getRequest(JavaMethod method) {
+    private List<Parameters> getRequest(JavaMethod method)  {
         List<DocletTag> paramTags = method.getTagsByName("param");
         List<Parameters> parameters = new LinkedList<>();
         for (DocletTag paramTag : paramTags) {
@@ -173,12 +174,12 @@ public class SourceBuilder {
             // 获取对应的type
             JavaParameter parameterByName = method.getParameterByName(pName);
 
-            String type = null;
+            Type type = null;
 
             boolean required = false;
             // 如果参数不为空
             if (parameterByName != null) {
-                type = parameterByName.getType().getValue();
+                type = DocUtils.getTypeForName(parameterByName.getType().getValue());
                 // 以@RequestBody为主
                 if (isRequestBody(parameterByName)) {
                     required = true;
@@ -228,7 +229,7 @@ public class SourceBuilder {
         String subClass = DocUtils.getSubClassName(genericCanonicalName);
         if (StringUtils.isNotEmpty(subClass)) {
             returns = builder.getClassByName(subClass);
-            Parameters parameters = new Parameters("List");
+            Parameters parameters = new Parameters(List.class);
             parameters.setDetail(parsingBody(returns));
             return Collections.singletonList(parameters);
         }
@@ -270,7 +271,7 @@ public class SourceBuilder {
             parameters.add(new Parameters(required,
                     field.getName(),
                     field.getComment(),
-                    field.getType().getName(),
+                    DocUtils.getTypeForName(field.getType().getFullyQualifiedName()),
                     parsingBody(field.getType())
             ));
 
