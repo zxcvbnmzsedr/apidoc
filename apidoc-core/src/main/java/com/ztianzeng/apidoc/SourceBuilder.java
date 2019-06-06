@@ -243,27 +243,24 @@ public class SourceBuilder {
      * @return 返回类中的每个字段的信息
      */
     public List<Parameters> parsingBody(JavaClass cls) {
-        if (DocUtils.isPrimitive(cls.getSimpleName())) {
+        if (DocUtils.isPrimitive(cls.getFullyQualifiedName()) || cls.isPrimitive()) {
             return Collections.emptyList();
         }
-        String genericCanonicalName = cls.getGenericCanonicalName();
-        String subClass = DocUtils.getSubClassName(genericCanonicalName);
+//        String genericCanonicalName = cls.getGenericCanonicalName();
+//        String subClass = DocUtils.getSubClassName(genericCanonicalName);
         List<Parameters> parameters = new LinkedList<>();
 
-        if (StringUtils.isNotEmpty(subClass)) {
-            cls = builder.getClassByName(subClass);
-            if (StringUtils.isNotEmpty(DocUtils.getSubClassName(subClass))) {
-                Parameters parameters1 = new Parameters("List");
-                parameters1.setDetail(parsingBody(cls));
-                parameters.add(parameters1);
-            }
-        }
+//        if (StringUtils.isNotEmpty(subClass)) {
+//            cls = builder.getClassByName(subClass);
+//            if (StringUtils.isNotEmpty(DocUtils.getSubClassName(subClass))) {
+//                Parameters parameters1 = new Parameters("List");
+//                parameters1.setDetail(parsingBody(cls));
+//                parameters.add(parameters1);
+//            }
+//        }
 
         List<JavaField> fields = cls.getFields();
 
-        if (cls.isArray()){
-            return parsingBody(cls);
-        }
 
         for (JavaField field : fields) {
             // 属性是否为require

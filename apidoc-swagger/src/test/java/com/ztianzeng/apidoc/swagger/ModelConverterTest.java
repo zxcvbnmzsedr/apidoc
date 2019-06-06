@@ -1,5 +1,6 @@
 package com.ztianzeng.apidoc.swagger;
 
+import com.ztianzeng.apidoc.swagger.models.Person;
 import com.ztianzeng.apidoc.swagger.models.Pet;
 import com.ztianzeng.apidoc.swagger.models.media.Schema;
 import org.junit.Test;
@@ -15,8 +16,17 @@ import java.util.Map;
  */
 public class ModelConverterTest {
     @Test
-    public void readInterface() throws IOException {
+    public void readModel() throws IOException {
         assertEqualsToJson(readAll(Pet.class), "Pet.json");
+    }
+
+    @Test
+    public void convertModel() throws IOException {
+        assertEqualsToJson(read(Person.class), "Person.json");
+    }
+
+    private Map<String, Schema> read(Type type) {
+        return ModelConverters.getInstance().read(type);
     }
 
     private Map<String, Schema> readAll(Type type) {

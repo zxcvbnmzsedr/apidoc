@@ -35,6 +35,26 @@ public class ModelConverters {
         converters.add(new ModelResolver(Json.mapper(), sourceBuilder));
     }
 
+    public Map<String, Schema> read(Type type) {
+        return read(new AnnotatedType().type(type));
+    }
+
+    public Map<String, Schema> read(AnnotatedType type) {
+        Map<String, Schema> modelMap = new HashMap<>();
+        if (shouldProcess(type.getType())) {
+            ModelConverterContextImpl context = new ModelConverterContextImpl(
+                    converters);
+            Schema resolve = context.resolve(type);
+            for (Map.Entry<String, Schema> entry : context.getDefinedModels()
+                    .entrySet()) {
+                if (entry.getValue().equals(resolve)) {
+                    modelMap.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return modelMap;
+    }
+
     public Map<String, Schema> readAll(Type type) {
         return readAll(new AnnotatedType().type(type));
     }
