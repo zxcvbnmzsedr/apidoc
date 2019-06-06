@@ -4,18 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ztianzeng.apidoc.swagger.util.Json;
 import com.ztianzeng.apidoc.swagger.util.Yaml;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Comparator;
 
 import static org.junit.Assert.assertEquals;
-import static org.testng.Assert.assertEquals;
 
 public class SerializationMatchers {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SerializationMatchers.class);
 
     public static void assertEqualsToYaml(Object objectToSerialize, String yamlStr) {
         apply(objectToSerialize, yamlStr, Yaml.mapper());
@@ -30,8 +27,8 @@ public class SerializationMatchers {
         ObjectNode rhs = null;
         try {
             rhs = mapper.readValue(str, ObjectNode.class);
-        } catch (IOException e) {
-            LOGGER.error("Failed to read value", e);
+        } catch (IOException ignored) {
+
         }
         if (!lhs.equals(new ObjectNodeComparator(), rhs)) {
             assertEquals(Yaml.pretty(lhs), Yaml.pretty(rhs));
