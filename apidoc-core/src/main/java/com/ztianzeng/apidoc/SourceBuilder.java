@@ -27,19 +27,19 @@ public class SourceBuilder {
     public Map<String, JavaClass> javaFilesMap = new HashMap<>();
 
     private JavaProjectBuilder builder;
-    protected final ObjectMapper mapper;
+
 
     private Collection<JavaClass> javaClasses;
+
     private String appUrl;
 
     public SourceBuilder() {
-        this.mapper = mapper;
+
         this.appUrl = "http://{server}";
         loadJavaFiles("src");
     }
 
     public SourceBuilder(String uri) {
-        this.mapper = mapper;
         this.appUrl = "http://{server}";
         loadJavaFiles(uri);
     }
@@ -263,13 +263,12 @@ public class SourceBuilder {
         for (JavaField field : fields) {
             // 属性是否为require
             boolean required = DocUtils.isRequired(field);
-            final BeanDescription beanDesc = _mapper.getSerializationConfig().introspect(field.getType());
 
             // 会递归获取参数的信息
             parameters.add(new Parameters(required,
                     field.getName(),
                     field.getComment(),
-                    DocUtils.getTypeForName(field.getType().getFullyQualifiedName()),
+                    DocUtils.getTypeForName(field.getType().getFullyQualifiedName()),null
 
             ));
 

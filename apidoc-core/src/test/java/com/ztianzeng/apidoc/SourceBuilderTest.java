@@ -61,9 +61,7 @@ public class SourceBuilderTest {
         System.out.println(parameters);
         for (Parameters parameter : parameters) {
             Assert.assertNotNull(parameter.getName());
-            for (Parameters parameters1 : parameter.getDetail()) {
-                Assert.assertNotNull(parameters1.getName());
-            }
+
         }
     }
     /**
@@ -76,11 +74,7 @@ public class SourceBuilderTest {
         System.out.println(parameters);
         for (Parameters parameter : parameters) {
             Assert.assertNotNull(parameter.getName());
-            for (Parameters parameters1 : parameter.getDetail()) {
-                for (Parameters parameters2 : parameters1.getDetail()) {
-                    Assert.assertNotNull(parameters2.getName());
-                }
-            }
+
         }
     }
     /**
@@ -93,9 +87,7 @@ public class SourceBuilderTest {
         System.out.println(parameters);
         for (Parameters parameter : parameters) {
             Assert.assertNotNull(parameter.getName());
-            for (Parameters parameters1 : parameter.getDetail()) {
-                Assert.assertNotNull(parameters1.getName());
-            }
+
         }
     }
 

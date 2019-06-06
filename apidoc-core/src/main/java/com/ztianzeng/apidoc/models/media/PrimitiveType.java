@@ -1,7 +1,7 @@
 package com.ztianzeng.apidoc.models.media;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import org.apache.commons.lang3.StringUtils;
+import com.ztianzeng.apidoc.utils.StringUtils;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -348,10 +348,10 @@ public enum PrimitiveType {
     }
 
     public static PrimitiveType fromTypeAndFormat(String type, String format) {
-        if (StringUtils.isNotBlank(type) && type.equals("object")) {
+        if (StringUtils.isEmpty(type) && type.equals("object")) {
             return null;
         }
-        return fromName(datatypeMappings.get(String.format("%s_%s", StringUtils.isBlank(type) ? "" : type, StringUtils.isBlank(format) ? "" : format)));
+        return fromName(datatypeMappings.get(String.format("%s_%s", StringUtils.isNotEmpty(type) ? "" : type, StringUtils.isEmpty(format) ? "" : format)));
     }
 
     public static Schema createProperty(Type type) {
