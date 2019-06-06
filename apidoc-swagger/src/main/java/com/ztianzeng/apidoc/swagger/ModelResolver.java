@@ -7,15 +7,17 @@ import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.SourceBuilder;
 import com.ztianzeng.apidoc.model.Parameters;
-import com.ztianzeng.apidoc.swagger.converter.AnnotatedType;
-import com.ztianzeng.apidoc.swagger.converter.ModelConverter;
-import com.ztianzeng.apidoc.swagger.converter.ModelConverterContext;
 import com.ztianzeng.apidoc.models.media.MapSchema;
 import com.ztianzeng.apidoc.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.models.media.Schema;
+import com.ztianzeng.apidoc.swagger.converter.AnnotatedType;
+import com.ztianzeng.apidoc.swagger.converter.ModelConverter;
+import com.ztianzeng.apidoc.swagger.converter.ModelConverterContext;
 import com.ztianzeng.apidoc.utils.DocUtils;
 
 import java.util.*;
+
+import static com.ztianzeng.apidoc.swagger.util.RefUtils.constructRef;
 
 /**
  * 模型解析器
@@ -69,10 +71,12 @@ public class ModelResolver implements ModelConverter {
 
             final JavaType type = mapper.constructType(requestParam.getType());
 
+            BeanPropertyDefinition beanDescription = requestParam.getBeanDescription();
+            JavaType valueType = beanDescription.getPrimaryType().getContentType();
 
+            // 处理集合问题
             if (type.isContainerType()) {
-                BeanPropertyDefinition beanDescription = requestParam.getBeanDescription();
-                JavaType valueType = beanDescription.getPrimaryType().getContentType();
+
 
                 Schema addPropertiesSchema = context.resolve(
                         new AnnotatedType()
@@ -88,6 +92,11 @@ public class ModelResolver implements ModelConverter {
 
                 prop = new MapSchema().additionalProperties(addPropertiesSchema);
                 prop.name(name);
+            } else {
+                if ("object".equals(prop.getType())) {
+                    prop = new Schema().$ref(constructRef(beanDescription.getPrimaryType().getRawClass().getSimpleName()));
+
+                }
             }
 
 
