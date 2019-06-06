@@ -20,13 +20,13 @@
             },
             "birthDate": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date"
             },
-            "float": {
+            "floatValue": {
                 "type": "number",
                 "format": "float"
             },
-            "double": {
+            "doubleValue": {
                 "type": "number",
                 "format": "double"
             }

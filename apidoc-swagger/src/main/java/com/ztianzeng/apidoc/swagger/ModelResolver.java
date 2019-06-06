@@ -8,6 +8,7 @@ import com.ztianzeng.apidoc.model.Parameters;
 import com.ztianzeng.apidoc.swagger.converter.AnnotatedType;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverter;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverterContext;
+import com.ztianzeng.apidoc.swagger.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.swagger.models.media.Schema;
 
 import java.util.*;
@@ -26,7 +27,7 @@ public class ModelResolver implements ModelConverter {
 
     protected ObjectMapper mapper;
 
-    public ModelResolver(ObjectMapper mapper,SourceBuilder sourceBuilder) {
+    public ModelResolver(ObjectMapper mapper, SourceBuilder sourceBuilder) {
         this.mapper = mapper;
         this.sourceBuilder = sourceBuilder;
         builder = sourceBuilder.getBuilder();
@@ -46,7 +47,14 @@ public class ModelResolver implements ModelConverter {
         Map<String, Schema> properties = new HashMap<>();
         for (Parameters requestParam : parameters) {
             Schema prop = new Schema();
-            prop.setType(requestParam.getType().toLowerCase());
+            PrimitiveType primitiveType = PrimitiveType.fromName(requestParam.getType());
+
+            if (primitiveType != null) {
+                prop = primitiveType.createProperty();
+
+            } else {
+                prop.setType("object");
+            }
             prop.setDescription(requestParam.getDescription());
 
             if (requestParam.isRequired()) {
