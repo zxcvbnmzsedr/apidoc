@@ -23,13 +23,14 @@ public class ModelConverters {
     private final List<ModelConverter> converters;
     private final Set<String> skippedPackages = new HashSet<>();
     private final Set<String> skippedClasses = new HashSet<>();
+
     public static ModelConverters getInstance() {
         return SINGLETON;
     }
 
     public ModelConverters() {
         converters = new CopyOnWriteArrayList<>();
-//        converters.add(new ModelResolver(Json.mapper()));
+        converters.add(new ModelResolver(Json.mapper()));
     }
 
     public Map<String, Schema> readAll(Type type) {
@@ -38,8 +39,7 @@ public class ModelConverters {
 
     public Map<String, Schema> readAll(AnnotatedType type) {
         if (shouldProcess(type.getType())) {
-            ModelConverterContextImpl context = new ModelConverterContextImpl(
-                    converters);
+            ModelConverterContextImpl context = new ModelConverterContextImpl(converters);
 
             log.debug("ModelConverters readAll from " + type);
             context.resolve(type);

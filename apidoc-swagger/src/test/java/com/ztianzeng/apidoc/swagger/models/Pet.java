@@ -2,6 +2,9 @@ package com.ztianzeng.apidoc.swagger.models;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author zhaotianzeng
  * @version V1.0
@@ -9,9 +12,18 @@ import lombok.Data;
  */
 @Data
 public class Pet {
+    /**
+     * The pet type
+     */
+    @NotEmpty
     private String type;
 
+    /**
+     * The name of the pet
+     */
+    @NotEmpty
     private String name;
 
+    @NotNull
     private Boolean isDomestic;
 }

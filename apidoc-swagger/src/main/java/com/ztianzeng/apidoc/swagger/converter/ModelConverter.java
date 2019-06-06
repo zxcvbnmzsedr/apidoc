@@ -7,6 +7,8 @@ import java.util.Iterator;
 public interface ModelConverter {
 
     /**
+     * 解析
+     *
      * @param type
      * @param context
      * @param chain   the chain of model converters to try if this implementation cannot process
