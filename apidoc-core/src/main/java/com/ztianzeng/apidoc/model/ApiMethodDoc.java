@@ -13,9 +13,20 @@ import java.util.List;
 @Data
 public class ApiMethodDoc {
 
+    /**
+     * 详情描述
+     */
     private String description;
 
     private String url;
+
+
+    private String path;
+
+    /**
+     * 概述
+     */
+    private String summary;
 
     /**
      * HTTP请求方式

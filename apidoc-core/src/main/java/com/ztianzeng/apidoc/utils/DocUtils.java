@@ -83,7 +83,7 @@ public class DocUtils {
      */
     public static boolean isRequired(JavaField field) {
         boolean isRequired = false;
-        List<JavaAnnotation> annotations = field.getAnnotations();
+         List<JavaAnnotation> annotations = field.getAnnotations();
         for (JavaAnnotation annotation : annotations) {
             String fullyQualifiedName = annotation.getType().getFullyQualifiedName();
             if (fullyQualifiedName.startsWith("javax.validation")) {
@@ -109,21 +109,7 @@ public class DocUtils {
         return null;
     }
 
-    /**
-     * 是否为容器对象
-     *
-     * @return
-     */
-    public static boolean isContainerType(Type type) {
-        if (type instanceof Class) {
-            if (((Class) type).isAssignableFrom(Map.class)) {
-                return true;
-            }
-        }
 
-        return false;
-
-    }
 
     /**
      * 获取

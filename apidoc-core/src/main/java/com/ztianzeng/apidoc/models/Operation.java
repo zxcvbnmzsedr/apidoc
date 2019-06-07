@@ -23,6 +23,9 @@ import com.ztianzeng.apidoc.models.parameters.RequestBody;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.models.security.SecurityRequirement;
 import com.ztianzeng.apidoc.models.servers.Server;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +37,9 @@ import java.util.Objects;
  *
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#operationObject"
  */
-
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Operation {
     private List<String> tags = null;
     private String summary = null;

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
@@ -90,7 +89,9 @@ public class SourceBuilder {
 
         for (JavaMethod method : methods) {
             ApiMethodDoc apiMethodDoc = new ApiMethodDoc();
-            apiMethodDoc.setDescription(method.getComment());
+
+            setDescAndSummary(apiMethodDoc, method);
+
             List<JavaAnnotation> annotations = method.getAnnotations();
             String url = null;
             RequestMethod methodType = null;
@@ -121,13 +122,20 @@ public class SourceBuilder {
                 url = url.replaceAll("\"", "").trim();
 
                 apiMethodDoc.setRequestMethod(methodType);
+                String path;
                 if (StringUtils.isNotEmpty(baseUrl)) {
                     baseUrl = StringUtils.equals("/", baseUrl.subSequence(0, 1)) ? baseUrl : "/" + baseUrl;
-                    apiMethodDoc.setUrl(this.appUrl + (baseUrl + "/" + url).replace("//", "/"));
+                    path = (baseUrl + "/" + url).replace("//", "/");
+
                 } else {
                     url = StringUtils.equals("/", url.subSequence(0, 1)) ? url : "/" + url;
-                    apiMethodDoc.setUrl(this.appUrl + (url).replace("//", "/"));
+                    path = (url).replace("//", "/");
+
                 }
+
+                apiMethodDoc.setUrl(this.appUrl + path);
+                apiMethodDoc.setPath(path);
+
                 apiMethodDoc.setContentType(getContentType(method));
 
                 apiMethodDoc.setRequestParams(getRequest(method));
@@ -136,12 +144,25 @@ public class SourceBuilder {
 
                 methodDocList.add(apiMethodDoc);
 
+
             }
         }
 
         return methodDocList;
     }
 
+    /**
+     * 设置方法上的详情和概述
+     *
+     * @param apiMethodDoc
+     * @param method
+     */
+    // TODO: 2019-06-07 用正则解析第一个<p>中间的详情
+    private void setDescAndSummary(ApiMethodDoc apiMethodDoc, JavaMethod method) {
+        String comment = method.getComment();
+        apiMethodDoc.setDescription(comment);
+        apiMethodDoc.setSummary(comment);
+    }
 
     /**
      * 获取方法上的请求类型
@@ -263,10 +284,9 @@ public class SourceBuilder {
             cls = cls.getSuperJavaClass();
         }
 
-
         com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(targetClass);
         final BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
-//        Map<String, BeanPropertyDefinition> collect = beanDesc.findProperties().stream().collect(Collectors.toMap(BeanPropertyDefinition::getName, r -> r));
+
         Map<String, JavaField> collect = fields.stream().collect(Collectors.toMap(JavaField::getName, r -> r, (r1, r2) -> r1));
         for (BeanPropertyDefinition property : beanDesc.findProperties()) {
 
