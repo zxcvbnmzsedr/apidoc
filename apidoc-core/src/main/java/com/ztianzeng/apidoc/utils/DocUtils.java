@@ -6,7 +6,6 @@ import com.thoughtworks.qdox.model.JavaField;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +15,7 @@ import java.util.regex.Pattern;
  * @date 2019-06-05 15:13
  */
 public class DocUtils {
-    public static final String LIST_CLASS_NAME = "<(\\S*)>";
-    public static final Pattern LIST_CLASS_NAME_PATTERN = Pattern.compile(LIST_CLASS_NAME);
+
 
     /**
      * 是否为私有属性
@@ -83,7 +81,7 @@ public class DocUtils {
      */
     public static boolean isRequired(JavaField field) {
         boolean isRequired = false;
-         List<JavaAnnotation> annotations = field.getAnnotations();
+        List<JavaAnnotation> annotations = field.getAnnotations();
         for (JavaAnnotation annotation : annotations) {
             String fullyQualifiedName = annotation.getType().getFullyQualifiedName();
             if (fullyQualifiedName.startsWith("javax.validation")) {
@@ -94,20 +92,6 @@ public class DocUtils {
     }
 
 
-    /**
-     * 获取中间class 的信息
-     *
-     * @param soap 如:java.util.List<com.ztianzeng.apidoc.test.CreateParam>
-     * @return com.ztianzeng.apidoc.test.CreateParam
-     */
-    public static String getSubClassName(String soap) {
-        // 匹配的模式
-        Matcher m = LIST_CLASS_NAME_PATTERN.matcher(soap);
-        if (m.find()) {
-            return m.group(1);
-        }
-        return null;
-    }
 
 
 
@@ -126,8 +110,6 @@ public class DocUtils {
 
 
     }
-
-
 
 
 }

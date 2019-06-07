@@ -17,9 +17,11 @@ import com.ztianzeng.apidoc.utils.StringUtils;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import static com.ztianzeng.apidoc.constants.GlobalConstants.IGNORE_TAG;
+import static com.ztianzeng.apidoc.constants.HtmlRex.HTML_P_PATTERN;
 import static com.ztianzeng.apidoc.constants.SpringMvcConstants.*;
 
 /**
@@ -157,12 +159,24 @@ public class SourceBuilder {
      * @param apiMethodDoc
      * @param method
      */
-    // TODO: 2019-06-07 用正则解析第一个<p>中间的详情
     private void setDescAndSummary(ApiMethodDoc apiMethodDoc, JavaMethod method) {
         String comment = method.getComment();
-        apiMethodDoc.setDescription(comment);
-        apiMethodDoc.setSummary(comment);
+
+        if (comment != null) {
+            String desc = null;
+            Matcher m = HTML_P_PATTERN.matcher(comment);
+
+            if (m.find()) {
+                desc = m.group(0).replace("<p>", "").replace("</p>", "").trim();
+                comment = m.replaceAll("");
+            }
+            apiMethodDoc.setSummary(comment.trim());
+            apiMethodDoc.setDescription(desc);
+        }
+
+
     }
+
 
     /**
      * 获取方法上的请求类型

@@ -14,9 +14,7 @@ public class BasicFieldsResource {
     /**
      * Operation Summary
      *
-     * <p>
-     * Operation Description
-     * </p>
+     * <p>Operation Description</p>
      *
      * @param subscriptionId
      */

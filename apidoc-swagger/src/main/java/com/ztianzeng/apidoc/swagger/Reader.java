@@ -54,7 +54,7 @@ public class Reader {
 
             Operation build = Operation.builder()
                     .description(apiMethodDoc.getDescription())
-                    .summary(apiMethodDoc.getDescription())
+                    .summary(apiMethodDoc.getSummary())
                     .build();
             setPathItemOperation(pathItemObject, apiMethodDoc.getRequestMethod(), build);
 
