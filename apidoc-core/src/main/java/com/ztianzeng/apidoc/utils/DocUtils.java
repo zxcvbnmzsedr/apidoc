@@ -6,16 +6,17 @@ import com.thoughtworks.qdox.model.JavaField;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
+ * 基本工具类
+ *
  * @author zhaotianzeng
  * @version V1.0
  * @date 2019-06-05 15:13
  */
-public class DocUtils {
-
+public final class DocUtils {
+    private DocUtils() {
+    }
 
     /**
      * 是否为私有属性
@@ -55,8 +56,8 @@ public class DocUtils {
     /**
      * 是否为Spring mvc的内置对象
      *
-     * @param paramType
-     * @return
+     * @param paramType 类型
+     * @return true false
      */
     public static boolean isMvcParams(String paramType) {
         switch (paramType) {
@@ -92,14 +93,11 @@ public class DocUtils {
     }
 
 
-
-
-
     /**
-     * 获取
+     * 用过名字获取所在的类型
      *
-     * @param typeName
-     * @return
+     * @param typeName 类型名称
+     * @return javaType
      */
     public static Type getTypeForName(String typeName) {
         try {
