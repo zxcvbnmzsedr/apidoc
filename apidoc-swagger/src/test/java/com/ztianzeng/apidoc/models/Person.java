@@ -7,9 +7,6 @@ import java.util.Map;
 
 @Data
 public class Person {
-    /**
-     * d给哥哥哥哥
-     */
     private Long id;
     private String firstName;
     private Address address;

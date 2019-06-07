@@ -293,7 +293,7 @@ public class SourceBuilder {
 
         Type targetClass = DocUtils.getTypeForName(cls.getFullyQualifiedName());
 
-        while (cls != null && !cls.getFullyQualifiedName().equals("java.lang.Object")) {
+        while (cls != null && !"java.lang.Object".equals(cls.getFullyQualifiedName())) {
             fields.addAll(cls.getFields());
             cls = cls.getSuperJavaClass();
         }
@@ -346,8 +346,8 @@ public class SourceBuilder {
     /**
      * 获取请求的方法
      *
-     * @param annotation
-     * @return
+     * @param annotation 注解
+     * @return 请求方法
      */
     private RequestMethod getRequestMappingMethod(JavaAnnotation annotation) {
         String methodType;
@@ -408,7 +408,6 @@ public class SourceBuilder {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-        mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
