@@ -17,6 +17,8 @@ import com.ztianzeng.apidoc.models.info.License;
 import com.ztianzeng.apidoc.models.links.Link;
 import com.ztianzeng.apidoc.models.links.LinkParameter;
 import com.ztianzeng.apidoc.models.media.*;
+import com.ztianzeng.apidoc.models.parameters.Parameter;
+import com.ztianzeng.apidoc.models.parameters.RequestBody;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.models.security.OAuthFlow;
@@ -28,8 +30,6 @@ import com.ztianzeng.apidoc.models.servers.ServerVariable;
 import com.ztianzeng.apidoc.models.servers.ServerVariables;
 import com.ztianzeng.apidoc.models.tags.Tag;
 import com.ztianzeng.apidoc.swagger.*;
-import com.ztianzeng.apidoc.swagger.parameters.Parameter;
-import com.ztianzeng.apidoc.swagger.parameters.RequestBody;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

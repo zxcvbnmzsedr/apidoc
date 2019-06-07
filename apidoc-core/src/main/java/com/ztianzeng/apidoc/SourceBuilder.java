@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
@@ -253,13 +254,26 @@ public class SourceBuilder {
         }
         List<Parameters> parameters = new LinkedList<>();
 
-        List<JavaField> fields = cls.getFields();
+        List<JavaField> fields = new ArrayList<>();
 
         Type targetClass = DocUtils.getTypeForName(cls.getFullyQualifiedName());
+
+        while (cls != null && !cls.getFullyQualifiedName().equals("java.lang.Object")) {
+            fields.addAll(cls.getFields());
+            cls = cls.getSuperJavaClass();
+        }
+
+
         com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(targetClass);
         final BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
-        Map<String, BeanPropertyDefinition> collect = beanDesc.findProperties().stream().collect(Collectors.toMap(BeanPropertyDefinition::getName, r -> r));
-        for (JavaField field : fields) {
+//        Map<String, BeanPropertyDefinition> collect = beanDesc.findProperties().stream().collect(Collectors.toMap(BeanPropertyDefinition::getName, r -> r));
+        Map<String, JavaField> collect = fields.stream().collect(Collectors.toMap(JavaField::getName, r -> r, (r1, r2) -> r1));
+        for (BeanPropertyDefinition property : beanDesc.findProperties()) {
+
+            JavaField field = collect.get(property.getName());
+            if (field == null) {
+                continue;
+            }
             // 属性是否为require
             boolean required = DocUtils.isRequired(field);
 
@@ -269,11 +283,9 @@ public class SourceBuilder {
                     new Parameters(required,
                             field.getName(),
                             field.getComment(),
-                            DocUtils.getTypeForName(field.getType().getFullyQualifiedName()),
-                            collect.get(field.getName())
-                    )
+                            DocUtils.getTypeForName(field.getType().getBinaryName()),
+                            property)
             );
-
         }
 
 

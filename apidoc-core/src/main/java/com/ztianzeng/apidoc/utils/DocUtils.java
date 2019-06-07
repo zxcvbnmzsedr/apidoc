@@ -1,5 +1,6 @@
 package com.ztianzeng.apidoc.utils;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaField;
 
@@ -132,12 +133,15 @@ public class DocUtils {
      */
     public static Type getTypeForName(String typeName) {
         try {
-            return Class.forName(typeName);
+            return TypeFactory.defaultInstance().findClass(typeName);
         } catch (ClassNotFoundException e) {
             return null;
         }
 
+
     }
+
+
 
 
 }
