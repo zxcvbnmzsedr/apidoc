@@ -48,14 +48,9 @@ public class SwaggerSerializerTest {
                 .info(info)
                 .addServersItem(new Server()
                         .url("http://petstore.swagger.io"))
-
-//                .securityDefinition("api-key", new ApiKeyAuthDefinition("key", In.HEADER))
-//                .consumes("application/json")
-//                .produces("application/json")
                 .schema("Person", personModel)
                 .schema("Error", errorModel);
         final Operation get = new Operation()
-//                .produces("application/json")
                 .summary("finds pets in the system")
                 .description("a longer description")
                 .addTagsItem("Pet Operations")
