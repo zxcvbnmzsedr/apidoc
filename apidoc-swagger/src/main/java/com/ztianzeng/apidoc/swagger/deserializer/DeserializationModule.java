@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.swagger;
+package com.ztianzeng.apidoc.swagger.deserializer;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.ztianzeng.apidoc.models.Paths;
@@ -10,6 +10,10 @@ import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.models.parameters.Parameter;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.models.security.SecurityScheme;
+import com.ztianzeng.apidoc.swagger.EncodingPropertyStyleEnumDeserializer;
+import com.ztianzeng.apidoc.swagger.EncodingStyleEnumDeserializer;
+import com.ztianzeng.apidoc.swagger.HeaderStyleEnumDeserializer;
+import com.ztianzeng.apidoc.swagger.deserializer.*;
 
 public class DeserializationModule extends SimpleModule {
 

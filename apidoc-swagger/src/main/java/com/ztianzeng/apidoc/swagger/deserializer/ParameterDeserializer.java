@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.swagger;
+package com.ztianzeng.apidoc.swagger.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.swagger;
+package com.ztianzeng.apidoc.swagger.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.ztianzeng.apidoc.models.responses.ApiResponse;
-import com.ztianzeng.apidoc.models.responses.ApiResponses;
+import com.ztianzeng.apidoc.models.PathItem;
+import com.ztianzeng.apidoc.models.Paths;
 import com.ztianzeng.apidoc.swagger.util.Json;
 
 
@@ -16,11 +16,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ApiResponsesDeserializer extends JsonDeserializer<ApiResponses> {
+public class PathsDeserializer extends JsonDeserializer<Paths> {
     @Override
-    public ApiResponses deserialize(JsonParser jp, DeserializationContext ctxt)
+    public Paths deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
-        ApiResponses result = new ApiResponses();
+        Paths result = new Paths();
         JsonNode node = jp.getCodec().readTree(jp);
         ObjectNode objectNode = (ObjectNode) node;
         Map<String, Object> extensions = new LinkedHashMap<>();
@@ -31,7 +31,7 @@ public class ApiResponsesDeserializer extends JsonDeserializer<ApiResponses> {
             if (childName.startsWith("x-")) {
                 extensions.put(childName, Json.mapper().convertValue(child, Object.class));
             } else {
-                result.put(childName, Json.mapper().convertValue(child, ApiResponse.class));
+                result.put(childName, Json.mapper().convertValue(child, PathItem.class));
             }
         }
         if (!extensions.isEmpty()) {

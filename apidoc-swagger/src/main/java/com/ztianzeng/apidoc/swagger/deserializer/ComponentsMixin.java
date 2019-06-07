@@ -1,14 +1,14 @@
-package com.ztianzeng.apidoc.swagger;
+package com.ztianzeng.apidoc.swagger.deserializer;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.ztianzeng.apidoc.models.callbacks.Callback;
-import com.ztianzeng.apidoc.models.responses.ApiResponses;
+import com.ztianzeng.apidoc.swagger.deserializer.CallbackSerializer;
 
 import java.util.Map;
 
-public abstract class OperationMixin {
+public abstract class ComponentsMixin {
 
     @JsonAnyGetter
     public abstract Map<String, Object> getExtensions();
@@ -18,8 +18,5 @@ public abstract class OperationMixin {
 
     @JsonSerialize(contentUsing = CallbackSerializer.class)
     public abstract Map<String, Callback> getCallbacks();
-
-    @JsonSerialize(using = ApiResponsesSerializer.class)
-    public abstract ApiResponses getResponses();
 
 }

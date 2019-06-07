@@ -30,6 +30,7 @@ import com.ztianzeng.apidoc.models.servers.ServerVariable;
 import com.ztianzeng.apidoc.models.servers.ServerVariables;
 import com.ztianzeng.apidoc.models.tags.Tag;
 import com.ztianzeng.apidoc.swagger.*;
+import com.ztianzeng.apidoc.swagger.deserializer.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
