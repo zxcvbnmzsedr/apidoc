@@ -52,10 +52,7 @@ public class Reader {
                 pathItemObject = new PathItem();
             }
 
-            Operation build = Operation.builder()
-                    .description(apiMethodDoc.getDescription())
-                    .summary(apiMethodDoc.getSummary())
-                    .build();
+            Operation build = parseMethod(apiMethodDoc);
             setPathItemOperation(pathItemObject, apiMethodDoc.getRequestMethod(), build);
 
             paths.addPathItem(apiMethodDoc.getPath(), pathItemObject);
@@ -85,5 +82,19 @@ public class Reader {
                 // Do nothing here
                 break;
         }
+    }
+
+    /**
+     * 处理方法
+     *
+     * @return
+     */
+    public Operation parseMethod(ApiMethodDoc apiMethodDoc) {
+        Operation build = Operation.builder()
+                .description(apiMethodDoc.getDescription())
+                .summary(apiMethodDoc.getSummary())
+                .build();
+
+        return build;
     }
 }

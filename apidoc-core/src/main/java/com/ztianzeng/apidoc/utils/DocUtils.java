@@ -103,7 +103,11 @@ public final class DocUtils {
         try {
             return TypeFactory.defaultInstance().findClass(typeName);
         } catch (ClassNotFoundException e) {
-            return null;
+            try {
+                return Class.forName(typeName);
+            } catch (ClassNotFoundException ex) {
+                return null;
+            }
         }
 
 

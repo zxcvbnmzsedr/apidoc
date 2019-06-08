@@ -291,11 +291,14 @@ public class SourceBuilder {
 
         List<JavaField> fields = new ArrayList<>();
 
-        Type targetClass = DocUtils.getTypeForName(cls.getFullyQualifiedName());
 
-        while (cls != null && !"java.lang.Object".equals(cls.getFullyQualifiedName())) {
+        Type targetClass = DocUtils.getTypeForName(cls.getBinaryName());
+
+        while (cls != null && !cls.isArray() && !"java.lang.Object".equals(cls.getFullyQualifiedName())) {
             fields.addAll(cls.getFields());
+
             cls = cls.getSuperJavaClass();
+
         }
 
         com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(targetClass);
