@@ -138,6 +138,8 @@ public class SourceBuilder {
                 apiMethodDoc.setUrl(this.appUrl + path);
                 apiMethodDoc.setPath(path);
 
+                apiMethodDoc.setMethodName(method.getName());
+
                 apiMethodDoc.setContentType(getContentType(method));
 
                 apiMethodDoc.setRequestParams(getRequest(method));

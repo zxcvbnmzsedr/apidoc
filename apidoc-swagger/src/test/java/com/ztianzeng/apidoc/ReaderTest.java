@@ -7,6 +7,7 @@ import com.ztianzeng.apidoc.models.Operation;
 import com.ztianzeng.apidoc.models.PathItem;
 import com.ztianzeng.apidoc.models.Paths;
 import com.ztianzeng.apidoc.res.BasicFieldsResource;
+import com.ztianzeng.apidoc.res.DuplicatedOperationIdResource;
 import com.ztianzeng.apidoc.swagger.Reader;
 import org.junit.Test;
 
@@ -94,6 +95,24 @@ public class ReaderTest {
         assertNotNull(operation);
         assertEquals(OPERATION_SUMMARY, operation.getSummary());
         assertEquals(OPERATION_DESCRIPTION, operation.getDescription());
+    }
+
+    @Test
+    public void testResolveDuplicatedOperationId() {
+        Reader reader = new Reader(new OpenAPI());
+        OpenAPI openAPI = reader.read(DuplicatedOperationIdResource.class);
+
+        Paths paths = openAPI.getPaths();
+        assertNotNull(paths);
+        Operation firstOperation = paths.get(PATH_REF).getGet();
+        Operation secondOperation = paths.get(PATH_2_REF).getGet();
+        Operation thirdOperation = paths.get(PATH_REF).getPost();
+        assertNotNull(firstOperation);
+        assertNotNull(secondOperation);
+        assertNotNull(thirdOperation);
+        assertNotEquals(firstOperation.getOperationId(), secondOperation.getOperationId());
+        assertNotEquals(firstOperation.getOperationId(), thirdOperation.getOperationId());
+        assertNotEquals(secondOperation.getOperationId(), thirdOperation.getOperationId());
     }
 
 }

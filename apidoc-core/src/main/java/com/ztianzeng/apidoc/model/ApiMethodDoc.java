@@ -37,6 +37,11 @@ public class ApiMethodDoc {
 
     private String contentType = "application/json";
 
+    /**
+     * 具体的方法名
+     */
+    private String methodName;
+
     private List<Parameters> requestParams;
 
 

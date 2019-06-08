@@ -9,8 +9,11 @@ import com.ztianzeng.apidoc.models.OpenAPI;
 import com.ztianzeng.apidoc.models.Operation;
 import com.ztianzeng.apidoc.models.PathItem;
 import com.ztianzeng.apidoc.models.Paths;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * open api
@@ -46,21 +49,81 @@ public class Reader {
 
         for (ApiMethodDoc apiMethodDoc : apiMethodDocs) {
             PathItem pathItemObject;
-            if (openAPI.getPaths() != null && openAPI.getPaths().get(apiMethodDoc.getPath()) != null) {
-                pathItemObject = openAPI.getPaths().get(apiMethodDoc.getPath());
+            if (paths != null && paths.get(apiMethodDoc.getPath()) != null) {
+                pathItemObject = paths.get(apiMethodDoc.getPath());
             } else {
                 pathItemObject = new PathItem();
             }
+            Operation operation = parseMethod(apiMethodDoc);
+            setPathItemOperation(pathItemObject, apiMethodDoc.getRequestMethod(), operation);
 
-            Operation build = parseMethod(apiMethodDoc);
-            setPathItemOperation(pathItemObject, apiMethodDoc.getRequestMethod(), build);
+            if (StringUtils.isBlank(operation.getOperationId())) {
+                operation.setOperationId(getOperationId(apiMethodDoc.getMethodName()));
+            }
 
             paths.addPathItem(apiMethodDoc.getPath(), pathItemObject);
 
 
         }
+
         openAPI.setPaths(this.paths);
         return openAPI;
+    }
+
+    protected String getOperationId(String operationId) {
+        boolean operationIdUsed = existOperationId(operationId);
+        String operationIdToFind = null;
+        int counter = 0;
+        while (operationIdUsed) {
+            operationIdToFind = String.format("%s_%d", operationId, ++counter);
+            operationIdUsed = existOperationId(operationIdToFind);
+        }
+        if (operationIdToFind != null) {
+            operationId = operationIdToFind;
+        }
+        return operationId;
+    }
+
+    private boolean existOperationId(String operationId) {
+        if (openAPI == null) {
+            return false;
+        }
+        if (openAPI.getPaths() == null || openAPI.getPaths().isEmpty()) {
+            return false;
+        }
+        for (PathItem path : openAPI.getPaths().values()) {
+            Set<String> pathOperationIds = extractOperationIdFromPathItem(path);
+            if (pathOperationIds.contains(operationId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Set<String> extractOperationIdFromPathItem(PathItem path) {
+        Set<String> ids = new HashSet<>();
+        if (path.getGet() != null && StringUtils.isNotBlank(path.getGet().getOperationId())) {
+            ids.add(path.getGet().getOperationId());
+        }
+        if (path.getPost() != null && StringUtils.isNotBlank(path.getPost().getOperationId())) {
+            ids.add(path.getPost().getOperationId());
+        }
+        if (path.getPut() != null && StringUtils.isNotBlank(path.getPut().getOperationId())) {
+            ids.add(path.getPut().getOperationId());
+        }
+        if (path.getDelete() != null && StringUtils.isNotBlank(path.getDelete().getOperationId())) {
+            ids.add(path.getDelete().getOperationId());
+        }
+        if (path.getOptions() != null && StringUtils.isNotBlank(path.getOptions().getOperationId())) {
+            ids.add(path.getOptions().getOperationId());
+        }
+        if (path.getHead() != null && StringUtils.isNotBlank(path.getHead().getOperationId())) {
+            ids.add(path.getHead().getOperationId());
+        }
+        if (path.getPatch() != null && StringUtils.isNotBlank(path.getPatch().getOperationId())) {
+            ids.add(path.getPatch().getOperationId());
+        }
+        return ids;
     }
 
     private void setPathItemOperation(PathItem pathItemObject, RequestMethod method, Operation operation) {
