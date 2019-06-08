@@ -5,14 +5,18 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.SourceBuilder;
 import com.ztianzeng.apidoc.constants.RequestMethod;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
+import com.ztianzeng.apidoc.model.Parameters;
 import com.ztianzeng.apidoc.models.OpenAPI;
 import com.ztianzeng.apidoc.models.Operation;
 import com.ztianzeng.apidoc.models.PathItem;
 import com.ztianzeng.apidoc.models.Paths;
+import com.ztianzeng.apidoc.models.responses.ApiResponse;
+import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -160,6 +164,18 @@ public class Reader {
                 .deprecated(apiMethodDoc.isDeprecated())
                 .build();
 
+        Map<String, Parameters> responseBody = apiMethodDoc.getResponseBody();
+
+        ApiResponses responses = new ApiResponses();
+        for (String parametrString : responseBody.keySet()) {
+            Parameters parameters = responseBody.get(parametrString);
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setDescription(parametrString);
+            // 成功时候的返回
+            responses.addApiResponse("200", apiResponse);
+        }
+
+        build.setResponses(responses);
         return build;
     }
 }

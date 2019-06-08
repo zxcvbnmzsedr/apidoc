@@ -280,13 +280,23 @@ public class SourceBuilder {
 
     /**
      * 获取结果对象
-     * 因为解析时会直接拿泛型的去解析，因此重新构造一个新的塞入
      */
-    private List<Parameters> getResponse(JavaMethod method) {
-
+    private Map<String, Parameters> getResponse(JavaMethod method) {
+        Map<String, Parameters> map = new HashMap<>();
         JavaClass returns = method.getReturns();
+        Optional<String> aReturn = Optional.ofNullable(method.getTagByName("return")).map(DocletTag::getValue);
         // 如果是request Body 对象，则解析对象类型
-        return parsingBody(returns);
+        List<Parameters> parameters = parsingBody(returns);
+        for (Parameters parameter : parameters) {
+
+            if (aReturn.isPresent()) {
+                map.put(aReturn.get(), parameter);
+            } else {
+                map.put(parameter.getName(), parameter);
+            }
+
+        }
+        return map;
     }
 
     /**

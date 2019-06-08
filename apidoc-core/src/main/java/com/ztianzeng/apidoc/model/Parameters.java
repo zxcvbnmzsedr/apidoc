@@ -38,6 +38,7 @@ public class Parameters {
      */
     private Type type;
 
+
     /**
      * Bean的原始描述
      */

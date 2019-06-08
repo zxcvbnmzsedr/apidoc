@@ -2,20 +2,17 @@ package com.ztianzeng.apidoc;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
-import com.ztianzeng.apidoc.models.*;
-import com.ztianzeng.apidoc.models.security.SecurityScheme;
-import com.ztianzeng.apidoc.res.BasicFieldsResource;
-import com.ztianzeng.apidoc.res.DeprecatedFieldsResource;
-import com.ztianzeng.apidoc.res.DuplicatedOperationIdResource;
-import com.ztianzeng.apidoc.res.DuplicatedOperationMethodNameResource;
+import com.ztianzeng.apidoc.models.OpenAPI;
+import com.ztianzeng.apidoc.models.Operation;
+import com.ztianzeng.apidoc.models.PathItem;
+import com.ztianzeng.apidoc.models.Paths;
+import com.ztianzeng.apidoc.models.responses.ApiResponse;
+import com.ztianzeng.apidoc.models.responses.ApiResponses;
+import com.ztianzeng.apidoc.res.*;
 import com.ztianzeng.apidoc.swagger.Reader;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -28,7 +25,7 @@ public class ReaderTest {
     private static final String OPERATION_DESCRIPTION = "Operation Description";
     private static final String OPERATION_SUMMARY = "Operation Summary";
     private static final String PATH_1_REF = "/1";
-    private static final int RESPONSES_NUMBER = 2;
+    private static final int RESPONSES_NUMBER = 1;
     private static final int TAG_NUMBER = 2;
     private static final int SECURITY_SCHEMAS = 2;
     private static final int PARAMETER_NUMBER = 1;
@@ -155,6 +152,26 @@ public class ReaderTest {
         Operation deprecatedOperation = reader.parseMethod(apiMethodDocs.get(0));
         assertNotNull(deprecatedOperation);
         assertTrue(deprecatedOperation.getDeprecated());
+    }
+
+    @Test
+    public void testGetResponses() {
+        Reader reader = new Reader(new OpenAPI());
+        SourceBuilder sourceBuilder = new SourceBuilder();
+        JavaClass classByName = sourceBuilder.getBuilder().getClassByName(ResponsesResource.class.getName());
+
+        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
+
+        Operation responseOperation = reader.parseMethod(apiMethodDocs.stream().filter(
+                (method -> method.getMethodName().equals("getResponses"))).findFirst().get());
+        assertNotNull(responseOperation);
+
+        ApiResponses responses = responseOperation.getResponses();
+        assertEquals(RESPONSES_NUMBER, responses.size());
+
+        ApiResponse apiResponse = responses.get(RESPONSE_CODE_200);
+        assertNotNull(apiResponse);
+        assertEquals(RESPONSE_DESCRIPTION, apiResponse.getDescription());
     }
 
 }

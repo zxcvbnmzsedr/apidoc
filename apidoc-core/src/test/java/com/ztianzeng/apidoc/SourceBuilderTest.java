@@ -36,8 +36,6 @@ public class SourceBuilderTest {
             System.out.println("requestParam->");
             controllerDatum.getRequestParams().forEach(k -> System.out.println("             " + k));
 
-            System.out.println("response->");
-            controllerDatum.getResponseBody().forEach(k -> System.out.println("             " + k));
 
             System.out.println("=======================\n\n");
         }
@@ -64,6 +62,7 @@ public class SourceBuilderTest {
 
         }
     }
+
     /**
      * 嵌套list对象解析
      */
@@ -77,6 +76,7 @@ public class SourceBuilderTest {
 
         }
     }
+
     /**
      * 嵌套对象解析
      */

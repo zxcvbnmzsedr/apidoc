@@ -4,6 +4,7 @@ import com.ztianzeng.apidoc.constants.RequestMethod;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * api文档
@@ -47,10 +48,11 @@ public class ApiMethodDoc {
      */
     private boolean deprecated;
 
+
     private List<Parameters> requestParams;
 
 
-    private List<Parameters> responseBody;
+    private Map<String, Parameters> responseBody;
 
 
 }
