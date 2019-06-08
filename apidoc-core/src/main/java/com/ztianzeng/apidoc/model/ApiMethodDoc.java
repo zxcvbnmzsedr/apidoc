@@ -42,6 +42,11 @@ public class ApiMethodDoc {
      */
     private String methodName;
 
+    /**
+     * 是否已过期
+     */
+    private boolean deprecated;
+
     private List<Parameters> requestParams;
 
 

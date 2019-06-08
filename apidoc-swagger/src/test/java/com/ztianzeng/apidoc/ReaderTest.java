@@ -2,18 +2,20 @@ package com.ztianzeng.apidoc;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
-import com.ztianzeng.apidoc.models.OpenAPI;
-import com.ztianzeng.apidoc.models.Operation;
-import com.ztianzeng.apidoc.models.PathItem;
-import com.ztianzeng.apidoc.models.Paths;
+import com.ztianzeng.apidoc.models.*;
+import com.ztianzeng.apidoc.models.security.SecurityScheme;
 import com.ztianzeng.apidoc.res.BasicFieldsResource;
+import com.ztianzeng.apidoc.res.DeprecatedFieldsResource;
 import com.ztianzeng.apidoc.res.DuplicatedOperationIdResource;
 import com.ztianzeng.apidoc.res.DuplicatedOperationMethodNameResource;
 import com.ztianzeng.apidoc.swagger.Reader;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -140,6 +142,19 @@ public class ReaderTest {
         assertNotNull(fourthOperation);
         assertNotEquals(thirdOperation.getOperationId(), fourthOperation.getOperationId());
 
+    }
+
+    @Test
+    public void testDeprecatedMethod() {
+        SourceBuilder sourceBuilder = new SourceBuilder();
+        JavaClass classByName = sourceBuilder.getBuilder().getClassByName(DeprecatedFieldsResource.class.getName());
+
+        Reader reader = new Reader(new OpenAPI());
+        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
+
+        Operation deprecatedOperation = reader.parseMethod(apiMethodDocs.get(0));
+        assertNotNull(deprecatedOperation);
+        assertTrue(deprecatedOperation.getDeprecated());
     }
 
 }

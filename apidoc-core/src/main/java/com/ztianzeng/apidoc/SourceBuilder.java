@@ -100,6 +100,7 @@ public class SourceBuilder {
             String url = null;
             RequestMethod methodType = null;
             int methodCounter = 0;
+            boolean deprecated = false;
             // 处理方法上面的注解
             for (JavaAnnotation annotation : annotations) {
                 if (null == annotation.getNamedParameter("value")) {
@@ -116,6 +117,10 @@ public class SourceBuilder {
 
                     methodType = METHOD_MAP.get(annotationName);
                     methodCounter++;
+                }
+
+                if (annotation.getType().isA("java.lang.Deprecated")) {
+                    deprecated = true;
                 }
             }
 
@@ -139,6 +144,9 @@ public class SourceBuilder {
 
                 apiMethodDoc.setUrl(this.appUrl + path);
                 apiMethodDoc.setPath(path);
+
+
+                apiMethodDoc.setDeprecated(deprecated);
 
                 apiMethodDoc.setMethodName(method.getName());
 

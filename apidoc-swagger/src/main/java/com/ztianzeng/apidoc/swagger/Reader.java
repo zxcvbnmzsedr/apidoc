@@ -157,6 +157,7 @@ public class Reader {
         Operation build = Operation.builder()
                 .description(apiMethodDoc.getDescription())
                 .summary(apiMethodDoc.getSummary())
+                .deprecated(apiMethodDoc.isDeprecated())
                 .build();
 
         return build;
