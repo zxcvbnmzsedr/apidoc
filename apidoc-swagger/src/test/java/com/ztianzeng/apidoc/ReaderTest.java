@@ -8,6 +8,7 @@ import com.ztianzeng.apidoc.models.PathItem;
 import com.ztianzeng.apidoc.models.Paths;
 import com.ztianzeng.apidoc.res.BasicFieldsResource;
 import com.ztianzeng.apidoc.res.DuplicatedOperationIdResource;
+import com.ztianzeng.apidoc.res.DuplicatedOperationMethodNameResource;
 import com.ztianzeng.apidoc.swagger.Reader;
 import org.junit.Test;
 
@@ -113,6 +114,32 @@ public class ReaderTest {
         assertNotEquals(firstOperation.getOperationId(), secondOperation.getOperationId());
         assertNotEquals(firstOperation.getOperationId(), thirdOperation.getOperationId());
         assertNotEquals(secondOperation.getOperationId(), thirdOperation.getOperationId());
+    }
+
+    @Test
+    public void testResolveDuplicatedOperationIdMethodName() {
+        Reader reader = new Reader(new OpenAPI());
+        OpenAPI openAPI = reader.read(DuplicatedOperationMethodNameResource.class);
+
+        Paths paths = openAPI.getPaths();
+        assertNotNull(paths);
+        Operation firstOperation = paths.get("/1").getGet();
+        Operation secondOperation = paths.get("/2").getGet();
+        Operation secondPostOperation = paths.get("/2").getPost();
+        Operation thirdPostOperation = paths.get("/3").getPost();
+        assertNotNull(firstOperation);
+        assertNotNull(secondOperation);
+        assertNotNull(secondPostOperation);
+        assertNotNull(thirdPostOperation);
+        assertNotEquals(firstOperation.getOperationId(), secondOperation.getOperationId());
+        assertNotEquals(secondOperation.getOperationId(), secondPostOperation.getOperationId());
+        assertNotEquals(secondPostOperation.getOperationId(), thirdPostOperation.getOperationId());
+        Operation thirdOperation = paths.get("/3").getGet();
+        Operation fourthOperation = paths.get("/4").getGet();
+        assertNotNull(thirdOperation);
+        assertNotNull(fourthOperation);
+        assertNotEquals(thirdOperation.getOperationId(), fourthOperation.getOperationId());
+
     }
 
 }

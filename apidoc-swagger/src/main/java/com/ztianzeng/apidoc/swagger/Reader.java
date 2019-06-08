@@ -44,6 +44,7 @@ public class Reader {
     }
 
     public OpenAPI read(Class<?> cls) {
+        openAPI.setPaths(this.paths);
         JavaClass classByName = builder.getClassByName(cls.getCanonicalName());
         List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
 
@@ -66,7 +67,7 @@ public class Reader {
 
         }
 
-        openAPI.setPaths(this.paths);
+
         return openAPI;
     }
 

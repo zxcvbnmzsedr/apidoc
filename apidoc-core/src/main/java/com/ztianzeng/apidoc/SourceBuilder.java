@@ -25,6 +25,8 @@ import static com.ztianzeng.apidoc.constants.HtmlRex.HTML_P_PATTERN;
 import static com.ztianzeng.apidoc.constants.SpringMvcConstants.*;
 
 /**
+ * 核心处理器
+ *
  * @author zhaotianzeng
  * @version V1.0
  * @date 2019-05-27 13:13
