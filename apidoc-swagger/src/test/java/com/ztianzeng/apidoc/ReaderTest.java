@@ -81,4 +81,19 @@ public class ReaderTest {
             assertNotNull(operation);
         }
     }
+
+    @Test
+    public void testGetSummaryAndDescription() {
+        Reader reader = new Reader(new OpenAPI());
+        SourceBuilder sourceBuilder = new SourceBuilder();
+        JavaClass classByName = sourceBuilder.getBuilder().getClassByName(BasicFieldsResource.class.getName());
+
+        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
+
+        Operation operation = reader.parseMethod(apiMethodDocs.get(0));
+        assertNotNull(operation);
+        assertEquals(OPERATION_SUMMARY, operation.getSummary());
+        assertEquals(OPERATION_DESCRIPTION, operation.getDescription());
+    }
+
 }
