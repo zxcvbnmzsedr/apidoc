@@ -198,6 +198,14 @@ public class Reader {
             // 成功时候的返回
             responses.addApiResponse("200", apiResponse);
         }
+        // swagger规定必须有一个response
+        if (responses.size() == 0){
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setDescription("response");
+            responses.addApiResponse("200", apiResponse);
+
+        }
+
 
         // 在这边添加schema
         schemaMap.forEach((key, schema) -> {

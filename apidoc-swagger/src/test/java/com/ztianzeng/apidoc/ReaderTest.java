@@ -11,6 +11,8 @@ import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.res.*;
 import com.ztianzeng.apidoc.swagger.Reader;
 import com.ztianzeng.apidoc.swagger.SerializationMatchers;
+import com.ztianzeng.apidoc.swagger.util.Json;
+import com.ztianzeng.apidoc.swagger.util.Yaml;
 import org.junit.Test;
 
 import java.util.List;
@@ -175,6 +177,12 @@ public class ReaderTest {
         assertEquals(RESPONSE_DESCRIPTION, apiResponse.getDescription());
     }
 
+    @Test
+    public void print() {
+        Reader reader = new Reader(new OpenAPI());
+        OpenAPI openAPI = reader.read(TestController.class);
+        Yaml.prettyPrint(openAPI);
+    }
 
     @Test
     public void testMoreResponses() {
@@ -199,7 +207,7 @@ public class ReaderTest {
                 "components:\n" +
                 "  schemas:\n" +
                 "    SampleResponseSchema:\n" +
-                "      type: object\n"+
+                "      type: object\n" +
                 "      properties:\n" +
                 "        id:\n" +
                 "          type: string\n" +
