@@ -108,13 +108,13 @@ public class SourceBuilder {
                 } else {
                     url = annotation.getNamedParameter("value").toString();
                 }
+                String annotationName = annotation.getType().getName();
+
                 // @RequestMapping
                 if (isRequestMapping(annotation)) {
                     methodType = getRequestMappingMethod(annotation);
                     methodCounter++;
-                } else {
-                    String annotationName = annotation.getType().getName();
-
+                } else if (METHOD_MAP.get(annotationName) != null) {
                     methodType = METHOD_MAP.get(annotationName);
                     methodCounter++;
                 }
@@ -122,6 +122,7 @@ public class SourceBuilder {
                 if (annotation.getType().isA("java.lang.Deprecated")) {
                     deprecated = true;
                 }
+
             }
 
             if (methodCounter > 0) {
