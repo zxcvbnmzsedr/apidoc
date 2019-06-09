@@ -7,6 +7,8 @@ import com.ztianzeng.apidoc.constants.RequestMethod;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
 import com.ztianzeng.apidoc.model.Parameters;
 import com.ztianzeng.apidoc.models.*;
+import com.ztianzeng.apidoc.models.media.Content;
+import com.ztianzeng.apidoc.models.media.MediaType;
 import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
@@ -184,10 +186,18 @@ public class Reader {
 
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setDescription(parametrString);
+
+            Content content = new Content();
+            MediaType mediaType = new MediaType();
+            Schema objectSchema = new Schema();
+            objectSchema.$ref(COMPONENTS_REF + schemaMap.keySet().stream().findFirst().orElse(""));
+
+            mediaType.schema(objectSchema);
+            content.addMediaType("application/json", mediaType);
+            apiResponse.setContent(content);
             // 成功时候的返回
             responses.addApiResponse("200", apiResponse);
         }
-        Schema schemaObject = new Schema();
 
         // 在这边添加schema
         schemaMap.forEach((key, schema) -> {

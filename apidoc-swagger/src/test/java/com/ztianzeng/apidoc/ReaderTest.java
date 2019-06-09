@@ -199,7 +199,11 @@ public class ReaderTest {
                 "components:\n" +
                 "  schemas:\n" +
                 "    SampleResponseSchema:\n" +
-                "      type: object\n";
+                "      type: object\n"+
+                "      properties:\n" +
+                "        id:\n" +
+                "          type: string\n" +
+                "          description: the user id";
 
         SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
     }
