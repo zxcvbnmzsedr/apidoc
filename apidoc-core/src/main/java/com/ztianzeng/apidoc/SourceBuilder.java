@@ -344,7 +344,8 @@ public class SourceBuilder {
                             field.getName(),
                             field.getComment(),
                             DocUtils.getTypeForName(field.getType().getBinaryName()),
-                            property)
+                            property,
+                            targetClass)
             );
         }
 

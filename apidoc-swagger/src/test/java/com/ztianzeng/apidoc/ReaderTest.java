@@ -10,6 +10,7 @@ import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.res.*;
 import com.ztianzeng.apidoc.swagger.Reader;
+import com.ztianzeng.apidoc.swagger.SerializationMatchers;
 import org.junit.Test;
 
 import java.util.List;
@@ -172,6 +173,35 @@ public class ReaderTest {
         ApiResponse apiResponse = responses.get(RESPONSE_CODE_200);
         assertNotNull(apiResponse);
         assertEquals(RESPONSE_DESCRIPTION, apiResponse.getDescription());
+    }
+
+
+    @Test
+    public void testMoreResponses() {
+        Reader reader = new Reader(new OpenAPI());
+        OpenAPI openAPI = reader.read(EnhancedResponsesResource.class);
+        String yaml = "openapi: 3.0.1\n" +
+                "paths:\n" +
+                "  /:\n" +
+                "    get:\n" +
+                "      summary: Simple get operation\n" +
+                "      description: Defines a simple get operation with no inputs and a complex output\n" +
+                "        object\n" +
+                "      operationId: getResponses\n" +
+                "      responses:\n" +
+                "        200:\n" +
+                "          description: voila!\n" +
+                "          content:\n" +
+                "            application/json:\n" +
+                "              schema:\n" +
+                "                $ref: '#/components/schemas/SampleResponseSchema'\n" +
+                "      deprecated: true\n" +
+                "components:\n" +
+                "  schemas:\n" +
+                "    SampleResponseSchema:\n" +
+                "      type: object\n";
+
+        SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
     }
 
 }

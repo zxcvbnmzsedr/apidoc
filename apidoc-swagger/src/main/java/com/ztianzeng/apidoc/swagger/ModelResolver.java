@@ -49,7 +49,7 @@ public class ModelResolver implements ModelConverter {
 
         Schema schema = new Schema();
         schema.name(classByName.getName());
-        PrimitiveType parentType = PrimitiveType.fromType(DocUtils.getTypeForName(classByName.getFullyQualifiedName()));
+        PrimitiveType parentType = PrimitiveType.fromType(DocUtils.getTypeForName(classByName.getBinaryName()));
 
         schema.setType(parentType.getCommonName());
 

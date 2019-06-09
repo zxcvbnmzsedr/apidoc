@@ -6,6 +6,7 @@ import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.swagger.converter.AnnotatedType;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverter;
 import com.ztianzeng.apidoc.swagger.converter.ModelConverterContextImpl;
+import com.ztianzeng.apidoc.swagger.converter.ResolvedSchema;
 import com.ztianzeng.apidoc.swagger.util.Json;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,5 +83,20 @@ public class ModelConverters {
             }
         }
         return !skippedClasses.contains(className);
+    }
+
+
+    public ResolvedSchema readAllAsResolvedSchema(AnnotatedType type) {
+        if (shouldProcess(type.getType())) {
+            ModelConverterContextImpl context = new ModelConverterContextImpl(
+                    converters);
+
+            ResolvedSchema resolvedSchema = new ResolvedSchema();
+            resolvedSchema.schema = context.resolve(type);
+            resolvedSchema.referencedSchemas = context.getDefinedModels();
+
+            return resolvedSchema;
+        }
+        return null;
     }
 }

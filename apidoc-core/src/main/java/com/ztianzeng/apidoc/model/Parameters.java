@@ -1,5 +1,6 @@
 package com.ztianzeng.apidoc.model;
 
+import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import lombok.*;
 
@@ -43,6 +44,8 @@ public class Parameters {
      * Bean的原始描述
      */
     private BeanPropertyDefinition beanDescription;
+
+    private Type origin;
 
 
     public Parameters(Type type) {

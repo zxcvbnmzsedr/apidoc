@@ -6,18 +6,14 @@ import com.ztianzeng.apidoc.SourceBuilder;
 import com.ztianzeng.apidoc.constants.RequestMethod;
 import com.ztianzeng.apidoc.model.ApiMethodDoc;
 import com.ztianzeng.apidoc.model.Parameters;
-import com.ztianzeng.apidoc.models.OpenAPI;
-import com.ztianzeng.apidoc.models.Operation;
-import com.ztianzeng.apidoc.models.PathItem;
-import com.ztianzeng.apidoc.models.Paths;
+import com.ztianzeng.apidoc.models.*;
+import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
+import sun.jvm.hotspot.oops.MethodCounters;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * open api
@@ -31,24 +27,35 @@ public class Reader {
     private Paths paths;
     private SourceBuilder sourceBuilder;
     private JavaProjectBuilder builder;
+    private Components components;
+    public static final String COMPONENTS_REF = "#/components/schemas/";
 
     public Reader() {
         this.openAPI = new OpenAPI();
         this.sourceBuilder = new SourceBuilder();
         paths = new Paths();
+        components = new Components();
         this.builder = sourceBuilder.getBuilder();
     }
 
     public Reader(OpenAPI openAPI) {
         this.openAPI = openAPI;
         paths = new Paths();
+        components = new Components();
         this.sourceBuilder = new SourceBuilder();
         this.builder = sourceBuilder.getBuilder();
 
     }
 
+    /**
+     * 读取class的method
+     *
+     * @param cls
+     * @return
+     */
     public OpenAPI read(Class<?> cls) {
         openAPI.setPaths(this.paths);
+        openAPI.setComponents(components);
         JavaClass classByName = builder.getClassByName(cls.getCanonicalName());
         List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
 
@@ -164,16 +171,37 @@ public class Reader {
                 .deprecated(apiMethodDoc.isDeprecated())
                 .build();
 
+
         Map<String, Parameters> responseBody = apiMethodDoc.getResponseBody();
 
         ApiResponses responses = new ApiResponses();
+        Map<String, Schema> schemaMap = new HashMap<>();
+
         for (String parametrString : responseBody.keySet()) {
             Parameters parameters = responseBody.get(parametrString);
+
+            schemaMap = ModelConverters.getInstance().read(parameters.getOrigin());
+
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setDescription(parametrString);
             // 成功时候的返回
             responses.addApiResponse("200", apiResponse);
         }
+        Schema schemaObject = new Schema();
+
+        // 在这边添加schema
+        schemaMap.forEach((key, schema) -> {
+            components.addSchemas(key, schema);
+        });
+//        if (resolvedSchema.schema != null && StringUtils.isNotBlank(resolvedSchema.schema.getName())) {
+//            schemaObject.set$ref(COMPONENTS_REF + resolvedSchema.schema.getName());
+//        } else if (resolvedSchema.schema != null) {
+//            schemaObject = resolvedSchema.schema;
+//        }
+//        if (StringUtils.isBlank(schemaObject.get$ref()) && StringUtils.isBlank(schemaObject.getType())) {
+//            // default to string
+//            schemaObject.setType("string");
+//        }
 
         build.setResponses(responses);
         return build;
