@@ -10,9 +10,8 @@ import com.ztianzeng.apidoc.models.parameters.RequestBody;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.models.servers.Server;
-import com.ztianzeng.apidoc.swagger.ModelConverters;
 import com.ztianzeng.apidoc.swagger.SerializationMatchers;
-import com.ztianzeng.apidoc.swagger.util.Json;
+import com.ztianzeng.apidoc.utils.Json;
 import org.junit.Test;
 
 import java.io.IOException;

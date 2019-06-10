@@ -9,10 +9,8 @@ import com.ztianzeng.apidoc.models.Paths;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.res.*;
-import com.ztianzeng.apidoc.swagger.Reader;
 import com.ztianzeng.apidoc.swagger.SerializationMatchers;
-import com.ztianzeng.apidoc.swagger.util.Json;
-import com.ztianzeng.apidoc.swagger.util.Yaml;
+import com.ztianzeng.apidoc.utils.Yaml;
 import org.junit.Test;
 
 import java.util.List;
