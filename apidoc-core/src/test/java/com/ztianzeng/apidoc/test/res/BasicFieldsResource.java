@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.res;
+package com.ztianzeng.apidoc.test.res;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

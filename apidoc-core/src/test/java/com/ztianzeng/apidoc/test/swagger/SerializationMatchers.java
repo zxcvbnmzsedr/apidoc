@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.swagger;
+package com.ztianzeng.apidoc.test.swagger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

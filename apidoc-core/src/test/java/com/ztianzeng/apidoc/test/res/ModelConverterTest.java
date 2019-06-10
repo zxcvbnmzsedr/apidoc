@@ -1,12 +1,13 @@
-package com.ztianzeng.apidoc;
+package com.ztianzeng.apidoc.test.res;
 
 
 
+import com.ztianzeng.apidoc.ModelConverters;
 import com.ztianzeng.apidoc.models.Person;
 import com.ztianzeng.apidoc.models.Pet;
 import com.ztianzeng.apidoc.models.media.Schema;
-import com.ztianzeng.apidoc.swagger.ResourceUtils;
-import com.ztianzeng.apidoc.swagger.SerializationMatchers;
+import com.ztianzeng.apidoc.test.swagger.ResourceUtils;
+import com.ztianzeng.apidoc.test.swagger.SerializationMatchers;
 import org.junit.Test;
 
 import java.io.IOException;

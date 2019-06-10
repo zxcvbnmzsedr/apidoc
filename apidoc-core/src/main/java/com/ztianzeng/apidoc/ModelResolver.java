@@ -1,18 +1,11 @@
 package com.ztianzeng.apidoc;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverter;
 import com.ztianzeng.apidoc.converter.ModelConverterContext;
-import com.ztianzeng.apidoc.models.media.MapSchema;
-import com.ztianzeng.apidoc.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.models.media.Schema;
-import com.ztianzeng.apidoc.utils.DocUtils;
-import com.ztianzeng.apidoc.utils.RefUtils;
 
 import java.util.*;
 

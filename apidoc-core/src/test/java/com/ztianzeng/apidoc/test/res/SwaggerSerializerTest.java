@@ -1,5 +1,6 @@
-package com.ztianzeng.apidoc;
+package com.ztianzeng.apidoc.test.res;
 
+import com.ztianzeng.apidoc.ModelConverters;
 import com.ztianzeng.apidoc.models.*;
 import com.ztianzeng.apidoc.models.info.Contact;
 import com.ztianzeng.apidoc.models.info.Info;
@@ -10,7 +11,7 @@ import com.ztianzeng.apidoc.models.parameters.RequestBody;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.models.servers.Server;
-import com.ztianzeng.apidoc.swagger.SerializationMatchers;
+import com.ztianzeng.apidoc.test.swagger.SerializationMatchers;
 import com.ztianzeng.apidoc.utils.Json;
 import org.junit.Test;
 

@@ -1,6 +1,9 @@
 package com.ztianzeng.apidoc.deserializer;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.ztianzeng.apidoc.EncodingPropertyStyleEnumDeserializer;
+import com.ztianzeng.apidoc.EncodingStyleEnumDeserializer;
+import com.ztianzeng.apidoc.HeaderStyleEnumDeserializer;
 import com.ztianzeng.apidoc.models.Paths;
 import com.ztianzeng.apidoc.models.callbacks.Callback;
 import com.ztianzeng.apidoc.models.headers.Header;
@@ -10,9 +13,7 @@ import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.models.parameters.Parameter;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.models.security.SecurityScheme;
-import com.ztianzeng.apidoc.swagger.EncodingPropertyStyleEnumDeserializer;
-import com.ztianzeng.apidoc.swagger.EncodingStyleEnumDeserializer;
-import com.ztianzeng.apidoc.swagger.HeaderStyleEnumDeserializer;
+
 
 public class DeserializationModule extends SimpleModule {
 

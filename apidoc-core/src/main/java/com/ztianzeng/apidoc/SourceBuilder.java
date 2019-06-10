@@ -8,7 +8,7 @@ import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
 import com.ztianzeng.apidoc.utils.DocUtils;
-import com.ztianzeng.apidoc.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.Collection;

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.ztianzeng.apidoc.ExtensionsMixin;
 import com.ztianzeng.apidoc.models.*;
 import com.ztianzeng.apidoc.models.callbacks.Callback;
 import com.ztianzeng.apidoc.models.examples.Example;
@@ -29,7 +30,6 @@ import com.ztianzeng.apidoc.models.servers.Server;
 import com.ztianzeng.apidoc.models.servers.ServerVariable;
 import com.ztianzeng.apidoc.models.servers.ServerVariables;
 import com.ztianzeng.apidoc.models.tags.Tag;
-import com.ztianzeng.apidoc.swagger.*;
 import com.ztianzeng.apidoc.deserializer.*;
 
 import java.util.LinkedHashMap;

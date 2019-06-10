@@ -1,6 +1,10 @@
 package com.ztianzeng.apidoc.utils;
 
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 public class RefUtils {
 
     public static String constructRef(String simpleRef) {
@@ -15,7 +19,7 @@ public class RefUtils {
         int idx = ref.lastIndexOf("/");
         if (idx > 0) {
             String simple = ref.substring(idx + 1);
-            if (!StringUtils.isBlank(simple)) {
+            if (!StringUtils.isEmpty(simple)) {
                 return new ImmutablePair<>(simple, ref.substring(0, idx + 1));
             }
         }

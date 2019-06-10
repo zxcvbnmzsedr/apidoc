@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.swagger;
+package com.ztianzeng.apidoc.test.swagger;
 
 import org.apache.commons.io.IOUtils;
 

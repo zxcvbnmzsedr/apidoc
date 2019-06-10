@@ -1,7 +1,7 @@
 package com.ztianzeng.apidoc.models.media;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.ztianzeng.apidoc.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Type;
 import java.util.*;
