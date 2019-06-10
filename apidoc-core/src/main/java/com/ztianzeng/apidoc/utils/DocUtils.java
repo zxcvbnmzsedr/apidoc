@@ -3,9 +3,12 @@ package com.ztianzeng.apidoc.utils;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaField;
+import com.ztianzeng.apidoc.constants.RequestMethod;
 
 import java.lang.reflect.Type;
 import java.util.List;
+
+import static com.ztianzeng.apidoc.constants.SpringMvcConstants.*;
 
 /**
  * 基本工具类
@@ -111,6 +114,70 @@ public final class DocUtils {
         }
 
 
+    }
+
+    /**
+     * 是否为@RequestMapping的注解
+     *
+     * @param annotation
+     * @return
+     */
+    public static boolean isRequestMapping(JavaAnnotation annotation) {
+        String annotationName = annotation.getType().getName();
+        return REQUEST_MAPPING.equals(annotationName)
+                || REQUEST_MAPPING_FULLY.equals(annotationName)
+                || METHOD_MAP.get(annotationName) != null;
+    }
+
+    /**
+     * 获取URL
+     *
+     * @param annotation
+     * @return
+     */
+    public static String getRequestMappingUrl(JavaAnnotation annotation) {
+        String baseUrl = "/";
+        if (isRequestMapping(annotation)) {
+            if (isRequestMapping(annotation)) {
+                if (annotation.getNamedParameter("value") == null) {
+                    return baseUrl;
+                }
+                baseUrl = annotation.getNamedParameter("value").toString();
+                baseUrl = baseUrl.replaceAll("\"", "");
+            }
+        }
+        return baseUrl;
+    }
+
+    /**
+     * 获取请求的方法
+     *
+     * @param annotation 注解
+     * @return 请求方法
+     */
+    public static RequestMethod getRequestMappingMethod(JavaAnnotation annotation) {
+        String methodType;
+        String annotationName = annotation.getType().getName();
+        if (METHOD_MAP.get(annotationName) != null) {
+            return METHOD_MAP.get(annotationName);
+        }
+        if (null != annotation.getNamedParameter("method")) {
+            methodType = annotation.getNamedParameter("method").toString();
+            if ("RequestMethod.POST".equals(methodType)) {
+                methodType = "POST";
+            } else if ("RequestMethod.GET".equals(methodType)) {
+                methodType = "GET";
+            } else if ("RequestMethod.PUT".equals(methodType)) {
+                methodType = "PUT";
+            } else if ("RequestMethod.DELETE".equals(methodType)) {
+                methodType = "DELETE";
+            } else {
+                methodType = "GET";
+            }
+        } else {
+            methodType = "GET";
+        }
+        return RequestMethod.valueOf(methodType);
     }
 
 
