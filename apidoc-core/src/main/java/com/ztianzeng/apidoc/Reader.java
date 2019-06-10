@@ -8,6 +8,7 @@ import com.ztianzeng.apidoc.models.media.Content;
 import com.ztianzeng.apidoc.models.media.MediaType;
 import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.models.parameters.Parameter;
+import com.ztianzeng.apidoc.models.parameters.RequestBody;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.utils.DocUtils;
@@ -18,6 +19,7 @@ import java.util.regex.Matcher;
 
 import static com.ztianzeng.apidoc.constants.HtmlRex.HTML_P_PATTERN;
 import static com.ztianzeng.apidoc.utils.DocUtils.*;
+import static com.ztianzeng.apidoc.utils.RefUtils.constructRef;
 
 /**
  * open api
@@ -32,7 +34,6 @@ public class Reader {
     private SourceBuilder sourceBuilder;
     private JavaProjectBuilder builder;
     private Components components;
-    public static final String COMPONENTS_REF = "#/components/schemas/";
 
     public Reader() {
         this.openAPI = new OpenAPI();
@@ -210,6 +211,8 @@ public class Reader {
 
         setParametersItem(build, javaMethod);
 
+        setRequestBody(build, javaMethod);
+
         JavaType returnType = javaMethod.getReturnType();
 
         Map<String, Schema> schemaMap = ModelConverters.getInstance()
@@ -225,7 +228,7 @@ public class Reader {
         Content content = new Content();
         MediaType mediaType = new MediaType();
         Schema objectSchema = new Schema();
-        objectSchema.$ref(COMPONENTS_REF + schemaMap.keySet().stream().findFirst().orElse(""));
+        objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
 
         mediaType.schema(objectSchema);
         content.addMediaType("application/json", mediaType);
@@ -253,11 +256,10 @@ public class Reader {
     /**
      * 设置方法的请求参数
      */
-    public void setParametersItem(Operation apiMethodDoc, JavaMethod method) {
+    private void setParametersItem(Operation apiMethodDoc, JavaMethod method) {
         List<JavaParameter> parameters = method.getParameters();
 
         Map<String, String> paramDesc = getParamTag(method);
-
 
         for (JavaParameter parameter : parameters) {
             if (isContentBody(parameter.getAnnotations())) {
@@ -289,6 +291,35 @@ public class Reader {
 
 
             }
+
+
+        }
+
+
+    }
+
+    /**
+     * 设置方法的请求参数
+     */
+    private void setRequestBody(Operation apiMethodDoc, JavaMethod method) {
+        List<JavaParameter> parameters = method.getParameters();
+
+
+        for (JavaParameter parameter : parameters) {
+            if (!isContentBody(parameter.getAnnotations())) {
+                return;
+            }
+            RequestBody requestBody = new RequestBody();
+            requestBody.setRequired(true);
+            requestBody.set$ref(constructRef(parameter.getJavaClass().getName()));
+
+            Map<String, Schema> stringSchemaMap = ModelConverters.getInstance()
+                    .readAll(getTypeForName(parameter.getJavaClass().getBinaryName()));
+
+            stringSchemaMap.forEach((key, schema) -> {
+                components.addSchemas(key, schema);
+            });
+            apiMethodDoc.setRequestBody(requestBody);
 
 
         }

@@ -187,7 +187,7 @@ public final class DocUtils {
      */
     public static boolean isContentBody(List<JavaAnnotation> annotation) {
         for (JavaAnnotation javaAnnotation : annotation) {
-            String annotationName = javaAnnotation.getType().getName();
+            String annotationName = javaAnnotation.getType().getFullyQualifiedName();
             if (REQUEST_BODY_ALL.equals(annotationName)) {
                 return true;
             }
