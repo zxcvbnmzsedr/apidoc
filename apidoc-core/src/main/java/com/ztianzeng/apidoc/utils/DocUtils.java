@@ -136,9 +136,12 @@ public final class DocUtils {
      * @return
      */
     public static String getRequestMappingUrl(JavaAnnotation annotation) {
-        String baseUrl = null;
+        String baseUrl = "/";
         if (isRequestMapping(annotation)) {
             if (isRequestMapping(annotation)) {
+                if (annotation.getNamedParameter("value") == null) {
+                    return baseUrl;
+                }
                 baseUrl = annotation.getNamedParameter("value").toString();
                 baseUrl = baseUrl.replaceAll("\"", "");
             }
@@ -154,6 +157,10 @@ public final class DocUtils {
      */
     public static RequestMethod getRequestMappingMethod(JavaAnnotation annotation) {
         String methodType;
+        String annotationName = annotation.getType().getName();
+        if (METHOD_MAP.get(annotationName) != null) {
+            return METHOD_MAP.get(annotationName);
+        }
         if (null != annotation.getNamedParameter("method")) {
             methodType = annotation.getNamedParameter("method").toString();
             if ("RequestMethod.POST".equals(methodType)) {
