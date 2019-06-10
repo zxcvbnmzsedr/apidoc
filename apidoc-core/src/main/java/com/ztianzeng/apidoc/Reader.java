@@ -1,7 +1,7 @@
 package com.ztianzeng.apidoc;
 
 import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
 import com.ztianzeng.apidoc.models.*;
 import com.ztianzeng.apidoc.models.media.Content;
@@ -9,9 +9,14 @@ import com.ztianzeng.apidoc.models.media.MediaType;
 import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
+import com.ztianzeng.apidoc.utils.DocUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+
+import static com.ztianzeng.apidoc.constants.HtmlRex.HTML_P_PATTERN;
+import static com.ztianzeng.apidoc.utils.DocUtils.*;
 
 /**
  * open api
@@ -55,6 +60,56 @@ public class Reader {
         openAPI.setPaths(this.paths);
         openAPI.setComponents(components);
         JavaClass classByName = builder.getClassByName(cls.getCanonicalName());
+
+        // controller上面的URL
+        String classBaseUrl = null;
+
+        for (JavaAnnotation annotation : classByName.getAnnotations()) {
+            if (isRequestMapping(annotation)) {
+                classBaseUrl = getRequestMappingUrl(annotation);
+            }
+        }
+
+
+        // 处理方法上面的注解
+        for (JavaMethod method : classByName.getMethods()) {
+            RequestMethod methodType = null;
+            boolean deprecated = false;
+            String url = null;
+            List<JavaAnnotation> annotations = method.getAnnotations();
+            for (JavaAnnotation annotation : annotations) {
+                if (isRequestMapping(annotation)) {
+                    url = getRequestMappingUrl(annotation);
+                    methodType = getRequestMappingMethod(annotation);
+
+                }
+
+                if (annotation.getType().isA("java.lang.Deprecated")) {
+                    deprecated = true;
+                }
+
+
+            }
+
+            url = url.replaceAll("\"", "").trim();
+
+            PathItem pathItemObject;
+            if (paths != null && paths.get(url) != null) {
+                pathItemObject = paths.get(url);
+            } else {
+                pathItemObject = new PathItem();
+            }
+
+            Operation operation = parseMethod(method, deprecated);
+            setPathItemOperation(pathItemObject, methodType, operation);
+
+            if (StringUtils.isBlank(operation.getOperationId())) {
+                operation.setOperationId(getOperationId(method.getName()));
+            }
+            paths.addPathItem(url, pathItemObject);
+        }
+
+
 //        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
 //
 //        for (ApiMethodDoc apiMethodDoc : apiMethodDocs) {
@@ -157,58 +212,80 @@ public class Reader {
         }
     }
 
-//    /**
-//     * 处理方法
-//     *
-//     * @return
-//     */
-//    public Operation parseMethod(ApiMethodDoc apiMethodDoc) {
-//        Operation build = Operation.builder()
-//                .description(apiMethodDoc.getDescription())
-//                .summary(apiMethodDoc.getSummary())
-//                .deprecated(apiMethodDoc.isDeprecated())
-//                .build();
-//
-//
-//        Map<String, Parameters> responseBody = apiMethodDoc.getResponseBody();
-//
-//        ApiResponses responses = new ApiResponses();
-//        Map<String, Schema> schemaMap = new HashMap<>();
-//
-//        for (String parametrString : responseBody.keySet()) {
-//            Parameters parameters = responseBody.get(parametrString);
-//
-//            schemaMap = ModelConverters.getInstance().read(parameters.getOrigin());
-//
-//            ApiResponse apiResponse = new ApiResponse();
-//            apiResponse.setDescription(parametrString);
-//
-//            Content content = new Content();
-//            MediaType mediaType = new MediaType();
-//            Schema objectSchema = new Schema();
-//            objectSchema.$ref(COMPONENTS_REF + schemaMap.keySet().stream().findFirst().orElse(""));
-//
-//            mediaType.schema(objectSchema);
-//            content.addMediaType("application/json", mediaType);
-//            apiResponse.setContent(content);
-//            // 成功时候的返回
-//            responses.addApiResponse("200", apiResponse);
-//        }
-//        // swagger规定必须有一个response
-//        if (responses.size() == 0) {
-//            ApiResponse apiResponse = new ApiResponse();
-//            apiResponse.setDescription("response");
-//            responses.addApiResponse("200", apiResponse);
-//
-//        }
-//
-//
-//        // 在这边添加schema
-//        schemaMap.forEach((key, schema) -> {
-//            components.addSchemas(key, schema);
-//        });
-//
-//        build.setResponses(responses);
-//        return build;
-//    }
+    /**
+     * 处理方法
+     *
+     * @return
+     */
+    public Operation parseMethod(JavaMethod javaMethod, boolean deprecated) {
+        Operation build = Operation.builder()
+                .deprecated(deprecated)
+                .build();
+        setDescAndSummary(build, javaMethod);
+
+
+        JavaType returnType = javaMethod.getReturnType();
+
+        Map<String, Schema> schemaMap = ModelConverters.getInstance()
+                .readAll(DocUtils.getTypeForName(returnType.getBinaryName()));
+        ApiResponses responses = new ApiResponses();
+
+        ApiResponse apiResponse = new ApiResponse();
+
+        Optional<String> aReturn = Optional.ofNullable(javaMethod.getTagByName("return")).map(DocletTag::getValue);
+        aReturn.ifPresent(apiResponse::setDescription);
+
+        Content content = new Content();
+        MediaType mediaType = new MediaType();
+        Schema objectSchema = new Schema();
+        objectSchema.$ref(COMPONENTS_REF + schemaMap.keySet().stream().findFirst().orElse(""));
+
+        mediaType.schema(objectSchema);
+        content.addMediaType("application/json", mediaType);
+        apiResponse.setContent(content);
+        // 成功时候的返回
+        responses.addApiResponse("200", apiResponse);
+
+
+        // swagger规定必须有一个response
+        if (responses.size() == 0) {
+            apiResponse.setDescription("response");
+            responses.addApiResponse("200", apiResponse);
+        }
+
+
+        // 在这边添加schema
+        schemaMap.forEach((key, schema) -> {
+            components.addSchemas(key, schema);
+        });
+
+        build.setResponses(responses);
+        return build;
+    }
+
+    /**
+     * 设置方法上的详情和概述
+     *
+     * @param apiMethodDoc
+     * @param method
+     */
+    private void setDescAndSummary(Operation apiMethodDoc, JavaMethod method) {
+        String comment = method.getComment();
+
+        if (comment != null) {
+            String desc = null;
+            Matcher m = HTML_P_PATTERN.matcher(comment);
+
+            if (m.find()) {
+                desc = m.group(0).replace("<p>", "").replace("</p>", "").trim();
+                comment = m.replaceAll("");
+            }
+            apiMethodDoc.setSummary(comment.trim());
+            apiMethodDoc.setDescription(desc);
+        }
+
+
+    }
+
+
 }

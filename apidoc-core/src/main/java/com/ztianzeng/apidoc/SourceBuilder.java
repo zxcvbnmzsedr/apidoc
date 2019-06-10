@@ -18,6 +18,8 @@ import java.util.Map;
 
 import static com.ztianzeng.apidoc.constants.GlobalConstants.IGNORE_TAG;
 import static com.ztianzeng.apidoc.constants.SpringMvcConstants.*;
+import static com.ztianzeng.apidoc.utils.DocUtils.getRequestMappingMethod;
+import static com.ztianzeng.apidoc.utils.DocUtils.isRequestMapping;
 
 /**
  * 核心处理器
@@ -156,30 +158,6 @@ public class SourceBuilder {
 
         return null;
     }
-
-//    /**
-//     * 设置方法上的详情和概述
-//     *
-//     * @param apiMethodDoc
-//     * @param method
-//     */
-//    private void setDescAndSummary(ApiMethodDoc apiMethodDoc, JavaMethod method) {
-//        String comment = method.getComment();
-//
-//        if (comment != null) {
-//            String desc = null;
-//            Matcher m = HTML_P_PATTERN.matcher(comment);
-//
-//            if (m.find()) {
-//                desc = m.group(0).replace("<p>", "").replace("</p>", "").trim();
-//                comment = m.replaceAll("");
-//            }
-//            apiMethodDoc.setSummary(comment.trim());
-//            apiMethodDoc.setDescription(desc);
-//        }
-//
-//
-//    }
 
 
     /**
@@ -359,44 +337,6 @@ public class SourceBuilder {
             }
         }
         return false;
-    }
-
-    /**
-     * 获取请求的方法
-     *
-     * @param annotation 注解
-     * @return 请求方法
-     */
-    private RequestMethod getRequestMappingMethod(JavaAnnotation annotation) {
-        String methodType;
-        if (null != annotation.getNamedParameter("method")) {
-            methodType = annotation.getNamedParameter("method").toString();
-            if ("RequestMethod.POST".equals(methodType)) {
-                methodType = "POST";
-            } else if ("RequestMethod.GET".equals(methodType)) {
-                methodType = "GET";
-            } else if ("RequestMethod.PUT".equals(methodType)) {
-                methodType = "PUT";
-            } else if ("RequestMethod.DELETE".equals(methodType)) {
-                methodType = "DELETE";
-            } else {
-                methodType = "GET";
-            }
-        } else {
-            methodType = "GET";
-        }
-        return RequestMethod.valueOf(methodType);
-    }
-
-    /**
-     * 是否为@RequestMapping的注解
-     *
-     * @param annotation
-     * @return
-     */
-    private boolean isRequestMapping(JavaAnnotation annotation) {
-        String annotationName = annotation.getType().getName();
-        return REQUEST_MAPPING.equals(annotationName) || REQUEST_MAPPING_FULLY.equals(annotationName);
     }
 
 
