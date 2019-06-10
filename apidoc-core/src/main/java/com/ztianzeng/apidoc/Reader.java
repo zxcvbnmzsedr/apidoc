@@ -256,6 +256,8 @@ public class Reader {
     public void setParametersItem(Operation apiMethodDoc, JavaMethod method) {
         List<JavaParameter> parameters = method.getParameters();
 
+        Map<String, String> paramDesc = getParamTag(method);
+
 
         for (JavaParameter parameter : parameters) {
             if (isContentBody(parameter.getAnnotations())) {
@@ -264,7 +266,11 @@ public class Reader {
             // 如果是私有属性直接便利
             if (DocUtils.isPrimitive(parameter.getType().getBinaryName())) {
                 Parameter inputParameter = new Parameter();
+                inputParameter.in("query");
                 inputParameter.setName(parameter.getName());
+                Schema schema = new Schema();
+                inputParameter.setDescription(paramDesc.get(parameter.getName()));
+                inputParameter.setSchema(schema);
                 apiMethodDoc.addParametersItem(inputParameter);
             } else {
                 Map<String, Schema> stringSchemaMap = ModelConverters.getInstance()
@@ -311,6 +317,34 @@ public class Reader {
             apiMethodDoc.setDescription(desc);
         }
 
+    }
+
+
+    /**
+     * 获取方法上param注解
+     *
+     * @param javaMethod java方法
+     * @return
+     */
+    private Map<String, String> getParamTag(final JavaMethod javaMethod) {
+        List<DocletTag> paramTags = javaMethod.getTagsByName("param");
+        Map<String, String> paramTagMap = new HashMap<>();
+        for (DocletTag docletTag : paramTags) {
+            String value = docletTag.getValue();
+            String pName;
+            String pValue;
+            int idx = value.indexOf("\n");
+            //如果存在换行
+            if (idx > -1) {
+                pName = value.substring(0, idx);
+                pValue = value.substring(idx + 1);
+            } else {
+                pName = (value.contains(" ")) ? value.substring(0, value.indexOf(" ")) : value;
+                pValue = value.contains(" ") ? value.substring(value.indexOf(' ') + 1) : "";
+            }
+            paramTagMap.put(pName.trim(), pValue.trim());
+        }
+        return paramTagMap;
     }
 
 
