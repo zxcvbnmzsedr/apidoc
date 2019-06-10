@@ -333,7 +333,7 @@ public enum PrimitiveType {
                 return entry.getValue();
             }
         }
-        return PrimitiveType.OBJECT;
+        return null;
     }
 
     public static PrimitiveType fromName(String name) {
