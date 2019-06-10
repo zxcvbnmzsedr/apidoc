@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.test.res;
+package com.ztianzeng.apidoc.test;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.Reader;
@@ -9,6 +9,8 @@ import com.ztianzeng.apidoc.models.PathItem;
 import com.ztianzeng.apidoc.models.Paths;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
+import com.ztianzeng.apidoc.test.res.*;
+import com.ztianzeng.apidoc.test.res.TestController;
 import com.ztianzeng.apidoc.test.swagger.SerializationMatchers;
 import com.ztianzeng.apidoc.utils.Yaml;
 import org.junit.Test;

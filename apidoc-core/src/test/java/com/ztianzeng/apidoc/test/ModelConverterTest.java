@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.test.res;
+package com.ztianzeng.apidoc.test;
 
 
 
