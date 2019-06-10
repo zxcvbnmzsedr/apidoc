@@ -4,6 +4,11 @@ import com.ztianzeng.apidoc.models.media.Schema;
 
 import java.util.Iterator;
 
+/**
+ * 模型解析
+ *
+ * @author tianzeng
+ */
 public interface ModelConverter {
 
     /**

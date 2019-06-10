@@ -1,6 +1,10 @@
 package com.ztianzeng.apidoc;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.ztianzeng.apidoc.converter.AnnotatedType;
+import com.ztianzeng.apidoc.converter.ModelConverter;
+import com.ztianzeng.apidoc.converter.ModelConverterContextImpl;
+import com.ztianzeng.apidoc.converter.ResolvedSchema;
 import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.utils.Json;
 import lombok.extern.slf4j.Slf4j;
