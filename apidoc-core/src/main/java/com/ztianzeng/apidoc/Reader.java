@@ -234,8 +234,9 @@ public class Reader {
 
         ApiResponse apiResponse = new ApiResponse();
 
-        Optional<String> aReturn = Optional.ofNullable(javaMethod.getTagByName("return")).map(DocletTag::getValue);
-        aReturn.ifPresent(apiResponse::setDescription);
+        // 必须得返回一个描述，否则swagger报错
+        String aReturn = Optional.ofNullable(javaMethod.getTagByName("return")).map(DocletTag::getValue).orElse("response");
+        apiResponse.setDescription(aReturn);
 
         Content content = new Content();
         MediaType mediaType = new MediaType();
