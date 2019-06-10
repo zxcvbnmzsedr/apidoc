@@ -7,6 +7,7 @@ import com.ztianzeng.apidoc.models.*;
 import com.ztianzeng.apidoc.models.media.Content;
 import com.ztianzeng.apidoc.models.media.MediaType;
 import com.ztianzeng.apidoc.models.media.Schema;
+import com.ztianzeng.apidoc.models.parameters.Parameter;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.utils.DocUtils;
@@ -71,7 +72,7 @@ public class Reader {
         }
 
 
-        // 处理方法上面的注解
+        // 处理方法
         for (JavaMethod method : classByName.getMethods()) {
             RequestMethod methodType = null;
             boolean deprecated = false;
@@ -87,7 +88,6 @@ public class Reader {
                 if (annotation.getType().isA("java.lang.Deprecated")) {
                     deprecated = true;
                 }
-
 
             }
 
@@ -105,37 +105,20 @@ public class Reader {
             Operation operation = parseMethod(method, deprecated);
             setPathItemOperation(pathItemObject, methodType, operation);
 
+
             if (StringUtils.isBlank(operation.getOperationId())) {
                 operation.setOperationId(getOperationId(method.getName()));
             }
+
+
+//            operation.requestBody();
             paths.addPathItem(url, pathItemObject);
         }
 
 
-//        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
-//
-//        for (ApiMethodDoc apiMethodDoc : apiMethodDocs) {
-//            PathItem pathItemObject;
-//            if (paths != null && paths.get(apiMethodDoc.getPath()) != null) {
-//                pathItemObject = paths.get(apiMethodDoc.getPath());
-//            } else {
-//                pathItemObject = new PathItem();
-//            }
-//            Operation operation = parseMethod(apiMethodDoc);
-//            setPathItemOperation(pathItemObject, apiMethodDoc.getRequestMethod(), operation);
-//
-//            if (StringUtils.isBlank(operation.getOperationId())) {
-//                operation.setOperationId(getOperationId(apiMethodDoc.getMethodName()));
-//            }
-//
-//            paths.addPathItem(apiMethodDoc.getPath(), pathItemObject);
-//
-//
-//        }
-
-
         return openAPI;
     }
+
 
     protected String getOperationId(String operationId) {
         boolean operationIdUsed = existOperationId(operationId);
@@ -225,6 +208,7 @@ public class Reader {
                 .build();
         setDescAndSummary(build, javaMethod);
 
+        setParametersItem(build, javaMethod);
 
         JavaType returnType = javaMethod.getReturnType();
 
@@ -267,6 +251,46 @@ public class Reader {
     }
 
     /**
+     * 设置方法的请求参数
+     */
+    public void setParametersItem(Operation apiMethodDoc, JavaMethod method) {
+        List<JavaParameter> parameters = method.getParameters();
+
+
+        for (JavaParameter parameter : parameters) {
+            if (isContentBody(parameter.getAnnotations())) {
+                return;
+            }
+            // 如果是私有属性直接便利
+            if (DocUtils.isPrimitive(parameter.getType().getBinaryName())) {
+                Parameter inputParameter = new Parameter();
+                inputParameter.setName(parameter.getName());
+                apiMethodDoc.addParametersItem(inputParameter);
+            } else {
+                Map<String, Schema> stringSchemaMap = ModelConverters.getInstance()
+                        .readAll(DocUtils.getTypeForName(parameter.getJavaClass().getBinaryName()));
+                for (String s : stringSchemaMap.keySet()) {
+                    Schema schema = stringSchemaMap.get(s);
+                    Map<String, Schema> properties = schema.getProperties();
+                    properties.forEach((k, v) -> {
+                        Parameter inputParameter = new Parameter();
+                        inputParameter.setName(k);
+                        inputParameter.in("query");
+                        inputParameter.setSchema(v);
+                        apiMethodDoc.addParametersItem(inputParameter);
+                    });
+                }
+
+
+            }
+
+
+        }
+
+
+    }
+
+    /**
      * 设置方法上的详情和概述
      *
      * @param apiMethodDoc
@@ -286,7 +310,6 @@ public class Reader {
             apiMethodDoc.setSummary(comment.trim());
             apiMethodDoc.setDescription(desc);
         }
-
 
     }
 

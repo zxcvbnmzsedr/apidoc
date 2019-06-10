@@ -180,5 +180,21 @@ public final class DocUtils {
         return RequestMethod.valueOf(methodType);
     }
 
+    /**
+     * 是否使用@requestBody注解
+     *
+     * @return
+     */
+    public static boolean isContentBody(List<JavaAnnotation> annotation) {
+        for (JavaAnnotation javaAnnotation : annotation) {
+            String annotationName = javaAnnotation.getType().getName();
+            if (REQUEST_BODY_ALL.equals(annotationName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
 }
