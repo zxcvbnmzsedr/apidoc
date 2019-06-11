@@ -34,7 +34,7 @@ public class TestController {
      * @param createParam2 创建对象2
      */
     @PostMapping(value = "/create2")
-    public List<CreateVO> create2(@Valid CreateParam createParam2) {
+    public List<CreateVO> create2(@Valid @RequestBody CreateParam createParam2) {
         return new LinkedList<>();
     }
 //
