@@ -60,6 +60,15 @@ public class Reader {
         mapper = Json.mapper();
     }
 
+    public Reader(OpenAPI openAPI, SourceBuilder sourceBuilder) {
+        this.openAPI = openAPI;
+        paths = new Paths();
+        components = new Components();
+        this.sourceBuilder = sourceBuilder;
+        this.builder = sourceBuilder.getBuilder();
+        mapper = Json.mapper();
+    }
+
     /**
      * 读取class的method
      *
@@ -258,7 +267,7 @@ public class Reader {
                 .deprecated(deprecated)
                 .build();
         setDescAndSummary(build, javaMethod);
-        if (tag != null) {
+        if (StringUtils.isNotBlank(tag)) {
             build.addTagsItem(tag);
         }
         setParametersItem(build, javaMethod);
@@ -274,7 +283,9 @@ public class Reader {
             }
         }
 
-        assert jackSonMethod != null;
+        if (jackSonMethod == null) {
+            return build;
+        }
         setRequestBody(build, javaMethod, jackSonMethod);
 
         // 处理方法的信息
@@ -355,6 +366,9 @@ public class Reader {
                 for (String s : stringSchemaMap.keySet()) {
                     Schema schema = stringSchemaMap.get(s);
                     Map<String, Schema> properties = schema.getProperties();
+                    if (properties == null) {
+                        continue;
+                    }
                     properties.forEach((k, v) -> {
                         Parameter inputParameter = new Parameter();
                         inputParameter.setName(k);
