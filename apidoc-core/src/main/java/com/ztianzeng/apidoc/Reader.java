@@ -84,8 +84,10 @@ public class Reader {
         BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
 
 
+
         // 处理方法
         for (JavaMethod method : classByName.getMethods()) {
+            boolean isRquestMapping = false;
             RequestMethod methodType = null;
             boolean deprecated = false;
             String url = null;
@@ -94,13 +96,16 @@ public class Reader {
                 if (isRequestMapping(annotation)) {
                     url = getRequestMappingUrl(annotation);
                     methodType = getRequestMappingMethod(annotation);
-
+                    isRquestMapping = true;
                 }
 
                 if (annotation.getType().isA("java.lang.Deprecated")) {
                     deprecated = true;
                 }
 
+            }
+            if (!isRquestMapping) {
+                continue;
             }
 
             if (url != null) {

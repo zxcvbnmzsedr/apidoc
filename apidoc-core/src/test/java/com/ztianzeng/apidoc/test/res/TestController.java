@@ -64,4 +64,8 @@ public class TestController {
                                     @RequestParam(value = "sex2") String sex) {
         return new Result<>();
     }
+
+    private void a() {
+
+    }
 }
