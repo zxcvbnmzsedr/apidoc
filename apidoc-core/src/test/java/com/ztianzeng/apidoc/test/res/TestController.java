@@ -17,16 +17,17 @@ import java.util.List;
 @RestController
 public class TestController {
 //
-//    /**
-//     * 新增一个实例
-//     *
-//     * @param createParam 创建对象
-//     * @return 创建后的信息
-//     */
-//    @PostMapping(value = "/create")
-//    public CreateVO add(@RequestBody @Valid CreateParam createParam) {
-//        return new CreateVO();
-//    }
+
+    /**
+     * 新增一个实例
+     *
+     * @param createParam 创建对象
+     * @return 创建后的信息
+     */
+    @PostMapping(value = "/create")
+    public CreateVO add(@RequestBody @Valid CreateParam createParam) {
+        return new CreateVO();
+    }
 
     /**
      * 新增一个实例2
@@ -37,17 +38,30 @@ public class TestController {
     public List<CreateVO> create2(@Valid @RequestBody List<CreateParam> createParam2) {
         return new LinkedList<>();
     }
-//
-//    /**
-//     * 获取一个实例
-//     *
-//     * @param userId 用户ID
-//     * @param sex    性别
-//     * @return 返回信息
-//     */
-//    @GetMapping(value = "/get")
-//    public String get(@RequestParam(value = "userId", required = false) String userId,
-//                      @RequestParam(value = "sex2") String sex) {
-//        return "";
-//    }
+
+    /**
+     * 获取一个实例
+     *
+     * @param userId 用户ID
+     * @param sex    性别
+     * @return 返回信息
+     */
+    @GetMapping(value = "/get")
+    public Result<CreateVO> get(@RequestParam(value = "userId", required = false) String userId,
+                                @RequestParam(value = "sex2") String sex) {
+        return new Result<>();
+    }
+
+    /**
+     * 获取一个实例
+     *
+     * @param userId 用户ID
+     * @param sex    性别
+     * @return 返回信息
+     */
+    @GetMapping(value = "/get")
+    public Result<CreateParam> get2(@RequestParam(value = "userId", required = false) String userId,
+                                    @RequestParam(value = "sex2") String sex) {
+        return new Result<>();
+    }
 }
