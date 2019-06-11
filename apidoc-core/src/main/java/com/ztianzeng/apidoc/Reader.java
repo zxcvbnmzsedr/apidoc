@@ -250,11 +250,12 @@ public class Reader {
         Schema objectSchema = ModelConverters.getInstance()
                 .resolve(jackSonMethod.getType());
 
-        if (objectSchema != null) {
-            objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
-        }
+
         if (objectSchema instanceof ArraySchema) {
             ((ArraySchema) objectSchema).getItems().$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+        } else {
+            objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+
         }
 
         mediaType.schema(objectSchema);
