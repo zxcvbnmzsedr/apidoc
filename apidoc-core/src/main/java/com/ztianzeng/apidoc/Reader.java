@@ -221,7 +221,9 @@ public class Reader {
                 .deprecated(deprecated)
                 .build();
         setDescAndSummary(build, javaMethod);
-        build.addTagsItem(tag);
+        if (tag != null) {
+            build.addTagsItem(tag);
+        }
         setParametersItem(build, javaMethod);
 
 
