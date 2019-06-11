@@ -145,6 +145,7 @@ public class ModelResolver implements ModelConverter {
                 if (items == null) {
                     return null;
                 }
+                items.$ref(constructRef(items.getName()));
                 schema = new ArraySchema().items(items);
 
             }

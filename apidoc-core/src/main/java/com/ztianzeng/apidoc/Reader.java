@@ -1,9 +1,13 @@
 package com.ztianzeng.apidoc;
 
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
 import com.ztianzeng.apidoc.models.*;
+import com.ztianzeng.apidoc.models.media.ArraySchema;
 import com.ztianzeng.apidoc.models.media.Content;
 import com.ztianzeng.apidoc.models.media.MediaType;
 import com.ztianzeng.apidoc.models.media.Schema;
@@ -12,6 +16,7 @@ import com.ztianzeng.apidoc.models.parameters.RequestBody;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.utils.DocUtils;
+import com.ztianzeng.apidoc.utils.Json;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -34,6 +39,7 @@ public class Reader {
     private SourceBuilder sourceBuilder;
     private JavaProjectBuilder builder;
     private Components components;
+    private ObjectMapper mapper;
 
     public Reader() {
         this.openAPI = new OpenAPI();
@@ -41,6 +47,7 @@ public class Reader {
         paths = new Paths();
         components = new Components();
         this.builder = sourceBuilder.getBuilder();
+        mapper = Json.mapper();
     }
 
     public Reader(OpenAPI openAPI) {
@@ -49,7 +56,7 @@ public class Reader {
         components = new Components();
         this.sourceBuilder = new SourceBuilder();
         this.builder = sourceBuilder.getBuilder();
-
+        mapper = Json.mapper();
     }
 
     /**
@@ -71,6 +78,9 @@ public class Reader {
                 classBaseUrl = getRequestMappingUrl(annotation);
             }
         }
+
+        com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(cls);
+        BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
 
 
         // 处理方法
@@ -103,7 +113,7 @@ public class Reader {
                 pathItemObject = new PathItem();
             }
 
-            Operation operation = parseMethod(method, deprecated);
+            Operation operation = parseMethod(beanDesc, method, deprecated);
             setPathItemOperation(pathItemObject, methodType, operation);
 
 
@@ -202,7 +212,7 @@ public class Reader {
      *
      * @return
      */
-    public Operation parseMethod(JavaMethod javaMethod, boolean deprecated) {
+    public Operation parseMethod(BeanDescription beanDesc, JavaMethod javaMethod, boolean deprecated) {
         Operation build = Operation.builder()
                 .deprecated(deprecated)
                 .build();
@@ -213,9 +223,19 @@ public class Reader {
         setRequestBody(build, javaMethod);
 
         JavaType returnType = javaMethod.getReturnType();
+        AnnotatedMethod jackSonMethod = null;
+        // 筛选，提取jackson的类型
+        for (AnnotatedMethod factoryMethod : beanDesc.getClassInfo().memberMethods()) {
+            if (factoryMethod.getName().equals(javaMethod.getName())
+                    && factoryMethod.getRawReturnType().getName().equals(returnType.getBinaryName())) {
+                jackSonMethod = factoryMethod;
+            }
+        }
 
+        // 处理方法的信息
         Map<String, Schema> schemaMap = ModelConverters.getInstance()
-                .readAll(DocUtils.getTypeForName(returnType.getBinaryName()));
+                .readAll(jackSonMethod.getType());
+
         ApiResponses responses = new ApiResponses();
 
         ApiResponse apiResponse = new ApiResponse();
@@ -226,8 +246,14 @@ public class Reader {
 
         Content content = new Content();
         MediaType mediaType = new MediaType();
-        Schema objectSchema = new Schema();
-        objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+
+        Schema objectSchema = ModelConverters.getInstance()
+                .resolve(jackSonMethod.getType());
+
+        if (objectSchema != null) {
+            objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+
+        }
 
         mediaType.schema(objectSchema);
         content.addMediaType("application/json", mediaType);

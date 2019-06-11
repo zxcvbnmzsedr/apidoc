@@ -1,21 +1,15 @@
 package com.ztianzeng.apidoc.test;
 
-import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.Reader;
-import com.ztianzeng.apidoc.SourceBuilder;
 import com.ztianzeng.apidoc.models.OpenAPI;
 import com.ztianzeng.apidoc.models.Operation;
 import com.ztianzeng.apidoc.models.PathItem;
 import com.ztianzeng.apidoc.models.Paths;
-import com.ztianzeng.apidoc.models.responses.ApiResponse;
-import com.ztianzeng.apidoc.models.responses.ApiResponses;
+import com.ztianzeng.apidoc.models.media.ArraySchema;
 import com.ztianzeng.apidoc.test.res.*;
-import com.ztianzeng.apidoc.test.res.TestController;
 import com.ztianzeng.apidoc.test.swagger.SerializationMatchers;
 import com.ztianzeng.apidoc.utils.Yaml;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -72,33 +66,6 @@ public class ReaderTest {
         assertEquals(OPERATION_DESCRIPTION, operation.getDescription());
     }
 
-    @Test
-    public void testScanMethods() {
-        SourceBuilder sourceBuilder = new SourceBuilder();
-        JavaClass classByName = sourceBuilder.getBuilder().getClassByName(SimpleMethods.class.getName());
-
-        Reader reader = new Reader(new OpenAPI());
-
-//        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
-//        for (final ApiMethodDoc method : apiMethodDocs) {
-//            Operation operation = reader.parseMethod(method);
-//            assertNotNull(operation);
-//        }
-    }
-
-    @Test
-    public void testGetSummaryAndDescription() {
-        Reader reader = new Reader(new OpenAPI());
-        SourceBuilder sourceBuilder = new SourceBuilder();
-        JavaClass classByName = sourceBuilder.getBuilder().getClassByName(BasicFieldsResource.class.getName());
-
-//        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
-
-//        Operation operation = reader.parseMethod(apiMethodDocs.get(0));
-//        assertNotNull(operation);
-//        assertEquals(OPERATION_SUMMARY, operation.getSummary());
-//        assertEquals(OPERATION_DESCRIPTION, operation.getDescription());
-    }
 
     @Test
     public void testResolveDuplicatedOperationId() {
@@ -144,38 +111,6 @@ public class ReaderTest {
 
     }
 
-    @Test
-    public void testDeprecatedMethod() {
-        SourceBuilder sourceBuilder = new SourceBuilder();
-        JavaClass classByName = sourceBuilder.getBuilder().getClassByName(DeprecatedFieldsResource.class.getName());
-
-        Reader reader = new Reader(new OpenAPI());
-//        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
-
-//        Operation deprecatedOperation = reader.parseMethod(apiMethodDocs.get(0));
-//        assertNotNull(deprecatedOperation);
-//        assertTrue(deprecatedOperation.getDeprecated());
-    }
-
-    @Test
-    public void testGetResponses() {
-        Reader reader = new Reader(new OpenAPI());
-        SourceBuilder sourceBuilder = new SourceBuilder();
-        JavaClass classByName = sourceBuilder.getBuilder().getClassByName(ResponsesResource.class.getName());
-
-//        List<ApiMethodDoc> apiMethodDocs = sourceBuilder.buildControllerMethod(classByName);
-
-//        Operation responseOperation = reader.parseMethod(apiMethodDocs.stream().filter(
-//                (method -> method.getMethodName().equals("getResponses"))).findFirst().get());
-//        assertNotNull(responseOperation);
-//
-//        ApiResponses responses = responseOperation.getResponses();
-//        assertEquals(RESPONSES_NUMBER, responses.size());
-
-//        ApiResponse apiResponse = responses.get(RESPONSE_CODE_200);
-//        assertNotNull(apiResponse);
-//        assertEquals(RESPONSE_DESCRIPTION, apiResponse.getDescription());
-    }
 
     @Test
     public void print() {
@@ -214,6 +149,23 @@ public class ReaderTest {
                 "          description: the user id";
 
         SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
+    }
+
+
+    @Test
+    public void test2497() {
+        Reader reader = new Reader(new OpenAPI());
+        OpenAPI openAPI = reader.read(ResponseContentWithArrayResource.class);
+
+        Paths paths = openAPI.getPaths();
+        assertEquals(paths.size(), 1);
+        PathItem pathItem = paths.get("/user");
+        assertNotNull(pathItem);
+        Operation operation = pathItem.getGet();
+        assertNotNull(operation);
+        ArraySchema schema = (ArraySchema) operation.getResponses().get("200").getContent().values().iterator().next().getSchema();
+        assertNotNull(schema);
+        assertEquals(schema.getItems().get$ref(), "#/components/schemas/User");
     }
 
 }

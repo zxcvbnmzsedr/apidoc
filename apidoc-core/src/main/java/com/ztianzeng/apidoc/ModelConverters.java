@@ -59,6 +59,7 @@ public class ModelConverters {
         return readAll(new AnnotatedType().type(type));
     }
 
+
     public Map<String, Schema> readAll(AnnotatedType type) {
         if (shouldProcess(type.getType())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(converters);
@@ -68,6 +69,20 @@ public class ModelConverters {
             return context.getDefinedModels();
         }
         return new HashMap<>();
+    }
+
+    public Schema resolve(Type type) {
+        return resolve(new AnnotatedType().type(type));
+    }
+
+    public Schema resolve(AnnotatedType type) {
+        if (shouldProcess(type.getType())) {
+            ModelConverterContextImpl context = new ModelConverterContextImpl(converters);
+
+            log.debug("ModelConverters readAll from " + type);
+            return context.resolve(type);
+        }
+        return null;
     }
 
     private boolean shouldProcess(Type type) {
