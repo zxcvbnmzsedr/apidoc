@@ -1,25 +1,17 @@
 package com.ztianzeng.apidoc;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.model.*;
-import com.ztianzeng.apidoc.constants.RequestMethod;
+import com.thoughtworks.qdox.model.JavaAnnotation;
+import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.utils.DocUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 
-import static com.ztianzeng.apidoc.constants.GlobalConstants.IGNORE_TAG;
-import static com.ztianzeng.apidoc.constants.SpringMvcConstants.*;
-import static com.ztianzeng.apidoc.utils.DocUtils.getRequestMappingMethod;
-import static com.ztianzeng.apidoc.utils.DocUtils.isRequestMapping;
+import static com.ztianzeng.apidoc.constants.SpringMvcConstants.CONTROLLER_FULLY;
+import static com.ztianzeng.apidoc.constants.SpringMvcConstants.REST_CONTROLLER_FULLY;
 
 /**
  * 核心处理器
@@ -57,7 +49,34 @@ public class SourceBuilder {
         }
     }
 
+    public Set<Class<?>> getControllerData() throws ClassNotFoundException {
+        Set<Class<?>> apiMethodDocs = new HashSet<>();
+        for (JavaClass javaClass : javaClasses) {
+            if (isController(javaClass)) {
+                apiMethodDocs.add(TypeFactory.defaultInstance().findClass(javaClass.getBinaryName()));
+            }
+        }
+        return apiMethodDocs;
+    }
 
+    /**
+     * 检测controller上的注解
+     *
+     * @param cls
+     * @return
+     */
+    private boolean isController(JavaClass cls) {
+        List<JavaAnnotation> classAnnotations = cls.getAnnotations();
+        for (JavaAnnotation annotation : classAnnotations) {
+            String annotationName = annotation.getType().getName();
+            if ("Controller".equals(annotationName) || "RestController".equals(annotationName)
+                    || REST_CONTROLLER_FULLY.equals(annotationName)
+                    || CONTROLLER_FULLY.equals(annotationName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public JavaProjectBuilder getBuilder() {
         return builder;

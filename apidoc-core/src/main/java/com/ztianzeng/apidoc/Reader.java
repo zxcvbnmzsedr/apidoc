@@ -84,7 +84,6 @@ public class Reader {
         BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
 
 
-
         // 处理方法
         for (JavaMethod method : classByName.getMethods()) {
             boolean isRquestMapping = false;
@@ -132,6 +131,39 @@ public class Reader {
 
 
             paths.addPathItem(url, pathItemObject);
+        }
+
+
+        return openAPI;
+    }
+
+
+    public OpenAPI read(Set<Class<?>> classes) {
+        Set<Class<?>> sortedClasses = new TreeSet<>(new Comparator<Class<?>>() {
+            @Override
+            public int compare(Class<?> class1, Class<?> class2) {
+                if (class1.equals(class2)) {
+                    return 0;
+                } else if (class1.isAssignableFrom(class2)) {
+                    return -1;
+                } else if (class2.isAssignableFrom(class1)) {
+                    return 1;
+                }
+                return class1.getName().compareTo(class2.getName());
+            }
+        });
+        sortedClasses.addAll(classes);
+
+
+        for (Class<?> aClass : sortedClasses) {
+            OpenAPI read = read(aClass);
+
+            paths.putAll(read.getPaths());
+            if (components.getSchemas() == null) {
+                components.setSchemas(new HashMap<>(20));
+            }
+            components.getSchemas().putAll(read.getComponents().getSchemas());
+
         }
 
 
