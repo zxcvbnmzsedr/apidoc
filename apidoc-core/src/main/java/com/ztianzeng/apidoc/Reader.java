@@ -112,7 +112,6 @@ public class Reader {
             }
 
 
-//            operation.requestBody();
             paths.addPathItem(url, pathItemObject);
         }
 
@@ -311,7 +310,17 @@ public class Reader {
             }
             RequestBody requestBody = new RequestBody();
             requestBody.setRequired(true);
-            requestBody.set$ref(constructRef(parameter.getJavaClass().getName()));
+            Content content = new Content();
+            MediaType mediaType = new MediaType();
+
+            Schema objectSchema = new Schema();
+            objectSchema.$ref(constructRef(parameter.getJavaClass().getSimpleName()));
+
+            mediaType.schema(objectSchema);
+
+            content.addMediaType("application/json", mediaType);
+            requestBody.content(content);
+
 
             Map<String, Schema> stringSchemaMap = ModelConverters.getInstance()
                     .readAll(getTypeForName(parameter.getJavaClass().getBinaryName()));
