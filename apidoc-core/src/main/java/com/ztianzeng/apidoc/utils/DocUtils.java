@@ -1,5 +1,9 @@
 package com.ztianzeng.apidoc.utils;
 
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaField;
@@ -7,6 +11,7 @@ import com.ztianzeng.apidoc.constants.RequestMethod;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Set;
 
 import static com.ztianzeng.apidoc.constants.SpringMvcConstants.*;
 
@@ -196,5 +201,36 @@ public final class DocUtils {
         return false;
     }
 
+    public static String findTypeName(JavaType type, BeanDescription beanDesc) {
+        ObjectMapper mapper = Json.mapper();
+        // First, handle container types; they require recursion
+        if (type.isArrayType()) {
+            return "Array";
+        }
+
+        if (type.isMapLikeType() && ReflectionUtils.isSystemType(type)) {
+            return "Map";
+        }
+
+        if (type.isContainerType() && ReflectionUtils.isSystemType(type)) {
+            if (Set.class.isAssignableFrom(type.getRawClass())) {
+                return "Set";
+            }
+            return "List";
+        }
+        if (beanDesc == null) {
+            beanDesc = mapper.getSerializationConfig().introspectClassAnnotations(type);
+        }
+
+        PropertyName rootName = mapper.getSerializationConfig().getAnnotationIntrospector().findRootName(beanDesc.getClassInfo());
+        if (rootName != null && rootName.hasSimpleName()) {
+            return rootName.getSimpleName();
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (JavaType typeParameter : type.getBindings().getTypeParameters()) {
+            stringBuilder.append(typeParameter.getRawClass().getSimpleName());
+        }
+        return type.getRawClass().getSimpleName() + stringBuilder.toString();
+    }
 
 }

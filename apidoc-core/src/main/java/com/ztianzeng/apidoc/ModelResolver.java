@@ -68,7 +68,7 @@ public class ModelResolver implements ModelConverter {
         String parentName = annotatedType.getName();
         if (StringUtils.isBlank(parentName)) {
             if (StringUtils.isBlank(parentName) && !ReflectionUtils.isSystemType(targetType)) {
-                parentName = findTypeName(targetType, beanDesc);
+                parentName = DocUtils.findTypeName(targetType, beanDesc);
             }
         }
 
@@ -205,32 +205,7 @@ public class ModelResolver implements ModelConverter {
         return schema;
     }
 
-    protected String findTypeName(JavaType type, BeanDescription beanDesc) {
-        // First, handle container types; they require recursion
-        if (type.isArrayType()) {
-            return "Array";
-        }
 
-        if (type.isMapLikeType() && ReflectionUtils.isSystemType(type)) {
-            return "Map";
-        }
-
-        if (type.isContainerType() && ReflectionUtils.isSystemType(type)) {
-            if (Set.class.isAssignableFrom(type.getRawClass())) {
-                return "Set";
-            }
-            return "List";
-        }
-        if (beanDesc == null) {
-            beanDesc = mapper.getSerializationConfig().introspectClassAnnotations(type);
-        }
-
-        PropertyName rootName = mapper.getSerializationConfig().getAnnotationIntrospector().findRootName(beanDesc.getClassInfo());
-        if (rootName != null && rootName.hasSimpleName()) {
-            return rootName.getSimpleName();
-        }
-        return type.getRawClass().getSimpleName();
-    }
 
 
     /**

@@ -254,11 +254,13 @@ public class Reader {
                 .resolve(jackSonMethod.getType());
 
 
-        if (objectSchema instanceof ArraySchema) {
-            ((ArraySchema) objectSchema).getItems().$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
-        } else {
-            objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+        if (objectSchema != null) {
+            if (objectSchema instanceof ArraySchema) {
+                ((ArraySchema) objectSchema).getItems().$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+            } else {
+                objectSchema.$ref(constructRef(DocUtils.findTypeName(jackSonMethod.getType(), beanDesc)));
 
+            }
         }
 
         mediaType.schema(objectSchema);
