@@ -106,6 +106,7 @@ public class Reader {
             if (url != null) {
                 url = url.replaceAll("\"", "").trim();
             }
+            url = classBaseUrl + url;
 
             PathItem pathItemObject;
             if (paths != null && paths.get(url) != null) {
@@ -114,7 +115,8 @@ public class Reader {
                 pathItemObject = new PathItem();
             }
 
-            Operation operation = parseMethod(beanDesc, method, deprecated);
+            Operation operation = parseMethod(beanDesc, method, deprecated, classByName.getComment());
+
             setPathItemOperation(pathItemObject, methodType, operation);
 
 
@@ -213,12 +215,12 @@ public class Reader {
      *
      * @return
      */
-    public Operation parseMethod(BeanDescription beanDesc, JavaMethod javaMethod, boolean deprecated) {
+    public Operation parseMethod(BeanDescription beanDesc, JavaMethod javaMethod, boolean deprecated, String tag) {
         Operation build = Operation.builder()
                 .deprecated(deprecated)
                 .build();
         setDescAndSummary(build, javaMethod);
-
+        build.addTagsItem(tag);
         setParametersItem(build, javaMethod);
 
 
