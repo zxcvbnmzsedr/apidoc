@@ -3,6 +3,7 @@ package com.ztianzeng.apidoc;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
+import com.fasterxml.jackson.databind.introspect.AnnotatedParameter;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
@@ -220,7 +221,6 @@ public class Reader {
 
         setParametersItem(build, javaMethod);
 
-        setRequestBody(build, javaMethod);
 
         JavaType returnType = javaMethod.getReturnType();
         AnnotatedMethod jackSonMethod = null;
@@ -231,6 +231,9 @@ public class Reader {
                 jackSonMethod = factoryMethod;
             }
         }
+
+        assert jackSonMethod != null;
+        setRequestBody(build, javaMethod, jackSonMethod);
 
         // 处理方法的信息
         Map<String, Schema> schemaMap = ModelConverters.getInstance()
@@ -329,37 +332,45 @@ public class Reader {
     /**
      * 设置方法的请求参数
      */
-    private void setRequestBody(Operation apiMethodDoc, JavaMethod method) {
+    private void setRequestBody(Operation apiMethodDoc, JavaMethod method, AnnotatedMethod jacksonMethod) {
         List<JavaParameter> parameters = method.getParameters();
 
-
-        for (JavaParameter parameter : parameters) {
+        for (int i = 0; i < parameters.size(); i++) {
+            JavaParameter parameter = parameters.get(i);
             if (!isContentBody(parameter.getAnnotations())) {
                 return;
             }
+            AnnotatedParameter jacksonParam = jacksonMethod.getParameter(i);
+
+
+            Schema objectSchema = ModelConverters.getInstance()
+                    .resolve(jacksonParam.getType());
+
+            Map<String, Schema> schemaMap = ModelConverters.getInstance()
+                    .readAll(jacksonParam.getType());
+
+
+            if (objectSchema instanceof ArraySchema) {
+                ((ArraySchema) objectSchema).getItems().$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+            } else {
+                objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+
+            }
+
             RequestBody requestBody = new RequestBody();
             requestBody.setRequired(true);
             Content content = new Content();
             MediaType mediaType = new MediaType();
 
-            Schema objectSchema = new Schema();
-            objectSchema.$ref(constructRef(parameter.getJavaClass().getSimpleName()));
-
             mediaType.schema(objectSchema);
-
             content.addMediaType("application/json", mediaType);
             requestBody.content(content);
 
 
-            Map<String, Schema> stringSchemaMap = ModelConverters.getInstance()
-                    .readAll(getTypeForName(parameter.getJavaClass().getBinaryName()));
-
-            stringSchemaMap.forEach((key, schema) -> {
+            schemaMap.forEach((key, schema) -> {
                 components.addSchemas(key, schema);
             });
             apiMethodDoc.setRequestBody(requestBody);
-
-
         }
 
 

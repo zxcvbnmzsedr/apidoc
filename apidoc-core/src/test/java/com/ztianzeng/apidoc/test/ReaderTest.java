@@ -5,6 +5,7 @@ import com.ztianzeng.apidoc.models.OpenAPI;
 import com.ztianzeng.apidoc.models.Operation;
 import com.ztianzeng.apidoc.models.PathItem;
 import com.ztianzeng.apidoc.models.Paths;
+import com.ztianzeng.apidoc.models.info.Info;
 import com.ztianzeng.apidoc.models.media.ArraySchema;
 import com.ztianzeng.apidoc.test.res.*;
 import com.ztianzeng.apidoc.test.swagger.SerializationMatchers;
@@ -116,6 +117,10 @@ public class ReaderTest {
     public void print() {
         Reader reader = new Reader(new OpenAPI());
         OpenAPI openAPI = reader.read(TestController.class);
+        Info info = new Info();
+        info.title("dddd");
+        info.setVersion("111.111");
+        openAPI.setInfo(info);
         Yaml.prettyPrint(openAPI);
     }
 
