@@ -106,8 +106,9 @@ public class Reader {
             if (url != null) {
                 url = url.replaceAll("\"", "").trim();
             }
-            url = classBaseUrl + url;
-
+            if (classBaseUrl != null) {
+                url = classBaseUrl + url;
+            }
             PathItem pathItemObject;
             if (paths != null && paths.get(url) != null) {
                 pathItemObject = paths.get(url);
