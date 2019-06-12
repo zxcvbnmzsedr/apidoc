@@ -34,10 +34,7 @@ public class ModelResolver implements ModelConverter {
     private JavaProjectBuilder builder;
 
 
-//    protected ObjectMapper mapper;
-
     public ModelResolver(ObjectMapper mapper, SourceBuilder sourceBuilder) {
-//        this.mapper = mapper;
         this.sourceBuilder = sourceBuilder;
         builder = sourceBuilder.getBuilder();
     }

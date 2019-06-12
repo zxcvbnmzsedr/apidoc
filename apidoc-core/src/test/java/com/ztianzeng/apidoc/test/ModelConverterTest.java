@@ -29,10 +29,12 @@ public class ModelConverterTest {
 
     @Test
     public void convertModel() throws IOException {
-        assertEqualsToJson(read(Person.class), "Person.json");
+        JavaClass classByName = TestBase.builder.getClassByName(Person.class.getName());
+
+        assertEqualsToJson(read(classByName), "Person.json");
     }
 
-    private Map<String, Schema> read(Type type) {
+    private Map<String, Schema> read(JavaClass type) {
         return ModelConverters.getInstance().read(type);
     }
 

@@ -230,6 +230,10 @@ public class AnnotatedType {
         if (type != null && that.type != null && !type.equals(that.type)) {
             return false;
         }
+
+        if (javaClass != null && that.javaClass != null && !javaClass.equals(that.javaClass)) {
+            return false;
+        }
         return Arrays.equals(this.ctxAnnotations, that.ctxAnnotations);
     }
 

@@ -2,7 +2,6 @@ package com.ztianzeng.apidoc;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaType;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverter;
 import com.ztianzeng.apidoc.converter.ModelConverterContextImpl;
@@ -41,9 +40,13 @@ public class ModelConverters {
         return read(new AnnotatedType().type(type));
     }
 
+    public Map<String, Schema> read(JavaClass type) {
+        return read(new AnnotatedType().javaClass(type));
+    }
+
     public Map<String, Schema> read(AnnotatedType type) {
         Map<String, Schema> modelMap = new HashMap<>();
-        if (shouldProcess(type.getType())) {
+        if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(
                     converters);
             Schema resolve = context.resolve(type);
