@@ -4,19 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.JavaType;
+import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverter;
 import com.ztianzeng.apidoc.converter.ModelConverterContext;
+import com.ztianzeng.apidoc.models.media.MapSchema;
 import com.ztianzeng.apidoc.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.utils.DocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.ztianzeng.apidoc.utils.RefUtils.constructRef;
 
@@ -58,7 +58,7 @@ public class ModelResolver implements ModelConverter {
             parentName = targetClass.getName();
         }
 
-        schema.name(parentName);
+
 
         Schema resolvedModel = context.resolve(annotatedType);
         if (resolvedModel != null) {
@@ -69,9 +69,12 @@ public class ModelResolver implements ModelConverter {
 
 
         // 转换成OpenApi定义的字段信息
-        PrimitiveType parentType = PrimitiveType.fromType(parentName);
+        PrimitiveType parentType = PrimitiveType.fromType(targetClass.getFullyQualifiedName());
         schema.setType(Optional.ofNullable(parentType).orElse(PrimitiveType.OBJECT).getCommonName());
-
+        if (DocUtils.isPrimitive(targetClass.getName())) {
+            return schema;
+        }
+        schema.name(parentName);
 
         // 分析类的字段
         List<JavaField> fields = new ArrayList<>();
@@ -83,9 +86,37 @@ public class ModelResolver implements ModelConverter {
             cls = cls.getSuperJavaClass();
         }
 
+        if (targetClass.isA(Map.class.getName())) {
+            // 泛型信息
+            List<JavaType> actualTypeArguments = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
+            JavaType javaType = actualTypeArguments.get(1);
 
-//        JavaType valueType = targetType.getContentType();
-//        JavaType keyType = targetType.getKeyType();
+            Schema addPropertiesSchema = context.resolve(
+                    new AnnotatedType()
+                            .javaClass(builder.getClassByName(javaType.getFullyQualifiedName()))
+                            .schemaProperty(annotatedType.isSchemaProperty())
+                            .skipSchemaName(true)
+                            .resolveAsRef(annotatedType.isResolveAsRef())
+                            .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
+                            .propertyName(annotatedType.getPropertyName())
+                            .parent(annotatedType.getParent())
+            );
+            String pName = null;
+            if (addPropertiesSchema != null) {
+                if (StringUtils.isNotBlank(addPropertiesSchema.getName())) {
+                    pName = addPropertiesSchema.getName();
+                }
+                if ("object".equals(addPropertiesSchema.getType()) && pName != null) {
+                    // create a reference for the items
+                    if (context.getDefinedModels().containsKey(pName)) {
+                        addPropertiesSchema = new Schema().$ref(constructRef(pName));
+                    }
+                } else if (addPropertiesSchema.get$ref() != null) {
+                    addPropertiesSchema = new Schema().$ref(StringUtils.isNotEmpty(addPropertiesSchema.get$ref()) ? addPropertiesSchema.get$ref() : addPropertiesSchema.getName());
+                }
+            }
+            schema = new MapSchema().additionalProperties(addPropertiesSchema);
+        }
 //        // 如果是集合类型，将类型向上抛出继续处理
 //        if (targetType.isContainerType()) {
 //            // 处理Map那种两种都有的
@@ -138,6 +169,9 @@ public class ModelResolver implements ModelConverter {
 
 
         for (JavaField field : fields) {
+            if (DocUtils.isPrimitive(field.getName())) {
+                continue;
+            }
 
             AnnotatedType aType = new AnnotatedType()
                     .javaClass(field.getType())
