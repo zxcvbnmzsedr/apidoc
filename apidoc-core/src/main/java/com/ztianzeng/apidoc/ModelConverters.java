@@ -36,9 +36,6 @@ public class ModelConverters {
         converters.add(new ModelResolver(Json.mapper(), sourceBuilder));
     }
 
-    public Map<String, Schema> read(Type type) {
-        return read(new AnnotatedType().type(type));
-    }
 
     public Map<String, Schema> read(JavaClass type) {
         return read(new AnnotatedType().javaClass(type));
@@ -64,6 +61,9 @@ public class ModelConverters {
         return readAll(new AnnotatedType().type(type));
     }
 
+    public Map<String, Schema> readAll(JavaClass type) {
+        return readAll(new AnnotatedType().javaClass(type));
+    }
 
     public Map<String, Schema> readAll(AnnotatedType type) {
         if (shouldProcess(type.getJavaClass())) {
@@ -80,6 +80,9 @@ public class ModelConverters {
         return resolve(new AnnotatedType().type(type));
     }
 
+    public Schema resolve(JavaClass type) {
+        return resolve(new AnnotatedType().javaClass(type));
+    }
     public Schema resolve(AnnotatedType type) {
         if (shouldProcess(type.getType())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(converters);

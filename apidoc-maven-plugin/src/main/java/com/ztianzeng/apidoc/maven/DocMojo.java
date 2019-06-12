@@ -4,6 +4,7 @@
 
 package com.ztianzeng.apidoc.maven;
 
+import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.Reader;
 import com.ztianzeng.apidoc.SourceBuilder;
 import com.ztianzeng.apidoc.models.OpenAPI;
@@ -12,7 +13,6 @@ import com.ztianzeng.apidoc.utils.Json;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -48,12 +48,9 @@ public class DocMojo extends AbstractMojo {
 
         Reader reader = new Reader(new OpenAPI(), sourceBuilder);
 
-        Set<Class<?>> controllerData = null;
-        try {
-            controllerData = sourceBuilder.getControllerData();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        Set<JavaClass> controllerData = null;
+        controllerData = sourceBuilder.getControllerData();
+
 
         OpenAPI openAPI = reader.read(controllerData);
         Info info = new Info();
