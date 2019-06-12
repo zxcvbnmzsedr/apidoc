@@ -165,6 +165,57 @@ public class ReaderTest {
         SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
     }
 
+    @Test
+    public void testMuRet() {
+        Reader reader = new Reader(new OpenAPI());
+        JavaClass classByName = TestBase.builder.getClassByName(MuRetController.class.getName());
+
+        OpenAPI openAPI = reader.read(classByName);
+        String yaml = "openapi: 3.0.1\n" +
+                "paths:\n" +
+                "  /get:\n" +
+                "    get:\n" +
+                "      summary: 获取一个实例\n" +
+                "      operationId: get\n" +
+                "      responses:\n" +
+                "        200:\n" +
+                "          description: 返回信息\n" +
+                "          content:\n" +
+                "            application/json:\n" +
+                "              schema:\n" +
+                "                $ref: '#/components/schemas/Result'\n" +
+                "      deprecated: false\n" +
+                "components:\n" +
+                "  schemas:\n" +
+                "    CreateParam:\n" +
+                "      required:\n" +
+                "      - username\n" +
+                "      type: object\n" +
+                "      properties:\n" +
+                "        username:\n" +
+                "          type: string\n" +
+                "          description: 用户名\n" +
+                "        mobile:\n" +
+                "          type: string\n" +
+                "          description: 手机\n" +
+                "    Result:\n" +
+                "      type: object\n" +
+                "      properties:\n" +
+                "        msg:\n" +
+                "          type: string\n" +
+                "        data:\n" +
+                "          $ref: '#/components/schemas/Result2'\n" +
+                "    Result2:\n" +
+                "      type: object\n" +
+                "      properties:\n" +
+                "        msg:\n" +
+                "          type: string\n" +
+                "        data:\n" +
+                "          $ref: '#/components/schemas/CreateParam'\n";
+
+        SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
+    }
+
 
     @Test
     public void test2497() {

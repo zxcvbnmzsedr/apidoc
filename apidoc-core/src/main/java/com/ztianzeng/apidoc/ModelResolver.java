@@ -216,16 +216,15 @@ public class ModelResolver implements ModelConverter {
         List<JavaType> ref = ((DefaultJavaParameterizedType) type).getActualTypeArguments();
         if (!ref.isEmpty()) {
             for (JavaType actualTypeArgument : ref) {
-                type = builder.getClassByName(actualTypeArgument.getBinaryName());
                 AnnotatedType aType = new AnnotatedType()
-                        .javaClass(type)
+                        .javaClass((DefaultJavaParameterizedType) actualTypeArgument)
                         .parent(schema)
                         .resolveAsRef(annotatedType.isResolveAsRef())
                         .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
                         .skipSchemaName(true)
                         .schemaProperty(true)
                         .propertyName(targetClass.getName());
-                schema = context.resolve(aType);
+                context.resolve(aType);
             }
         }
     }

@@ -104,6 +104,25 @@ public class ContainerTest extends TestBase {
         assertEquals(foo.getType(), "string");
         final Schema name = innerProps.get("mobile");
         assertEquals(name.getType(), "string");
+    }
+
+    @Test
+    public void testResult2() {
+        ModelResolver resolver = new ModelResolver(sourceBuilder);
+
+        final ModelConverterContextImpl context = new ModelConverterContextImpl(resolver);
+        JavaClass classByName = TestBase.builder.getClassByName(ResultBean2.class.getName());
+        context.resolve(new AnnotatedType(classByName));
+
+        final Map<String, Schema> models = context.getDefinedModels();
+        final Schema createParam = models.get("CreateParam");
+        assertNotNull(createParam);
+        final Map<String, Schema> innerProps = createParam.getProperties();
+        assertEquals(innerProps.size(), 2);
+        final Schema foo = innerProps.get("username");
+        assertEquals(foo.getType(), "string");
+        final Schema name = innerProps.get("mobile");
+        assertEquals(name.getType(), "string");
 
 
     }
@@ -122,6 +141,10 @@ public class ContainerTest extends TestBase {
 
     static class ResultBean {
         public Result<CreateParam> result;
+    }
+
+    static class ResultBean2 {
+        public Result<Result<CreateParam>> result2;
     }
 
 }
