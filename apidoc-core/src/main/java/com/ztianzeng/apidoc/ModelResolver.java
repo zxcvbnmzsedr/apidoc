@@ -54,7 +54,8 @@ public class ModelResolver implements ModelConverter {
 
         String parentName = annotatedType.getName();
         if (StringUtils.isBlank(parentName)) {
-            parentName = targetClass.getName();
+            parentName = findName(targetClass, new StringBuilder());
+            ;
         }
 
 
@@ -227,6 +228,27 @@ public class ModelResolver implements ModelConverter {
                 context.resolve(aType);
             }
         }
+    }
+
+    /**
+     * 设置泛型
+     *
+     * @param type
+     */
+    public String findName(JavaClass type, StringBuilder stringBuilder) {
+
+        stringBuilder.append(type.getName());
+        if (type instanceof DefaultJavaParameterizedType) {
+            List<JavaType> ref = ((DefaultJavaParameterizedType) type).getActualTypeArguments();
+            if (!ref.isEmpty()) {
+                for (JavaType actualTypeArgument : ref) {
+                    if (actualTypeArgument instanceof DefaultJavaParameterizedType) {
+                        return findName((DefaultJavaParameterizedType) actualTypeArgument, stringBuilder);
+                    }
+                }
+            }
+        }
+        return stringBuilder.toString();
     }
 
 }
