@@ -1,6 +1,5 @@
 package com.ztianzeng.apidoc;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverter;
@@ -83,8 +82,9 @@ public class ModelConverters {
     public Schema resolve(JavaClass type) {
         return resolve(new AnnotatedType().javaClass(type));
     }
+
     public Schema resolve(AnnotatedType type) {
-        if (shouldProcess(type.getType())) {
+        if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(converters);
 
             log.debug("ModelConverters readAll from " + type);
@@ -93,20 +93,6 @@ public class ModelConverters {
         return null;
     }
 
-    @Deprecated
-    private boolean shouldProcess(Type type) {
-        final Class<?> cls = TypeFactory.defaultInstance().constructType(type).getRawClass();
-        if (cls.isPrimitive()) {
-            return false;
-        }
-        String className = cls.getName();
-        for (String packageName : skippedPackages) {
-            if (className.startsWith(packageName)) {
-                return false;
-            }
-        }
-        return !skippedClasses.contains(className);
-    }
 
     private boolean shouldProcess(JavaClass javaClass) {
         if (javaClass.isPrimitive()) {
@@ -123,7 +109,7 @@ public class ModelConverters {
 
 
     public ResolvedSchema readAllAsResolvedSchema(AnnotatedType type) {
-        if (shouldProcess(type.getType())) {
+        if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(
                     converters);
 
