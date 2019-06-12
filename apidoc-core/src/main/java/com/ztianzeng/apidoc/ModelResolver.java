@@ -18,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+import static com.ztianzeng.apidoc.utils.DocUtils.genericityContentType;
+import static com.ztianzeng.apidoc.utils.DocUtils.genericityCount;
 import static com.ztianzeng.apidoc.utils.RefUtils.constructRef;
 
 
@@ -55,7 +57,6 @@ public class ModelResolver implements ModelConverter {
         String parentName = annotatedType.getName();
         if (StringUtils.isBlank(parentName)) {
             parentName = findName(targetClass, new StringBuilder());
-            ;
         }
 
 
@@ -66,9 +67,23 @@ public class ModelResolver implements ModelConverter {
             }
         }
 
-        if (targetClass instanceof DefaultJavaParameterizedType) {
-            setRefType(targetClass, schema, annotatedType, targetClass, context);
+        // 如果泛型大于0
+        if (genericityCount(targetClass) > 0) {
+            JavaClass aClass = genericityContentType(targetClass);
+            if (aClass != null) {
+                AnnotatedType aType = new AnnotatedType()
+                        .javaClass(aClass)
+                        .parent(schema)
+                        .resolveAsRef(annotatedType.isResolveAsRef())
+                        .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
+                        .skipSchemaName(true)
+                        .schemaProperty(true)
+                        .propertyName(targetClass.getName());
+                context.resolve(aType);
+
+            }
         }
+
         // 转换成OpenApi定义的字段信息
         PrimitiveType parentType = PrimitiveType.fromType(targetClass.getBinaryName());
         schema.setType(Optional.ofNullable(parentType).orElse(PrimitiveType.OBJECT).getCommonName());
@@ -154,8 +169,7 @@ public class ModelResolver implements ModelConverter {
             if (DocUtils.isPrimitive(field.getName())) {
                 continue;
             }
-            JavaClass type = field.getType();
-            setRefType(type, schema, annotatedType, targetClass, context);
+            JavaClass type = genericityContentType(targetClass) == null ? field.getType() : genericityContentType(targetClass);
 
             AnnotatedType aType = new AnnotatedType()
                     .javaClass(type)

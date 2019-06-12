@@ -183,7 +183,7 @@ public class ReaderTest {
                 "          content:\n" +
                 "            application/json:\n" +
                 "              schema:\n" +
-                "                $ref: '#/components/schemas/Result'\n" +
+                "                $ref: '#/components/schemas/ResultResult2CreateParam'\n" +
                 "      deprecated: false\n" +
                 "components:\n" +
                 "  schemas:\n" +
@@ -198,20 +198,43 @@ public class ReaderTest {
                 "        mobile:\n" +
                 "          type: string\n" +
                 "          description: 手机\n" +
-                "    Result:\n" +
+                "    Result2CreateParam:\n" +
                 "      type: object\n" +
                 "      properties:\n" +
                 "        msg:\n" +
                 "          type: string\n" +
                 "        data:\n" +
-                "          $ref: '#/components/schemas/Result2'\n" +
-                "    Result2:\n" +
+                "          required:\n" +
+                "          - username\n" +
+                "          type: object\n" +
+                "          properties:\n" +
+                "            username:\n" +
+                "              type: string\n" +
+                "              description: 用户名\n" +
+                "            mobile:\n" +
+                "              type: string\n" +
+                "              description: 手机\n" +
+                "    ResultResult2CreateParam:\n" +
                 "      type: object\n" +
                 "      properties:\n" +
                 "        msg:\n" +
                 "          type: string\n" +
                 "        data:\n" +
-                "          $ref: '#/components/schemas/CreateParam'\n";
+                "          type: object\n" +
+                "          properties:\n" +
+                "            msg:\n" +
+                "              type: string\n" +
+                "            data:\n" +
+                "              required:\n" +
+                "              - username\n" +
+                "              type: object\n" +
+                "              properties:\n" +
+                "                username:\n" +
+                "                  type: string\n" +
+                "                  description: 用户名\n" +
+                "                mobile:\n" +
+                "                  type: string\n" +
+                "                  description: 手机\n";
 
         SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
     }
