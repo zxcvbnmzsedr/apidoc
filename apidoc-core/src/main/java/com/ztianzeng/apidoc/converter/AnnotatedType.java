@@ -1,6 +1,8 @@
 package com.ztianzeng.apidoc.converter;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaType;
 import com.ztianzeng.apidoc.models.media.Schema;
 
 import java.lang.annotation.Annotation;
@@ -13,6 +15,7 @@ import java.util.function.Function;
 
 public class AnnotatedType {
     private Type type;
+    private JavaClass javaClass;
     private String name;
     private Schema parent;
     private Function<AnnotatedType, Schema> jsonUnwrappedHandler;
@@ -30,6 +33,10 @@ public class AnnotatedType {
 
     public AnnotatedType(Type type) {
         this.type = type;
+    }
+
+    public AnnotatedType(JavaClass javaClass) {
+        this.javaClass = javaClass;
     }
 
     public boolean isSkipOverride() {
@@ -175,6 +182,15 @@ public class AnnotatedType {
         return this;
     }
 
+    public JavaClass getJavaClass() {
+        return javaClass;
+    }
+
+    public AnnotatedType javaClass(JavaClass javaClass) {
+        this.javaClass = javaClass;
+        return this;
+    }
+
     /**
      * @since 2.0.4
      */
@@ -242,4 +258,6 @@ public class AnnotatedType {
         }
         return result;
     }
+
+
 }

@@ -1,8 +1,9 @@
 package com.ztianzeng.apidoc.test;
 
 
-
+import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.ModelConverters;
+import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.models.Person;
 import com.ztianzeng.apidoc.models.Pet;
 import com.ztianzeng.apidoc.models.media.Schema;
@@ -22,7 +23,8 @@ import java.util.Map;
 public class ModelConverterTest {
     @Test
     public void readModel() throws IOException {
-        assertEqualsToJson(readAll(Pet.class), "Pet.json");
+        JavaClass classByName = TestBase.builder.getClassByName(Pet.class.getName());
+        assertEqualsToJson(readAll(classByName), "Pet.json");
     }
 
     @Test
@@ -34,8 +36,8 @@ public class ModelConverterTest {
         return ModelConverters.getInstance().read(type);
     }
 
-    private Map<String, Schema> readAll(Type type) {
-        return ModelConverters.getInstance().readAll(type);
+    private Map<String, Schema> readAll(JavaClass type) {
+        return ModelConverters.getInstance().readAll(new AnnotatedType(type));
     }
 
     private void assertEqualsToJson(Object objectToSerialize, String fileName) throws IOException {
