@@ -9,6 +9,7 @@ import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverter;
 import com.ztianzeng.apidoc.converter.ModelConverterContext;
+import com.ztianzeng.apidoc.models.media.ArraySchema;
 import com.ztianzeng.apidoc.models.media.MapSchema;
 import com.ztianzeng.apidoc.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.models.media.Schema;
@@ -59,7 +60,6 @@ public class ModelResolver implements ModelConverter {
         }
 
 
-
         Schema resolvedModel = context.resolve(annotatedType);
         if (resolvedModel != null) {
             if (parentName.equals(resolvedModel.getName())) {
@@ -69,9 +69,14 @@ public class ModelResolver implements ModelConverter {
 
 
         // 转换成OpenApi定义的字段信息
-        PrimitiveType parentType = PrimitiveType.fromType(targetClass.getFullyQualifiedName());
+        PrimitiveType parentType = PrimitiveType.fromType(targetClass.getBinaryName());
         schema.setType(Optional.ofNullable(parentType).orElse(PrimitiveType.OBJECT).getCommonName());
         if (DocUtils.isPrimitive(targetClass.getName())) {
+            if (targetClass.isArray()) {
+                Schema array = new Schema();
+                array.setType(schema.getType());
+                schema = new ArraySchema().items(array);
+            }
             return schema;
         }
         schema.name(parentName);
@@ -89,6 +94,9 @@ public class ModelResolver implements ModelConverter {
         if (targetClass.isA(Map.class.getName())) {
             // 泛型信息
             List<JavaType> actualTypeArguments = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
+            if (actualTypeArguments.isEmpty()) {
+                return null;
+            }
             JavaType javaType = actualTypeArguments.get(1);
 
             Schema addPropertiesSchema = context.resolve(
@@ -116,6 +124,28 @@ public class ModelResolver implements ModelConverter {
                 }
             }
             schema = new MapSchema().additionalProperties(addPropertiesSchema);
+        } else if (targetClass.isA(Collection.class.getName())
+                || targetClass.isA(List.class.getName())) {
+            // 泛型信息
+            List<JavaType> actualTypeArguments = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
+            if (actualTypeArguments.isEmpty()) {
+                return null;
+            }
+            JavaType javaType = actualTypeArguments.get(0);
+            // 处理集合
+            Schema items = context.resolve(new AnnotatedType()
+                    .javaClass(builder.getClassByName(javaType.getFullyQualifiedName()))
+                    .schemaProperty(annotatedType.isSchemaProperty())
+                    .skipSchemaName(true)
+                    .resolveAsRef(annotatedType.isResolveAsRef())
+                    .propertyName(annotatedType.getPropertyName())
+                    .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
+                    .parent(annotatedType.getParent()));
+
+            if (items == null) {
+                return null;
+            }
+            schema = new ArraySchema().items(items);
         }
 //        // 如果是集合类型，将类型向上抛出继续处理
 //        if (targetType.isContainerType()) {

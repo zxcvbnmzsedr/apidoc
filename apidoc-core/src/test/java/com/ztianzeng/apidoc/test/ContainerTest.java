@@ -44,7 +44,7 @@ public class ContainerTest extends TestBase {
     public void testMap() throws Exception {
         final ModelResolver modelResolver = new ModelResolver(mapper(), sourceBuilder);
         final ModelConverterContextImpl context = new ModelConverterContextImpl(modelResolver);
-        JavaClass classByName = TestBase.builder.getClassByName(ArrayBean.class.getName());
+        JavaClass classByName = TestBase.builder.getClassByName(MapBean.class.getName());
 
         final Schema model = context
                 .resolve(new AnnotatedType(classByName));

@@ -219,6 +219,7 @@ public enum PrimitiveType {
         addKeys(keyClasses, NUMBER, Number.class.getName());
         addKeys(keyClasses, DATE, DateStub.class.getName());
         addKeys(keyClasses, DATE_TIME, java.util.Date.class.getName());
+        addKeys(keyClasses, DATE_TIME, Calendar.class.getName());
         addKeys(keyClasses, FILE, java.io.File.class.getName());
         addKeys(keyClasses, OBJECT, Object.class.getName());
         KEY_CLASSES = Collections.unmodifiableMap(keyClasses);
