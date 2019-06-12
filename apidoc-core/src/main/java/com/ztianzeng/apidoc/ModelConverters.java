@@ -56,9 +56,6 @@ public class ModelConverters {
         return modelMap;
     }
 
-    public Map<String, Schema> readAll(Type type) {
-        return readAll(new AnnotatedType().type(type));
-    }
 
     public Map<String, Schema> readAll(JavaClass type) {
         return readAll(new AnnotatedType().javaClass(type));
@@ -75,9 +72,6 @@ public class ModelConverters {
         return new HashMap<>();
     }
 
-    public Schema resolve(Type type) {
-        return resolve(new AnnotatedType().type(type));
-    }
 
     public Schema resolve(JavaClass type) {
         return resolve(new AnnotatedType().javaClass(type));

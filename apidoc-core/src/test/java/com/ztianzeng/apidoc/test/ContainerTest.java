@@ -1,6 +1,7 @@
 package com.ztianzeng.apidoc.test;
 
 
+import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.ModelResolver;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverterContextImpl;
@@ -23,9 +24,10 @@ public class ContainerTest extends TestBase {
         final ModelResolver modelResolver = new ModelResolver(mapper(), sourceBuilder);
 
         final ModelConverterContextImpl context = new ModelConverterContextImpl(modelResolver);
+        JavaClass classByName = TestBase.builder.getClassByName(ArrayBean.class.getName());
 
         final Schema model = context
-                .resolve(new AnnotatedType(ArrayBean.class));
+                .resolve(new AnnotatedType(classByName));
 
         final Map<String, Schema> props = model.getProperties();
         assertEquals(1, props.size());
@@ -42,9 +44,10 @@ public class ContainerTest extends TestBase {
     public void testMap() throws Exception {
         final ModelResolver modelResolver = new ModelResolver(mapper(), sourceBuilder);
         final ModelConverterContextImpl context = new ModelConverterContextImpl(modelResolver);
+        JavaClass classByName = TestBase.builder.getClassByName(ArrayBean.class.getName());
 
         final Schema model = context
-                .resolve(new AnnotatedType(MapBean.class));
+                .resolve(new AnnotatedType(classByName));
 
         final Map<String, Schema> props = model.getProperties();
         assertEquals(1, props.size());
@@ -62,7 +65,8 @@ public class ContainerTest extends TestBase {
         ModelResolver resolver = new ModelResolver(mapper(), sourceBuilder);
 
         final ModelConverterContextImpl context = new ModelConverterContextImpl(resolver);
-        context.resolve(new AnnotatedType(WrapperType.class));
+        JavaClass classByName = TestBase.builder.getClassByName(WrapperType.class.getName());
+        context.resolve(new AnnotatedType(classByName));
 
         final Map<String, Schema> models = context.getDefinedModels();
         final Schema innerType = models.get("InnerType");

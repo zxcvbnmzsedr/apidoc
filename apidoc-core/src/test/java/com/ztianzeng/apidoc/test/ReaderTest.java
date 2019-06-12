@@ -134,7 +134,7 @@ public class ReaderTest {
     @Test
     public void testMoreResponses() {
         Reader reader = new Reader(new OpenAPI());
-        JavaClass classByName = TestBase.builder.getClassByName(TestController.class.getName());
+        JavaClass classByName = TestBase.builder.getClassByName(EnhancedResponsesResource.class.getName());
 
         OpenAPI openAPI = reader.read(classByName);
         String yaml = "openapi: 3.0.1\n" +

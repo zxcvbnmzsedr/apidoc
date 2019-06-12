@@ -277,7 +277,7 @@ public class Reader {
             if (objectSchema instanceof ArraySchema) {
                 ((ArraySchema) objectSchema).getItems().$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
             } else {
-                objectSchema.$ref(constructRef(""));
+                objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
 
             }
         }
@@ -328,7 +328,7 @@ public class Reader {
                 apiMethodDoc.addParametersItem(inputParameter);
             } else {
                 Map<String, Schema> stringSchemaMap = ModelConverters.getInstance()
-                        .readAll(DocUtils.getTypeForName(parameter.getJavaClass().getBinaryName()));
+                        .readAll(parameter.getJavaClass());
                 for (String s : stringSchemaMap.keySet()) {
                     Schema schema = stringSchemaMap.get(s);
                     Map<String, Schema> properties = schema.getProperties();

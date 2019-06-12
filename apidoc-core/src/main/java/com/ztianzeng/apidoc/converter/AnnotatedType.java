@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class AnnotatedType {
-    private Type type;
     private JavaClass javaClass;
     private String name;
     private Schema parent;
@@ -31,9 +30,6 @@ public class AnnotatedType {
     public AnnotatedType() {
     }
 
-    public AnnotatedType(Type type) {
-        this.type = type;
-    }
 
     public AnnotatedType(JavaClass javaClass) {
         this.javaClass = javaClass;
@@ -156,18 +152,6 @@ public class AnnotatedType {
         return this;
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public AnnotatedType type(Type type) {
-        setType(type);
-        return this;
-    }
 
     public JsonView getJsonViewAnnotation() {
         return jsonViewAnnotation;
@@ -223,13 +207,7 @@ public class AnnotatedType {
         }
         AnnotatedType that = (AnnotatedType) o;
 
-        if ((type == null && that.type != null) || (type != null && that.type == null)) {
-            return false;
-        }
 
-        if (type != null && that.type != null && !type.equals(that.type)) {
-            return false;
-        }
 
         if (javaClass != null && that.javaClass != null && !javaClass.equals(that.javaClass)) {
             return false;
@@ -241,7 +219,7 @@ public class AnnotatedType {
     @Override
     public int hashCode() {
         if (ctxAnnotations == null || ctxAnnotations.length == 0) {
-            return Objects.hash(type, "fixed");
+            return Objects.hash(javaClass, "fixed");
         }
         List<Annotation> meaningfulAnnotations = new ArrayList<>();
 
@@ -254,7 +232,7 @@ public class AnnotatedType {
             }
         }
         int result = 1;
-        result = 31 * result + (type == null ? 0 : Objects.hash(type, "fixed"));
+        result = 31 * result + (javaClass == null ? 0 : Objects.hash(javaClass, "fixed"));
         if (hasDifference) {
             result = 31 * result + (meaningfulAnnotations == null ? 0 : Arrays.hashCode(meaningfulAnnotations.toArray(new Annotation[meaningfulAnnotations.size()])));
         } else {
