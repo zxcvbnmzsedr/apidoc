@@ -1,5 +1,6 @@
 package com.ztianzeng.apidoc.test;
 
+import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.ModelConverters;
 import com.ztianzeng.apidoc.models.*;
 import com.ztianzeng.apidoc.models.info.Contact;
@@ -28,8 +29,10 @@ public class SwaggerSerializerTest {
 
     @Test
     public void convertSpec() throws IOException {
-        final Schema errorModel = ModelConverters.getInstance().read(Error.class).get("Error");
-        final Schema personModel = ModelConverters.getInstance().read(Person.class).get("Person");
+        JavaClass error = TestBase.builder.getClassByName(Error.class.getName());
+        JavaClass persion = TestBase.builder.getClassByName(Person.class.getName());
+        final Schema errorModel = ModelConverters.getInstance().read(error).get("Error");
+        final Schema personModel = ModelConverters.getInstance().read(persion).get("Person");
         final Info info = new Info()
                 .version("1.0.0")
                 .title("Swagger Petstore");
