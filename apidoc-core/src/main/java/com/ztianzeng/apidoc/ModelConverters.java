@@ -63,7 +63,6 @@ public class ModelConverters {
         if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(converters);
 
-            log.debug("ModelConverters readAll from " + type);
             context.resolve(type);
             return context.getDefinedModels();
         }
@@ -79,7 +78,6 @@ public class ModelConverters {
         if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(converters);
 
-            log.debug("ModelConverters readAll from " + type);
             return context.resolve(type);
         }
         return null;

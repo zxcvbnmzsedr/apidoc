@@ -115,14 +115,8 @@ public class ContainerTest extends TestBase {
         context.resolve(new AnnotatedType(classByName));
 
         final Map<String, Schema> models = context.getDefinedModels();
-        final Schema createParam = models.get("CreateParam");
+        final Schema createParam = models.get("ResultResultCreateParam");
         assertNotNull(createParam);
-        final Map<String, Schema> innerProps = createParam.getProperties();
-        assertEquals(innerProps.size(), 2);
-        final Schema foo = innerProps.get("username");
-        assertEquals(foo.getType(), "string");
-        final Schema name = innerProps.get("mobile");
-        assertEquals(name.getType(), "string");
 
 
     }
