@@ -25,7 +25,7 @@ public abstract class TestBase {
     }
 
     protected ModelResolver modelResolver() {
-        return new ModelResolver(new ObjectMapper(), new SourceBuilder());
+        return new ModelResolver(new SourceBuilder());
     }
 
     protected void prettyPrint(Object o) {

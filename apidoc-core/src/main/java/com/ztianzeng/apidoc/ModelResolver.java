@@ -1,6 +1,5 @@
 package com.ztianzeng.apidoc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
@@ -31,12 +30,10 @@ import static com.ztianzeng.apidoc.utils.RefUtils.constructRef;
  */
 @Slf4j
 public class ModelResolver implements ModelConverter {
-    private SourceBuilder sourceBuilder;
     private JavaProjectBuilder builder;
 
 
-    public ModelResolver(ObjectMapper mapper, SourceBuilder sourceBuilder) {
-        this.sourceBuilder = sourceBuilder;
+    public ModelResolver(SourceBuilder sourceBuilder) {
         builder = sourceBuilder.getBuilder();
     }
 
@@ -47,6 +44,7 @@ public class ModelResolver implements ModelConverter {
         if (annotatedType == null) {
             return null;
         }
+
 
         // 分析目标类信息
         JavaClass targetClass = annotatedType.getJavaClass();
@@ -67,7 +65,9 @@ public class ModelResolver implements ModelConverter {
             }
         }
 
-
+        if (targetClass instanceof DefaultJavaParameterizedType) {
+            setRefType(targetClass, schema, annotatedType, targetClass, context);
+        }
         // 转换成OpenApi定义的字段信息
         PrimitiveType parentType = PrimitiveType.fromType(targetClass.getBinaryName());
         schema.setType(Optional.ofNullable(parentType).orElse(PrimitiveType.OBJECT).getCommonName());
@@ -93,11 +93,11 @@ public class ModelResolver implements ModelConverter {
 
         if (targetClass.isA(Map.class.getName())) {
             // 泛型信息
-            List<JavaType> actualTypeArguments = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
-            if (actualTypeArguments.isEmpty()) {
+            List<JavaType> tar = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
+            if (tar.isEmpty()) {
                 return null;
             }
-            JavaType javaType = actualTypeArguments.get(1);
+            JavaType javaType = tar.get(1);
 
             Schema addPropertiesSchema = context.resolve(
                     new AnnotatedType()
@@ -127,11 +127,11 @@ public class ModelResolver implements ModelConverter {
         } else if (targetClass.isA(Collection.class.getName())
                 || targetClass.isA(List.class.getName())) {
             // 泛型信息
-            List<JavaType> actualTypeArguments = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
-            if (actualTypeArguments.isEmpty()) {
+            List<JavaType> tar = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
+            if (tar.isEmpty()) {
                 return null;
             }
-            JavaType javaType = actualTypeArguments.get(0);
+            JavaType javaType = tar.get(0);
             // 处理集合
             Schema items = context.resolve(new AnnotatedType()
                     .javaClass(builder.getClassByName(javaType.getFullyQualifiedName()))
@@ -147,64 +147,17 @@ public class ModelResolver implements ModelConverter {
             }
             schema = new ArraySchema().items(items);
         }
-//        // 如果是集合类型，将类型向上抛出继续处理
-//        if (targetType.isContainerType()) {
-//            // 处理Map那种两种都有的
-//            if (keyType != null && valueType != null) {
-//                Schema addPropertiesSchema = context.resolve(
-//                        new AnnotatedType()
-//                                .type(valueType)
-//                                .schemaProperty(annotatedType.isSchemaProperty())
-//                                .skipSchemaName(true)
-//                                .resolveAsRef(annotatedType.isResolveAsRef())
-//                                .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
-//                                .propertyName(annotatedType.getPropertyName())
-//                                .parent(annotatedType.getParent())
-//                );
-//
-//                String pName = null;
-//
-//                if (addPropertiesSchema != null) {
-//                    if (StringUtils.isNotBlank(addPropertiesSchema.getName())) {
-//                        pName = addPropertiesSchema.getName();
-//                    }
-//                    if ("object".equals(addPropertiesSchema.getType()) && pName != null) {
-//                        // create a reference for the items
-//                        if (context.getDefinedModels().containsKey(pName)) {
-//                            addPropertiesSchema = new Schema().$ref(constructRef(pName));
-//                        }
-//                    } else if (addPropertiesSchema.get$ref() != null) {
-//                        addPropertiesSchema = new Schema().$ref(StringUtils.isNotEmpty(addPropertiesSchema.get$ref()) ? addPropertiesSchema.get$ref() : addPropertiesSchema.getName());
-//                    }
-//                }
-//                schema = new MapSchema().additionalProperties(addPropertiesSchema);
-//            } else if (valueType != null) {
-//                // 处理Array
-//                Schema items = context.resolve(new AnnotatedType()
-//                        .type(valueType)
-//                        .schemaProperty(annotatedType.isSchemaProperty())
-//                        .skipSchemaName(true)
-//                        .resolveAsRef(annotatedType.isResolveAsRef())
-//                        .propertyName(annotatedType.getPropertyName())
-//                        .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
-//                        .parent(annotatedType.getParent()));
-//
-//                if (items == null) {
-//                    return null;
-//                }
-//                schema = new ArraySchema().items(items);
-//
-//            }
-//        }
 
 
         for (JavaField field : fields) {
             if (DocUtils.isPrimitive(field.getName())) {
                 continue;
             }
+            JavaClass type = field.getType();
+            setRefType(type, schema, annotatedType, targetClass, context);
 
             AnnotatedType aType = new AnnotatedType()
-                    .javaClass(field.getType())
+                    .javaClass(type)
                     .parent(schema)
                     .resolveAsRef(annotatedType.isResolveAsRef())
                     .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
@@ -250,5 +203,31 @@ public class ModelResolver implements ModelConverter {
         return schema;
     }
 
+    /**
+     * 设置泛型
+     *
+     * @param type
+     * @param schema
+     * @param annotatedType
+     * @param targetClass
+     * @param context
+     */
+    public void setRefType(JavaClass type, Schema schema, AnnotatedType annotatedType, JavaClass targetClass, ModelConverterContext context) {
+        List<JavaType> ref = ((DefaultJavaParameterizedType) type).getActualTypeArguments();
+        if (!ref.isEmpty()) {
+            for (JavaType actualTypeArgument : ref) {
+                type = builder.getClassByName(actualTypeArgument.getBinaryName());
+                AnnotatedType aType = new AnnotatedType()
+                        .javaClass(type)
+                        .parent(schema)
+                        .resolveAsRef(annotatedType.isResolveAsRef())
+                        .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
+                        .skipSchemaName(true)
+                        .schemaProperty(true)
+                        .propertyName(targetClass.getName());
+                schema = context.resolve(aType);
+            }
+        }
+    }
 
 }

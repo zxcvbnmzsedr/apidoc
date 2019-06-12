@@ -181,7 +181,7 @@ public class ReaderTest {
         assertNotNull(operation);
         ArraySchema schema = (ArraySchema) operation.getResponses().get("200").getContent().values().iterator().next().getSchema();
         assertNotNull(schema);
-        assertEquals(schema.getItems().get$ref(), "#/components/schemas/com.ztianzeng.apidoc.test.res.ResponseContentWithArrayResource.User");
+        assertEquals(schema.getItems().get$ref(), "#/components/schemas/User");
     }
 
 }

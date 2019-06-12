@@ -7,7 +7,9 @@ import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverterContextImpl;
 import com.ztianzeng.apidoc.models.media.ArraySchema;
 import com.ztianzeng.apidoc.models.media.Schema;
+import com.ztianzeng.apidoc.test.res.CreateParam;
 import com.ztianzeng.apidoc.test.res.InnerType;
+import com.ztianzeng.apidoc.test.res.Result;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -21,7 +23,7 @@ public class ContainerTest extends TestBase {
 
     @Test
     public void testArray() throws Exception {
-        final ModelResolver modelResolver = new ModelResolver(mapper(), sourceBuilder);
+        final ModelResolver modelResolver = new ModelResolver(sourceBuilder);
 
         final ModelConverterContextImpl context = new ModelConverterContextImpl(modelResolver);
         JavaClass classByName = TestBase.builder.getClassByName(ArrayBean.class.getName());
@@ -42,7 +44,7 @@ public class ContainerTest extends TestBase {
 
     @Test
     public void testMap() throws Exception {
-        final ModelResolver modelResolver = new ModelResolver(mapper(), sourceBuilder);
+        final ModelResolver modelResolver = new ModelResolver(sourceBuilder);
         final ModelConverterContextImpl context = new ModelConverterContextImpl(modelResolver);
         JavaClass classByName = TestBase.builder.getClassByName(MapBean.class.getName());
 
@@ -62,7 +64,7 @@ public class ContainerTest extends TestBase {
 
     @Test
     public void testComplexMap() throws Exception {
-        ModelResolver resolver = new ModelResolver(mapper(), sourceBuilder);
+        ModelResolver resolver = new ModelResolver(sourceBuilder);
 
         final ModelConverterContextImpl context = new ModelConverterContextImpl(resolver);
         JavaClass classByName = TestBase.builder.getClassByName(WrapperType.class.getName());
@@ -84,6 +86,28 @@ public class ContainerTest extends TestBase {
         assertEquals(((Schema) wrapperType.getProperties().get("innerType")).getType(), "object");
     }
 
+
+    @Test
+    public void testResult() {
+        ModelResolver resolver = new ModelResolver(sourceBuilder);
+
+        final ModelConverterContextImpl context = new ModelConverterContextImpl(resolver);
+        JavaClass classByName = TestBase.builder.getClassByName(ResultBean.class.getName());
+        context.resolve(new AnnotatedType(classByName));
+
+        final Map<String, Schema> models = context.getDefinedModels();
+        final Schema createParam = models.get("CreateParam");
+        assertNotNull(createParam);
+        final Map<String, Schema> innerProps = createParam.getProperties();
+        assertEquals(innerProps.size(), 2);
+        final Schema foo = innerProps.get("username");
+        assertEquals(foo.getType(), "string");
+        final Schema name = innerProps.get("mobile");
+        assertEquals(name.getType(), "string");
+
+
+    }
+
     static class ArrayBean {
         public int[] a;
     }
@@ -95,4 +119,9 @@ public class ContainerTest extends TestBase {
     static class WrapperType {
         public Map<String, InnerType> innerType;
     }
+
+    static class ResultBean {
+        public Result<CreateParam> result;
+    }
+
 }

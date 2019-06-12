@@ -6,10 +6,8 @@ import com.ztianzeng.apidoc.converter.ModelConverter;
 import com.ztianzeng.apidoc.converter.ModelConverterContextImpl;
 import com.ztianzeng.apidoc.converter.ResolvedSchema;
 import com.ztianzeng.apidoc.models.media.Schema;
-import com.ztianzeng.apidoc.utils.Json;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -32,7 +30,7 @@ public class ModelConverters {
     public ModelConverters() {
         SourceBuilder sourceBuilder = new SourceBuilder();
         converters = new CopyOnWriteArrayList<>();
-        converters.add(new ModelResolver(Json.mapper(), sourceBuilder));
+        converters.add(new ModelResolver(sourceBuilder));
     }
 
 

@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/test")
 @RestController
 public class TestController {
-//
+
 
     /**
      * 新增一个实例
@@ -65,7 +65,5 @@ public class TestController {
         return new Result<>();
     }
 
-    private void a() {
 
-    }
 }
