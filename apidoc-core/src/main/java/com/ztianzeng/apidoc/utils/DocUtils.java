@@ -288,6 +288,16 @@ public final class DocUtils {
         }
     }
 
+    public static boolean isList(String type) {
+        switch (type) {
+            case "java.util.List":
+            case "java.util.Collection":
+                return true;
+            default:
+                return false;
+        }
+    }
+
     /**
      * Automatic repair of generic split class names
      *

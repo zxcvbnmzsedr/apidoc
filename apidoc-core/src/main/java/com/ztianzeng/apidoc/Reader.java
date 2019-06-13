@@ -376,7 +376,7 @@ public class Reader {
             if (objectSchema instanceof ArraySchema) {
                 ((ArraySchema) objectSchema).getItems().$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
             } else {
-                objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+                objectSchema.$ref(constructRef(objectSchema.getName()));
 
             }
 

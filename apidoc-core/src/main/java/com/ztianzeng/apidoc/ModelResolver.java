@@ -188,8 +188,22 @@ public class ModelResolver implements ModelConverter {
             Schema propSchema = new Schema();
             propSchema.setName(name);
             // 处理泛型
-            if (genericityContentType != null && "T".equals(field.getType().getGenericFullyQualifiedName())) {
+            if (genericityContentType != null
+                    && ("T".equals(field.getType().getGenericFullyQualifiedName())
+                    || "java.lang.Object".equals(field.getType().getGenericFullyQualifiedName())
+            )) {
                 propSchema.set$ref(constructRef(findName(genericityContentType)));
+            } else if (genericityContentType != null && DocUtils.isList(type.getBinaryName())) {
+                aType = new AnnotatedType()
+                        .javaClass(genericityContentType)
+                        .parent(schema)
+                        .resolveAsRef(annotatedType.isResolveAsRef())
+                        .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
+                        .skipSchemaName(true)
+                        .schemaProperty(true)
+                        .propertyName(targetClass.getName());
+                propSchema = new ArraySchema().items(context.resolve(aType));
+
             } else {
                 PrimitiveType primitiveType = PrimitiveType.fromType(field.getType().getFullyQualifiedName());
                 if (primitiveType != null) {
