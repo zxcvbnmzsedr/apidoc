@@ -169,7 +169,7 @@ public class ModelResolver implements ModelConverter {
             if (DocUtils.isPrimitive(field.getName())) {
                 continue;
             }
-            JavaClass type = genericityContentType(targetClass) == null ? field.getType() : genericityContentType(targetClass);
+            JavaClass type = field.getType();
 
             AnnotatedType aType = new AnnotatedType()
                     .javaClass(type)
@@ -216,32 +216,6 @@ public class ModelResolver implements ModelConverter {
 
 
         return schema;
-    }
-
-    /**
-     * 设置泛型
-     *
-     * @param type
-     * @param schema
-     * @param annotatedType
-     * @param targetClass
-     * @param context
-     */
-    public void setRefType(JavaClass type, Schema schema, AnnotatedType annotatedType, JavaClass targetClass, ModelConverterContext context) {
-        List<JavaType> ref = ((DefaultJavaParameterizedType) type).getActualTypeArguments();
-        if (!ref.isEmpty()) {
-            for (JavaType actualTypeArgument : ref) {
-                AnnotatedType aType = new AnnotatedType()
-                        .javaClass((DefaultJavaParameterizedType) actualTypeArgument)
-                        .parent(schema)
-                        .resolveAsRef(annotatedType.isResolveAsRef())
-                        .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
-                        .skipSchemaName(true)
-                        .schemaProperty(true)
-                        .propertyName(targetClass.getName());
-                context.resolve(aType);
-            }
-        }
     }
 
     /**

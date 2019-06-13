@@ -204,37 +204,14 @@ public class ReaderTest {
                 "        msg:\n" +
                 "          type: string\n" +
                 "        data:\n" +
-                "          required:\n" +
-                "          - username\n" +
-                "          type: object\n" +
-                "          properties:\n" +
-                "            username:\n" +
-                "              type: string\n" +
-                "              description: 用户名\n" +
-                "            mobile:\n" +
-                "              type: string\n" +
-                "              description: 手机\n" +
+                "          $ref: '#/components/schemas/CreateParam'\n" +
                 "    ResultResult2CreateParam:\n" +
                 "      type: object\n" +
                 "      properties:\n" +
                 "        msg:\n" +
                 "          type: string\n" +
                 "        data:\n" +
-                "          type: object\n" +
-                "          properties:\n" +
-                "            msg:\n" +
-                "              type: string\n" +
-                "            data:\n" +
-                "              required:\n" +
-                "              - username\n" +
-                "              type: object\n" +
-                "              properties:\n" +
-                "                username:\n" +
-                "                  type: string\n" +
-                "                  description: 用户名\n" +
-                "                mobile:\n" +
-                "                  type: string\n" +
-                "                  description: 手机\n";
+                "          $ref: '#/components/schemas/Result2CreateParam'\n";
 
         SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
     }
