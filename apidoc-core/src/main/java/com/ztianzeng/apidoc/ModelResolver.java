@@ -1,5 +1,6 @@
 package com.ztianzeng.apidoc;
 
+import com.fasterxml.jackson.databind.BeanDescription;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
@@ -13,6 +14,7 @@ import com.ztianzeng.apidoc.models.media.MapSchema;
 import com.ztianzeng.apidoc.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.utils.DocUtils;
+import com.ztianzeng.apidoc.utils.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,12 +69,13 @@ public class ModelResolver implements ModelConverter {
             }
         }
 
+        JavaClass genericityContentType = null;
         // 如果泛型大于0
         if (genericityCount(targetClass) > 0) {
-            JavaClass aClass = genericityContentType(targetClass);
-            if (aClass != null) {
+            genericityContentType = genericityContentType(targetClass);
+            if (genericityContentType != null) {
                 AnnotatedType aType = new AnnotatedType()
-                        .javaClass(aClass)
+                        .javaClass(genericityContentType)
                         .parent(schema)
                         .resolveAsRef(annotatedType.isResolveAsRef())
                         .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
@@ -80,7 +83,6 @@ public class ModelResolver implements ModelConverter {
                         .schemaProperty(true)
                         .propertyName(targetClass.getName());
                 context.resolve(aType);
-
             }
         }
 
@@ -165,12 +167,17 @@ public class ModelResolver implements ModelConverter {
         }
 
 
+//        com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(annotatedType.getType());
+//        BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
+
         for (JavaField field : fields) {
             if (DocUtils.isPrimitive(field.getName())) {
                 continue;
             }
+
             JavaClass type = field.getType();
 
+            String typeName = findName(genericityContentType == null ? type : genericityContentType);
             AnnotatedType aType = new AnnotatedType()
                     .javaClass(type)
                     .parent(schema)
@@ -195,8 +202,8 @@ public class ModelResolver implements ModelConverter {
                     if (propSchema.get$ref() == null) {
                         if ("object".equals(propSchema.getType())) {
                             // create a reference for the property
-                            if (context.getDefinedModels().containsKey(field.getType().getSimpleName())) {
-                                propSchema.set$ref(constructRef(field.getType().getSimpleName()));
+                            if (context.getDefinedModels().containsKey(typeName)) {
+                                propSchema.set$ref(constructRef(typeName));
                             }
                         }
                     }
@@ -216,6 +223,10 @@ public class ModelResolver implements ModelConverter {
 
 
         return schema;
+    }
+
+    public String findName(JavaClass type) {
+        return findName(type, new StringBuilder());
     }
 
     /**
