@@ -192,7 +192,19 @@ public class ModelResolver implements ModelConverter {
                     && ("T".equals(field.getType().getGenericFullyQualifiedName())
                     || "java.lang.Object".equals(field.getType().getGenericFullyQualifiedName())
             )) {
-                propSchema.set$ref(constructRef(findName(genericityContentType)));
+                if (DocUtils.isList(genericityContentType.getBinaryName())) {
+                    aType = new AnnotatedType()
+                            .javaClass(genericityContentType)
+                            .parent(schema)
+                            .resolveAsRef(annotatedType.isResolveAsRef())
+                            .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
+                            .skipSchemaName(true)
+                            .schemaProperty(true)
+                            .propertyName(targetClass.getName());
+                    propSchema = context.resolve(aType);
+                } else {
+                    propSchema.set$ref(constructRef(findName(genericityContentType)));
+                }
             } else if (genericityContentType != null && DocUtils.isList(type.getBinaryName())) {
                 aType = new AnnotatedType()
                         .javaClass(genericityContentType)
