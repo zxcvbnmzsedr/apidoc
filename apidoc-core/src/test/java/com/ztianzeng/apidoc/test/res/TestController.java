@@ -18,16 +18,16 @@ import java.util.List;
 public class TestController {
 
 
-//    /**
-//     * 新增一个实例
-//     *
-//     * @param createParam 创建对象
-//     * @return 创建后的信息
-//     */
-//    @PostMapping(value = "/create")
-//    public CreateVO add(@RequestBody @Valid CreateParam createParam) {
-//        return new CreateVO();
-//    }
+    /**
+     * 新增一个实例
+     *
+     * @param createParam 创建对象
+     * @return 创建后的信息
+     */
+    @PostMapping(value = "/create")
+    public CreateVO add(@RequestBody @Valid CreateParam createParam) {
+        return new CreateVO();
+    }
 //
 //    /**
 //     * 新增一个实例2

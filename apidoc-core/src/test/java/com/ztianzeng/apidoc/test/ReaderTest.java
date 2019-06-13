@@ -165,7 +165,7 @@ public class ReaderTest {
         SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
     }
 
-    @Test
+    //    @Test
     public void testMuRet() {
         Reader reader = new Reader(new OpenAPI());
         JavaClass classByName = TestBase.builder.getClassByName(MuRetController.class.getName());

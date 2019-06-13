@@ -1,6 +1,5 @@
 package com.ztianzeng.apidoc;
 
-import com.fasterxml.jackson.databind.BeanDescription;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
@@ -14,7 +13,6 @@ import com.ztianzeng.apidoc.models.media.MapSchema;
 import com.ztianzeng.apidoc.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.utils.DocUtils;
-import com.ztianzeng.apidoc.utils.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -167,9 +165,6 @@ public class ModelResolver implements ModelConverter {
         }
 
 
-//        com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(annotatedType.getType());
-//        BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
-
         for (JavaField field : fields) {
             if (DocUtils.isPrimitive(field.getName())) {
                 continue;
@@ -192,18 +187,22 @@ public class ModelResolver implements ModelConverter {
             String name = field.getName();
             Schema propSchema = new Schema();
             propSchema.setName(name);
-
-            PrimitiveType primitiveType = PrimitiveType.fromType(field.getType().getFullyQualifiedName());
-            if (primitiveType != null) {
-                propSchema = primitiveType.createProperty();
+            // 处理泛型
+            if (genericityContentType != null && "T".equals(field.getType().getGenericFullyQualifiedName())) {
+                propSchema.set$ref(constructRef(findName(genericityContentType)));
             } else {
-                propSchema = context.resolve(aType);
-                if (propSchema != null) {
-                    if (propSchema.get$ref() == null) {
-                        if ("object".equals(propSchema.getType())) {
-                            // create a reference for the property
-                            if (context.getDefinedModels().containsKey(typeName)) {
-                                propSchema.set$ref(constructRef(typeName));
+                PrimitiveType primitiveType = PrimitiveType.fromType(field.getType().getFullyQualifiedName());
+                if (primitiveType != null) {
+                    propSchema = primitiveType.createProperty();
+                } else {
+                    propSchema = context.resolve(aType);
+                    if (propSchema != null) {
+                        if (propSchema.get$ref() == null) {
+                            if ("object".equals(propSchema.getType())) {
+                                // create a reference for the property
+                                if (context.getDefinedModels().containsKey(typeName)) {
+                                    propSchema.set$ref(constructRef(typeName));
+                                }
                             }
                         }
                     }
