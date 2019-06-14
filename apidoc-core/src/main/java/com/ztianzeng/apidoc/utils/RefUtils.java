@@ -1,10 +1,6 @@
 package com.ztianzeng.apidoc.utils;
 
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
 public class RefUtils {
 
     public static String constructRef(String simpleRef) {
@@ -15,15 +11,8 @@ public class RefUtils {
         return prefix + simpleRef;
     }
 
-    public static Pair extractSimpleName(String ref) {
-        int idx = ref.lastIndexOf("/");
-        if (idx > 0) {
-            String simple = ref.substring(idx + 1);
-            if (!StringUtils.isEmpty(simple)) {
-                return new ImmutablePair<>(simple, ref.substring(0, idx + 1));
-            }
-        }
-        return new ImmutablePair<>(ref, null);
+    public static String getRef(String ref) {
+        return ref.replace("#/components/schemas/", "");
 
     }
 }

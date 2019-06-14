@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import java.io.File;
+import java.io.IOException;
+
 public class Json {
 
     private static ObjectMapper mapper;
@@ -34,5 +37,10 @@ public class Json {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void pretty(String filePath, Object o) throws IOException {
+        File file = new File(filePath);
+        mapper().writeValue(file, o);
     }
 }

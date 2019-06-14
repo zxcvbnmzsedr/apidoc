@@ -1,11 +1,11 @@
 package com.ztianzeng.apidoc.converter;
 
+import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.models.media.Schema;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
 public class ModelConverterContextImpl implements ModelConverterContext {
@@ -40,9 +40,10 @@ public class ModelConverterContextImpl implements ModelConverterContext {
     }
 
     @Override
-    public void defineModel(String name, Schema model, Type type, String prevName) {
-        defineModel(name, model, new AnnotatedType().type(type), prevName);
+    public void defineModel(String name, Schema model, JavaClass type, String prevName) {
+        defineModel(name, model, new AnnotatedType().javaClass(type), prevName);
     }
+
     @Override
     public void defineModel(String name, Schema model, AnnotatedType type, String prevName) {
         modelByName.put(name, model);
@@ -51,7 +52,7 @@ public class ModelConverterContextImpl implements ModelConverterContext {
             modelByName.remove(prevName);
         }
 
-        if (type != null && type.getType() != null) {
+        if (type != null && type.getJavaClass() != null) {
             modelByType.put(type, model);
         }
     }

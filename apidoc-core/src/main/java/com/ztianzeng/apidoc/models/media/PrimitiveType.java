@@ -1,9 +1,7 @@
 package com.ztianzeng.apidoc.models.media;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -129,14 +127,14 @@ public enum PrimitiveType {
             return new FileSchema();
         }
     },
-    OBJECT(Object.class,"object") {
+    OBJECT(Object.class, "object") {
         @Override
         public Schema createProperty() {
             return new Schema().type("object");
         }
     };
 
-    private static final Map<Class<?>, PrimitiveType> KEY_CLASSES;
+    private static final Map<String, PrimitiveType> KEY_CLASSES;
     private static final Map<Class<?>, PrimitiveType> BASE_CLASSES;
     /**
      * Adds support of a small number of "well-known" types, specifically for
@@ -205,24 +203,25 @@ public enum PrimitiveType {
         dms.put("object_", "object");
         datatypeMappings = Collections.unmodifiableMap(dms);
 
-        final Map<Class<?>, PrimitiveType> keyClasses = new HashMap<Class<?>, PrimitiveType>();
-        addKeys(keyClasses, BOOLEAN, Boolean.class, Boolean.TYPE);
-        addKeys(keyClasses, STRING, String.class, Character.class, Character.TYPE);
-        addKeys(keyClasses, BYTE, Byte.class, Byte.TYPE);
-        addKeys(keyClasses, URL, java.net.URL.class);
-        addKeys(keyClasses, URI, java.net.URI.class);
-        addKeys(keyClasses, UUID, java.util.UUID.class);
-        addKeys(keyClasses, INT, Integer.class, Integer.TYPE, Short.class, Short.TYPE);
-        addKeys(keyClasses, LONG, Long.class, Long.TYPE);
-        addKeys(keyClasses, FLOAT, Float.class, Float.TYPE);
-        addKeys(keyClasses, DOUBLE, Double.class, Double.TYPE);
-        addKeys(keyClasses, INTEGER, java.math.BigInteger.class);
-        addKeys(keyClasses, DECIMAL, java.math.BigDecimal.class);
-        addKeys(keyClasses, NUMBER, Number.class);
-        addKeys(keyClasses, DATE, DateStub.class);
-        addKeys(keyClasses, DATE_TIME, java.util.Date.class);
-        addKeys(keyClasses, FILE, java.io.File.class);
-        addKeys(keyClasses, OBJECT, Object.class);
+        final Map<String, PrimitiveType> keyClasses = new HashMap<>();
+        addKeys(keyClasses, BOOLEAN, Boolean.class.getName(), Boolean.TYPE.getName());
+        addKeys(keyClasses, STRING, String.class.getName(), Character.class.getName(), Character.TYPE.getName());
+        addKeys(keyClasses, BYTE, Byte.class.getName(), Byte.TYPE.getName());
+        addKeys(keyClasses, URL, java.net.URL.class.getName());
+        addKeys(keyClasses, URI, java.net.URI.class.getName());
+        addKeys(keyClasses, UUID, java.util.UUID.class.getName());
+        addKeys(keyClasses, INT, Integer.class.getName(), Integer.TYPE.getName(), Short.class.getName(), Short.TYPE.getName());
+        addKeys(keyClasses, LONG, Long.class.getName(), Long.TYPE.getName());
+        addKeys(keyClasses, FLOAT, Float.class.getName(), Float.TYPE.getName());
+        addKeys(keyClasses, DOUBLE, Double.class.getName(), Double.TYPE.getName());
+        addKeys(keyClasses, INTEGER, java.math.BigInteger.class.getName());
+        addKeys(keyClasses, DECIMAL, java.math.BigDecimal.class.getName());
+        addKeys(keyClasses, NUMBER, Number.class.getName());
+        addKeys(keyClasses, DATE, DateStub.class.getName());
+        addKeys(keyClasses, DATE_TIME, java.util.Date.class.getName());
+        addKeys(keyClasses, DATE_TIME, Calendar.class.getName());
+        addKeys(keyClasses, FILE, java.io.File.class.getName());
+        addKeys(keyClasses, OBJECT, Object.class.getName());
         KEY_CLASSES = Collections.unmodifiableMap(keyClasses);
 
         final Map<Class<?>, PrimitiveType> baseClasses = new HashMap<Class<?>, PrimitiveType>();
@@ -309,30 +308,24 @@ public enum PrimitiveType {
         return nonSystemTypePackages;
     }
 
-    public static PrimitiveType fromType(Type type) {
-        final Class<?> raw = TypeFactory.defaultInstance().constructType(type).getRawClass();
-        final PrimitiveType key = KEY_CLASSES.get(raw);
+    public static PrimitiveType fromType(String className) {
+        final PrimitiveType key = KEY_CLASSES.get(className);
         if (key != null) {
-            if (!customExcludedClasses.contains(raw.getName())) {
+            if (!customExcludedClasses.contains(className)) {
                 return key;
             }
         }
 
-        final PrimitiveType custom = customClasses.get(raw.getName());
+        final PrimitiveType custom = customClasses.get(className);
         if (custom != null) {
             return custom;
         }
 
-        final PrimitiveType external = EXTERNAL_CLASSES.get(raw.getName());
+        final PrimitiveType external = EXTERNAL_CLASSES.get(className);
         if (external != null) {
             return external;
         }
 
-        for (Map.Entry<Class<?>, PrimitiveType> entry : BASE_CLASSES.entrySet()) {
-            if (entry.getKey().isAssignableFrom(raw)) {
-                return entry.getValue();
-            }
-        }
         return null;
     }
 
@@ -354,20 +347,6 @@ public enum PrimitiveType {
         return fromName(datatypeMappings.get(String.format("%s_%s", StringUtils.isNotEmpty(type) ? "" : type, StringUtils.isEmpty(format) ? "" : format)));
     }
 
-    public static Schema createProperty(Type type) {
-        final PrimitiveType item = fromType(type);
-        return item == null ? null : item.createProperty();
-    }
-
-    public static Schema createProperty(String name) {
-        final PrimitiveType item = fromName(name);
-        return item == null ? null : item.createProperty();
-    }
-
-    public static String getCommonName(Type type) {
-        final PrimitiveType item = fromType(type);
-        return item == null ? null : item.getCommonName();
-    }
 
     public Class<?> getKeyClass() {
         return keyClass;

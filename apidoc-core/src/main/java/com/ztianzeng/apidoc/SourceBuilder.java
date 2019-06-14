@@ -1,13 +1,10 @@
 package com.ztianzeng.apidoc;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
-import com.ztianzeng.apidoc.utils.DocUtils;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.util.*;
 
 import static com.ztianzeng.apidoc.constants.SpringMvcConstants.CONTROLLER_FULLY;
@@ -49,11 +46,11 @@ public class SourceBuilder {
         }
     }
 
-    public Set<Class<?>> getControllerData() throws ClassNotFoundException {
-        Set<Class<?>> apiMethodDocs = new HashSet<>();
+    public Set<JavaClass> getControllerData() {
+        Set<JavaClass> apiMethodDocs = new HashSet<>();
         for (JavaClass javaClass : javaClasses) {
             if (isController(javaClass)) {
-                apiMethodDocs.add(TypeFactory.defaultInstance().findClass(javaClass.getBinaryName()));
+                apiMethodDocs.add(javaClass);
             }
         }
         return apiMethodDocs;

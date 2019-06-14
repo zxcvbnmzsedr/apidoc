@@ -5,12 +5,14 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.ztianzeng.apidoc.ModelResolver;
 import com.ztianzeng.apidoc.SourceBuilder;
 
 public abstract class TestBase {
     static ObjectMapper mapper;
     static SourceBuilder sourceBuilder = new SourceBuilder();
+    static JavaProjectBuilder builder = sourceBuilder.getBuilder();
 
     public static ObjectMapper mapper() {
         if (mapper == null) {
@@ -23,7 +25,7 @@ public abstract class TestBase {
     }
 
     protected ModelResolver modelResolver() {
-        return new ModelResolver(new ObjectMapper(), new SourceBuilder());
+        return new ModelResolver(new SourceBuilder());
     }
 
     protected void prettyPrint(Object o) {
@@ -33,4 +35,5 @@ public abstract class TestBase {
             e.printStackTrace();
         }
     }
+
 }

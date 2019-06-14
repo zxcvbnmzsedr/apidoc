@@ -1,5 +1,6 @@
 package com.ztianzeng.apidoc.test;
 
+import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.Reader;
 import com.ztianzeng.apidoc.models.OpenAPI;
 import com.ztianzeng.apidoc.models.Operation;
@@ -54,8 +55,9 @@ public class ReaderTest {
 
     @Test
     public void testSimpleReadClass() {
+        JavaClass classByName = TestBase.builder.getClassByName(BasicFieldsResource.class.getName());
         Reader reader = new Reader(new OpenAPI());
-        OpenAPI openAPI = reader.read(BasicFieldsResource.class);
+        OpenAPI openAPI = reader.read(classByName);
         Paths paths = openAPI.getPaths();
         assertEquals(paths.size(), 6);
         PathItem pathItem = paths.get(PATH_1_REF);
@@ -71,7 +73,8 @@ public class ReaderTest {
     @Test
     public void testResolveDuplicatedOperationId() {
         Reader reader = new Reader(new OpenAPI());
-        OpenAPI openAPI = reader.read(DuplicatedOperationIdResource.class);
+        JavaClass classByName = TestBase.builder.getClassByName(DuplicatedOperationIdResource.class.getName());
+        OpenAPI openAPI = reader.read(classByName);
 
         Paths paths = openAPI.getPaths();
         assertNotNull(paths);
@@ -89,7 +92,9 @@ public class ReaderTest {
     @Test
     public void testResolveDuplicatedOperationIdMethodName() {
         Reader reader = new Reader(new OpenAPI());
-        OpenAPI openAPI = reader.read(DuplicatedOperationMethodNameResource.class);
+        JavaClass classByName = TestBase.builder.getClassByName(DuplicatedOperationMethodNameResource.class.getName());
+
+        OpenAPI openAPI = reader.read(classByName);
 
         Paths paths = openAPI.getPaths();
         assertNotNull(paths);
@@ -116,7 +121,9 @@ public class ReaderTest {
     @Test
     public void print() {
         Reader reader = new Reader(new OpenAPI());
-        OpenAPI openAPI = reader.read(TestController.class);
+        JavaClass classByName = TestBase.builder.getClassByName(TestController.class.getName());
+
+        OpenAPI openAPI = reader.read(classByName);
         Info info = new Info();
         info.title("dddd");
         info.setVersion("111.111");
@@ -127,7 +134,9 @@ public class ReaderTest {
     @Test
     public void testMoreResponses() {
         Reader reader = new Reader(new OpenAPI());
-        OpenAPI openAPI = reader.read(EnhancedResponsesResource.class);
+        JavaClass classByName = TestBase.builder.getClassByName(EnhancedResponsesResource.class.getName());
+
+        OpenAPI openAPI = reader.read(classByName);
         String yaml = "openapi: 3.0.1\n" +
                 "paths:\n" +
                 "  /:\n" +
@@ -156,11 +165,64 @@ public class ReaderTest {
         SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
     }
 
+    //    @Test
+    public void testMuRet() {
+        Reader reader = new Reader(new OpenAPI());
+        JavaClass classByName = TestBase.builder.getClassByName(MuRetController.class.getName());
+
+        OpenAPI openAPI = reader.read(classByName);
+        String yaml = "openapi: 3.0.1\n" +
+                "paths:\n" +
+                "  /get:\n" +
+                "    get:\n" +
+                "      summary: 获取一个实例\n" +
+                "      operationId: get\n" +
+                "      responses:\n" +
+                "        200:\n" +
+                "          description: 返回信息\n" +
+                "          content:\n" +
+                "            application/json:\n" +
+                "              schema:\n" +
+                "                $ref: '#/components/schemas/ResultResult2CreateParam'\n" +
+                "      deprecated: false\n" +
+                "components:\n" +
+                "  schemas:\n" +
+                "    CreateParam:\n" +
+                "      required:\n" +
+                "      - username\n" +
+                "      type: object\n" +
+                "      properties:\n" +
+                "        username:\n" +
+                "          type: string\n" +
+                "          description: 用户名\n" +
+                "        mobile:\n" +
+                "          type: string\n" +
+                "          description: 手机\n" +
+                "    Result2CreateParam:\n" +
+                "      type: object\n" +
+                "      properties:\n" +
+                "        msg:\n" +
+                "          type: string\n" +
+                "        data:\n" +
+                "          $ref: '#/components/schemas/CreateParam'\n" +
+                "    ResultResult2CreateParam:\n" +
+                "      type: object\n" +
+                "      properties:\n" +
+                "        msg:\n" +
+                "          type: string\n" +
+                "        data:\n" +
+                "          $ref: '#/components/schemas/Result2CreateParam'\n";
+
+        SerializationMatchers.assertEqualsToYaml(openAPI, yaml);
+    }
+
 
     @Test
     public void test2497() {
         Reader reader = new Reader(new OpenAPI());
-        OpenAPI openAPI = reader.read(ResponseContentWithArrayResource.class);
+        JavaClass classByName = TestBase.builder.getClassByName(ResponseContentWithArrayResource.class.getName());
+
+        OpenAPI openAPI = reader.read(classByName);
 
         Paths paths = openAPI.getPaths();
         assertEquals(paths.size(), 1);

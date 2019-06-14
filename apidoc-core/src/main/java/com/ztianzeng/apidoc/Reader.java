@@ -1,9 +1,6 @@
 package com.ztianzeng.apidoc;
 
-import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
-import com.fasterxml.jackson.databind.introspect.AnnotatedParameter;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.*;
 import com.ztianzeng.apidoc.constants.RequestMethod;
@@ -72,13 +69,12 @@ public class Reader {
     /**
      * 读取class的method
      *
-     * @param cls
+     * @param classByName
      * @return
      */
-    public OpenAPI read(Class<?> cls) {
+    public OpenAPI read(JavaClass classByName) {
         openAPI.setPaths(this.paths);
         openAPI.setComponents(components);
-        JavaClass classByName = builder.getClassByName(cls.getCanonicalName());
 
         // controller上面的URL
         String classBaseUrl = null;
@@ -88,9 +84,6 @@ public class Reader {
                 classBaseUrl = getRequestMappingUrl(annotation);
             }
         }
-
-        com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(cls);
-        BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
 
 
         // 处理方法
@@ -129,7 +122,7 @@ public class Reader {
                 pathItemObject = new PathItem();
             }
 
-            Operation operation = parseMethod(beanDesc, method, deprecated, classByName.getComment());
+            Operation operation = parseMethod(method, deprecated, classByName.getComment());
 
             setPathItemOperation(pathItemObject, methodType, operation);
 
@@ -147,24 +140,10 @@ public class Reader {
     }
 
 
-    public OpenAPI read(Set<Class<?>> classes) {
-        Set<Class<?>> sortedClasses = new TreeSet<>(new Comparator<Class<?>>() {
-            @Override
-            public int compare(Class<?> class1, Class<?> class2) {
-                if (class1.equals(class2)) {
-                    return 0;
-                } else if (class1.isAssignableFrom(class2)) {
-                    return -1;
-                } else if (class2.isAssignableFrom(class1)) {
-                    return 1;
-                }
-                return class1.getName().compareTo(class2.getName());
-            }
-        });
-        sortedClasses.addAll(classes);
+    public OpenAPI read(Set<JavaClass> classes) {
 
 
-        for (Class<?> aClass : sortedClasses) {
+        for (JavaClass aClass : classes) {
             OpenAPI read = read(aClass);
 
             paths.putAll(read.getPaths());
@@ -262,7 +241,7 @@ public class Reader {
      *
      * @return
      */
-    public Operation parseMethod(BeanDescription beanDesc, JavaMethod javaMethod, boolean deprecated, String tag) {
+    public Operation parseMethod(JavaMethod javaMethod, boolean deprecated, String tag) {
         Operation build = Operation.builder()
                 .deprecated(deprecated)
                 .build();
@@ -273,24 +252,11 @@ public class Reader {
         setParametersItem(build, javaMethod);
 
 
-        JavaType returnType = javaMethod.getReturnType();
-        AnnotatedMethod jackSonMethod = null;
-        // 筛选，提取jackson的类型
-        for (AnnotatedMethod factoryMethod : beanDesc.getClassInfo().memberMethods()) {
-            if (factoryMethod.getName().equals(javaMethod.getName())
-                    && factoryMethod.getRawReturnType().getName().equals(returnType.getBinaryName())) {
-                jackSonMethod = factoryMethod;
-            }
-        }
-
-        if (jackSonMethod == null) {
-            return build;
-        }
-        setRequestBody(build, javaMethod, jackSonMethod);
+        setRequestBody(build, javaMethod);
 
         // 处理方法的信息
         Map<String, Schema> schemaMap = ModelConverters.getInstance()
-                .readAll(jackSonMethod.getType());
+                .readAll(javaMethod.getReturns());
 
         ApiResponses responses = new ApiResponses();
 
@@ -304,14 +270,14 @@ public class Reader {
         MediaType mediaType = new MediaType();
 
         Schema objectSchema = ModelConverters.getInstance()
-                .resolve(jackSonMethod.getType());
+                .resolve(javaMethod.getReturns());
 
 
         if (objectSchema != null) {
             if (objectSchema instanceof ArraySchema) {
                 ((ArraySchema) objectSchema).getItems().$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
             } else {
-                objectSchema.$ref(constructRef(DocUtils.findTypeName(jackSonMethod.getType(), beanDesc)));
+                objectSchema.$ref(constructRef(objectSchema.getName()));
 
             }
         }
@@ -362,7 +328,7 @@ public class Reader {
                 apiMethodDoc.addParametersItem(inputParameter);
             } else {
                 Map<String, Schema> stringSchemaMap = ModelConverters.getInstance()
-                        .readAll(DocUtils.getTypeForName(parameter.getJavaClass().getBinaryName()));
+                        .readAll(parameter.getJavaClass());
                 for (String s : stringSchemaMap.keySet()) {
                     Schema schema = stringSchemaMap.get(s);
                     Map<String, Schema> properties = schema.getProperties();
@@ -390,7 +356,7 @@ public class Reader {
     /**
      * 设置方法的请求参数
      */
-    private void setRequestBody(Operation apiMethodDoc, JavaMethod method, AnnotatedMethod jacksonMethod) {
+    private void setRequestBody(Operation apiMethodDoc, JavaMethod method) {
         List<JavaParameter> parameters = method.getParameters();
 
         for (int i = 0; i < parameters.size(); i++) {
@@ -398,20 +364,19 @@ public class Reader {
             if (!isContentBody(parameter.getAnnotations())) {
                 return;
             }
-            AnnotatedParameter jacksonParam = jacksonMethod.getParameter(i);
 
 
             Schema objectSchema = ModelConverters.getInstance()
-                    .resolve(jacksonParam.getType());
+                    .resolve(parameter.getJavaClass());
 
             Map<String, Schema> schemaMap = ModelConverters.getInstance()
-                    .readAll(jacksonParam.getType());
+                    .readAll(parameter.getJavaClass());
 
 
             if (objectSchema instanceof ArraySchema) {
                 ((ArraySchema) objectSchema).getItems().$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
             } else {
-                objectSchema.$ref(constructRef(schemaMap.keySet().stream().findFirst().orElse("")));
+                objectSchema.$ref(constructRef(objectSchema.getName()));
 
             }
 

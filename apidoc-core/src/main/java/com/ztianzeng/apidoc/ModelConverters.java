@@ -1,15 +1,13 @@
 package com.ztianzeng.apidoc;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverter;
 import com.ztianzeng.apidoc.converter.ModelConverterContextImpl;
 import com.ztianzeng.apidoc.converter.ResolvedSchema;
 import com.ztianzeng.apidoc.models.media.Schema;
-import com.ztianzeng.apidoc.utils.Json;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -32,16 +30,17 @@ public class ModelConverters {
     public ModelConverters() {
         SourceBuilder sourceBuilder = new SourceBuilder();
         converters = new CopyOnWriteArrayList<>();
-        converters.add(new ModelResolver(Json.mapper(), sourceBuilder));
+        converters.add(new ModelResolver(sourceBuilder));
     }
 
-    public Map<String, Schema> read(Type type) {
-        return read(new AnnotatedType().type(type));
+
+    public Map<String, Schema> read(JavaClass type) {
+        return read(new AnnotatedType().javaClass(type));
     }
 
     public Map<String, Schema> read(AnnotatedType type) {
         Map<String, Schema> modelMap = new HashMap<>();
-        if (shouldProcess(type.getType())) {
+        if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(
                     converters);
             Schema resolve = context.resolve(type);
@@ -55,42 +54,41 @@ public class ModelConverters {
         return modelMap;
     }
 
-    public Map<String, Schema> readAll(Type type) {
-        return readAll(new AnnotatedType().type(type));
+
+    public Map<String, Schema> readAll(JavaClass type) {
+        return readAll(new AnnotatedType().javaClass(type));
     }
 
-
     public Map<String, Schema> readAll(AnnotatedType type) {
-        if (shouldProcess(type.getType())) {
+        if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(converters);
 
-            log.debug("ModelConverters readAll from " + type);
             context.resolve(type);
             return context.getDefinedModels();
         }
         return new HashMap<>();
     }
 
-    public Schema resolve(Type type) {
-        return resolve(new AnnotatedType().type(type));
+
+    public Schema resolve(JavaClass type) {
+        return resolve(new AnnotatedType().javaClass(type));
     }
 
     public Schema resolve(AnnotatedType type) {
-        if (shouldProcess(type.getType())) {
+        if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(converters);
 
-            log.debug("ModelConverters readAll from " + type);
             return context.resolve(type);
         }
         return null;
     }
 
-    private boolean shouldProcess(Type type) {
-        final Class<?> cls = TypeFactory.defaultInstance().constructType(type).getRawClass();
-        if (cls.isPrimitive()) {
+
+    private boolean shouldProcess(JavaClass javaClass) {
+        if (javaClass.isPrimitive()) {
             return false;
         }
-        String className = cls.getName();
+        String className = javaClass.getName();
         for (String packageName : skippedPackages) {
             if (className.startsWith(packageName)) {
                 return false;
@@ -101,7 +99,7 @@ public class ModelConverters {
 
 
     public ResolvedSchema readAllAsResolvedSchema(AnnotatedType type) {
-        if (shouldProcess(type.getType())) {
+        if (shouldProcess(type.getJavaClass())) {
             ModelConverterContextImpl context = new ModelConverterContextImpl(
                     converters);
 

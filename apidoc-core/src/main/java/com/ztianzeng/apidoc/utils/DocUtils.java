@@ -6,10 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.thoughtworks.qdox.model.JavaAnnotation;
+import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
 import com.ztianzeng.apidoc.constants.RequestMethod;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -231,6 +235,140 @@ public final class DocUtils {
             stringBuilder.append(typeParameter.getRawClass().getSimpleName());
         }
         return type.getRawClass().getSimpleName() + stringBuilder.toString();
+    }
+
+
+    /**
+     * 获取泛型的数量
+     *
+     * @param returnType
+     * @return
+     */
+    public static int genericityCount(JavaClass returnType) {
+        if (returnType instanceof DefaultJavaParameterizedType) {
+            return ((DefaultJavaParameterizedType) returnType).getActualTypeArguments().size();
+        }
+        return 0;
+    }
+
+    /**
+     * 获取泛型的数量
+     *
+     * @param returnType
+     * @return
+     */
+    public static JavaClass genericityContentType(JavaClass returnType) {
+        if (returnType instanceof DefaultJavaParameterizedType) {
+            if (!((DefaultJavaParameterizedType) returnType).getActualTypeArguments().isEmpty()) {
+                return (DefaultJavaParameterizedType) ((DefaultJavaParameterizedType) returnType).getActualTypeArguments().get(0);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 是否为map
+     *
+     * @param type java type
+     * @return boolean
+     */
+    public static boolean isMap(String type) {
+        switch (type) {
+            case "java.util.Map":
+            case "java.util.SortedMap":
+            case "java.util.TreeMap":
+            case "java.util.LinkedHashMap":
+            case "java.util.HashMap":
+            case "java.util.concurrent.ConcurrentHashMap":
+            case "java.util.Properties":
+            case "java.util.Hashtable":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static boolean isList(String type) {
+        switch (type) {
+            case "java.util.List":
+            case "java.util.Collection":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Automatic repair of generic split class names
+     *
+     * @param arr arr of class name
+     * @return array of String
+     */
+    private static String[] classNameFix(String[] arr) {
+        List<String> classes = new ArrayList<>();
+        List<Integer> indexList = new ArrayList<>();
+        int globIndex = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (!classes.isEmpty()) {
+                int index = classes.size() - 1;
+                if (!isClassName(classes.get(index))) {
+                    globIndex = globIndex + 1;
+                    if (globIndex < arr.length) {
+                        indexList.add(globIndex);
+                        String className = classes.get(index) + "," + arr[globIndex];
+                        classes.set(index, className);
+                    }
+
+                } else {
+                    globIndex = globIndex + 1;
+                    if (globIndex < arr.length) {
+                        if (isClassName(arr[globIndex])) {
+                            indexList.add(globIndex);
+                            classes.add(arr[globIndex]);
+                        } else {
+                            if (!indexList.contains(globIndex) && !indexList.contains(globIndex + 1)) {
+                                indexList.add(globIndex);
+                                classes.add(arr[globIndex] + "," + arr[globIndex + 1]);
+                                globIndex = globIndex + 1;
+                                indexList.add(globIndex);
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (isClassName(arr[i])) {
+                    indexList.add(i);
+                    classes.add(arr[i]);
+                } else {
+                    if (!indexList.contains(i) && !indexList.contains(i + 1)) {
+                        globIndex = i + 1;
+                        classes.add(arr[i] + "," + arr[globIndex]);
+                        indexList.add(i);
+                        indexList.add(i + 1);
+                    }
+                }
+            }
+        }
+        return classes.toArray(new String[classes.size()]);
+    }
+
+    /**
+     * 是否是合法的java类名称
+     *
+     * @param className class nem
+     * @return boolean
+     */
+    public static boolean isClassName(String className) {
+        if (StringUtils.isEmpty(className)) {
+            return false;
+        }
+        if (className.contains("<") && !className.contains(">")) {
+            return false;
+        } else if (className.contains(">") && !className.contains("<")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

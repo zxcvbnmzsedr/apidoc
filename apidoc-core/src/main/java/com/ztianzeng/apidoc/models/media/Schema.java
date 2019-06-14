@@ -21,6 +21,7 @@ import com.ztianzeng.apidoc.models.ExternalDocumentation;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Schema
@@ -432,6 +433,9 @@ public class Schema<T> {
      **/
 
     public List<String> getRequired() {
+        if (required != null) {
+            required = required.stream().distinct().collect(Collectors.toList());
+        }
         return required;
     }
 
@@ -460,7 +464,7 @@ public class Schema<T> {
 
     public Schema addRequiredItem(String requiredItem) {
         if (this.required == null) {
-            this.required = new ArrayList<String>();
+            this.required = new ArrayList<>();
         }
         this.required.add(requiredItem);
         Collections.sort(required);
