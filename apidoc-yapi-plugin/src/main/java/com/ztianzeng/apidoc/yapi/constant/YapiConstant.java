@@ -49,4 +49,6 @@ public interface YapiConstant {
      * 获取菜单列表
      */
     String yapiCatMenu = "/api/interface/getCatMenu";
+
+    String IMPUT = "/api/open/import_data";
 }

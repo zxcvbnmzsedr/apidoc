@@ -203,7 +203,10 @@ public class ModelResolver implements ModelConverter {
                             .propertyName(targetClass.getName());
                     propSchema = context.resolve(aType);
                 } else {
-                    propSchema.set$ref(constructRef(findName(genericityContentType)));
+                    if (!DocUtils.isPrimitive(findName(genericityContentType))) {
+                        propSchema.set$ref(constructRef(findName(genericityContentType)));
+                    }
+
                 }
             } else if (genericityContentType != null && DocUtils.isList(type.getBinaryName())) {
                 aType = new AnnotatedType()
