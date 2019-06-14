@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ztianzeng.apidoc.models.OpenAPI;
 import com.ztianzeng.apidoc.models.Operation;
 import com.ztianzeng.apidoc.models.Paths;
+import com.ztianzeng.apidoc.models.media.Schema;
+import com.ztianzeng.apidoc.models.parameters.RequestBody;
 import com.ztianzeng.apidoc.utils.Json;
+import com.ztianzeng.apidoc.utils.RefUtils;
 import com.ztianzeng.apidoc.yapi.constant.YapiConstant;
 import com.ztianzeng.apidoc.yapi.module.*;
 import com.ztianzeng.apidoc.yapi.utils.HttpClientUtil;
@@ -135,19 +138,28 @@ public class UploadToYapi {
         List<YapiApiDTO> apiDTOS = new ArrayList<>(paths.size());
 
         openAPI.getPaths().forEach((k, v) -> {
-            Operation operation = v.getPost();
-            if (operation == null) {
-                operation = v.getGet();
+            boolean isGet = false;
+            if (v.getPost() == null) {
+                isGet = true;
             }
+            Operation operation = isGet ? v.getGet() : v.getPost();
 
             YapiApiDTO yapiApiDTO = new YapiApiDTO();
             yapiApiDTO.setDesc(operation.getDescription());
 
 
-            yapiApiDTO.setReq_params(operation.getParameters());
             yapiApiDTO.setTag(operation.getTags().stream().findFirst().orElse(""));
             try {
-                yapiApiDTO.setRequestBody(mapper.writeValueAsString(operation.getRequestBody()));
+                if (isGet) {
+                    yapiApiDTO.setReq_params(operation.getParameters());
+                } else {
+
+
+                    yapiApiDTO.setRequestBody(getRequestBOdy(openAPI, operation.getRequestBody()));
+
+                }
+
+
                 yapiApiDTO.setResponse(mapper.writeValueAsString(operation.getResponses()));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -228,6 +240,22 @@ public class UploadToYapi {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getRequestBOdy(OpenAPI openAPI, RequestBody requestBody) throws JsonProcessingException {
+        KV kv = KV.create();
+        ;
+        if (StringUtils.isNotBlank(requestBody.getContent().get("application/json").getSchema().get$ref())) {
+            Schema schema = openAPI.getComponents().getSchemas().get(RefUtils.getRef(requestBody.getContent().get("application/json").getSchema().get$ref()));
+
+            kv.set("type", schema.getType());
+            kv.set("description", "1111");
+            kv.set("items", schema.getTitle());
+
+        }
+        return mapper.writeValueAsString(kv);
+
+
     }
 
 }
