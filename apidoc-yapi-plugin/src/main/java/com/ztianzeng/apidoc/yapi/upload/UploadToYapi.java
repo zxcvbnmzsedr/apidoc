@@ -38,7 +38,7 @@ public class UploadToYapi {
      *
      * @param openAPI
      */
-    public void upload(OpenAPI openAPI, boolean merge) throws IOException {
+    public void upload(Object openAPI, boolean merge) throws IOException {
         Map<String, Object> send = new HashMap<>(4);
         send.put("type", "swagger");
         send.put("token", projectToken);
