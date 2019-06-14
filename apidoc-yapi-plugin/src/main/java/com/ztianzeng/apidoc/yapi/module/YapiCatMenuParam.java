@@ -24,7 +24,7 @@ public class YapiCatMenuParam implements Serializable {
     /**
      * 项目id
      */
-    private Integer project_id;
+    private String project_id;
     /**
      * token
      */
@@ -34,23 +34,23 @@ public class YapiCatMenuParam implements Serializable {
     public YapiCatMenuParam() {
     }
 
-    public YapiCatMenuParam(String desc, String name, Integer project_id, String token) {
+    public YapiCatMenuParam(String desc, String name, String project_id, String token) {
         this.desc = desc;
         this.name = name;
         this.project_id = project_id;
         this.token = token;
     }
 
-    public YapiCatMenuParam(Integer project_id, String token) {
+    public YapiCatMenuParam(String project_id, String token) {
         this.project_id = project_id;
         this.token = token;
     }
 
-    public YapiCatMenuParam(String name, Integer project_id, String token) {
+    public YapiCatMenuParam(String name, String project_id, String token) {
         this.name = name;
         this.project_id = project_id;
         this.token = token;
-        if (StringUtils.isNotEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
             this.name = YapiConstant.menu;
         }
     }
@@ -71,11 +71,11 @@ public class YapiCatMenuParam implements Serializable {
         this.name = name;
     }
 
-    public Integer getProject_id() {
+    public String getProject_id() {
         return project_id;
     }
 
-    public void setProject_id(Integer project_id) {
+    public void setProject_id(String project_id) {
         this.project_id = project_id;
     }
 

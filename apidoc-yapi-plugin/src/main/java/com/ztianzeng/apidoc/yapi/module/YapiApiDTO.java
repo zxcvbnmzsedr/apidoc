@@ -39,6 +39,8 @@ public class YapiApiDTO implements Serializable {
      */
     private String requestBody;
 
+    private String tag;
+
     /**
      * 请求方法
      */

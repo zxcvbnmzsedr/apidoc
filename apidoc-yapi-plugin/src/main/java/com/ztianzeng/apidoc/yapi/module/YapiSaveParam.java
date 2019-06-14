@@ -37,7 +37,7 @@ public class YapiSaveParam implements Serializable {
     /**
      * 分类id
      */
-    private String catid;
+    private Integer catid;
     /**
      * 请求数据类型   raw,form,json
      */

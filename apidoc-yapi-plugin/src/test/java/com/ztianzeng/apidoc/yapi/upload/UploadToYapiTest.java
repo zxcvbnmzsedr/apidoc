@@ -546,7 +546,7 @@ public class UploadToYapiTest {
         OpenAPI openAPI = Json.mapper().readValue(openAPI_S, OpenAPI.class);
 
 
-        UploadToYapi uploadToYapi = new UploadToYapi();
-        uploadToYapi.upload(openAPI, "0feace17c2d8c89f2849", "http://yapi.cnabc-inc.com");
+        UploadToYapi uploadToYapi = new UploadToYapi("511b6c128d2c7ff5b4cc", "http://yapi.cnabc-inc.com", "173");
+        uploadToYapi.upload(openAPI);
     }
 }
