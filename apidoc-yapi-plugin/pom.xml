@@ -5,17 +5,17 @@
     <parent>
         <artifactId>apidoc</artifactId>
         <groupId>com.ztianzeng.apidoc</groupId>
-        <version>0.02-SNAPSHOT</version>
+        <version>0.0.1-release</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>apidoc yapi plugin</name>
     <artifactId>apidoc-yapi-plugin</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.ztianzeng.apidoc</groupId>
             <artifactId>apidoc-core</artifactId>
-            <version>0.02-SNAPSHOT</version>
+            <version>0.0.1-release</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
