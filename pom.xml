@@ -16,6 +16,26 @@
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <eclipse.jetty>9.4.12.v20180830</eclipse.jetty>
     </properties>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>scm:git:https://github.com/zxcvbnmzsedr/apidoc.git</url>
+        <connection>scm:git:https://github.com/zxcvbnmzsedr/apidoc.git</connection>
+        <developerConnection>https://github.com/zxcvbnmzsedr/apidoc.git</developerConnection>
+        <tag>0.02</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>ztianzeng</name>
+        </developer>
+    </developers>
     <build>
         <finalName>apidoc</finalName>
         <plugins>
@@ -46,7 +66,6 @@
     </build>
     <modules>
         <module>apidoc-core</module>
-        <module>apidoc-maven-plugin</module>
         <module>apidoc-yapi-plugin</module>
     </modules>
 
@@ -88,16 +107,17 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <!-- 这个也是必须要的 以下两个<id>代码块中的id要与 setting.xml中的id一致 -->
     <distributionManagement>
-        <repository>
-            <id>nexus-releases</id>
-            <name>CNABC Release Maven Repository Group</name>
-            <url>http://nexus.cnabc-inc.com/content/repositories/share_releases</url>
-        </repository>
         <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <name>CNABC Snapshot Maven Repository Group</name>
-            <url>http://nexus.cnabc-inc.com/content/repositories/share_snapshots/</url>
+            <id>oss</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
+        <repository>
+            <id>oss</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
+
 </project>
