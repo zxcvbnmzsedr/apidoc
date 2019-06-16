@@ -29,6 +29,13 @@ URL解析:SpringMvc中定义的基本Mapping
 
 ## 使用方式
 
+~~~
+<dependency>
+  <groupId>com.ztianzeng.apidoc</groupId>
+  <artifactId>apidoc-core</artifactId>
+  <version>0.0.1-release</version>
+</dependency>
+~~~
 看下面代码：
 ~~~
  @Test
@@ -57,6 +64,13 @@ public void print() throws ClassNotFoundException, IOException {
 
 ### Yapi支持
 
+~~~
+<dependency>
+  <groupId>com.ztianzeng.apidoc</groupId>
+  <artifactId>apidoc-yapi-plugin</artifactId>
+  <version>0.0.1-release</version>
+</dependency>
+~~~
 apidoc 还提供了插件用于将扫描出来的openApi信息导入到Yapi中。
 ~~~
 UploadToYapi uploadToYapi = new UploadToYapi("token", "http://127.0.0.1:3000");

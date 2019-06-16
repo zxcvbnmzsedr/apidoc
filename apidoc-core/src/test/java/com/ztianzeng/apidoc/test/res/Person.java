@@ -1,5 +1,6 @@
-package com.ztianzeng.apidoc.models;
+package com.ztianzeng.apidoc.test.res;
 
+import com.ztianzeng.apidoc.models.Address;
 import lombok.Data;
 
 import java.util.Date;

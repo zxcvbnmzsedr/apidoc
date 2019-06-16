@@ -1,4 +1,4 @@
-package com.ztianzeng.apidoc.models;
+package com.ztianzeng.apidoc.test.res;
 
 import lombok.Data;
 

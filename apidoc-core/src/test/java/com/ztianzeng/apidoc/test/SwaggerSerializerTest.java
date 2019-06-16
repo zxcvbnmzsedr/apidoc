@@ -12,6 +12,7 @@ import com.ztianzeng.apidoc.models.parameters.RequestBody;
 import com.ztianzeng.apidoc.models.responses.ApiResponse;
 import com.ztianzeng.apidoc.models.responses.ApiResponses;
 import com.ztianzeng.apidoc.models.servers.Server;
+import com.ztianzeng.apidoc.test.res.Person;
 import com.ztianzeng.apidoc.test.swagger.SerializationMatchers;
 import com.ztianzeng.apidoc.utils.Json;
 import org.junit.Test;
