@@ -41,18 +41,31 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Operation {
+    @Builder.Default
     private List<String> tags = null;
+    @Builder.Default
     private String summary = null;
+    @Builder.Default
     private String description = null;
+    @Builder.Default
     private ExternalDocumentation externalDocs = null;
+    @Builder.Default
     private String operationId = null;
+    @Builder.Default
     private List<Parameter> parameters = null;
+    @Builder.Default
     private RequestBody requestBody = null;
+    @Builder.Default
     private ApiResponses responses = null;
+    @Builder.Default
     private Map<String, Callback> callbacks = null;
+    @Builder.Default
     private Boolean deprecated = null;
+    @Builder.Default
     private List<SecurityRequirement> security = null;
+    @Builder.Default
     private List<Server> servers = null;
+    @Builder.Default
     private Map<String, Object> extensions = null;
 
     /**

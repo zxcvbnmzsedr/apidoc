@@ -543,10 +543,10 @@ public class UploadToYapiTest {
 
     @Test
     public void upload() throws IOException {
-        OpenAPI openAPI = Json.mapper().readValue(openAPI_S, OpenAPI.class);
-
-
-        UploadToYapi uploadToYapi = new UploadToYapi("511b6c128d2c7ff5b4cc", "http://yapi.cnabc-inc.com");
-        uploadToYapi.upload(openAPI, true);
+//        OpenAPI openAPI = Json.mapper().readValue(openAPI_S, OpenAPI.class);
+//
+//
+//        UploadToYapi uploadToYapi = new UploadToYapi("511b6c128d2c7ff5b4cc", "http://yapi.cnabc-inc.com");
+//        uploadToYapi.upload(openAPI, true);
     }
 }
