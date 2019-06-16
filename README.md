@@ -80,6 +80,7 @@ uploadToYapi.upload(openAPI, true);
 ## 例子
 
 展示了一个简单的controller的解析
+![生成文档](http://pic.ztianzeng.com/20190614224053.png)
 ~~~
 /**
  * 测试控制器
@@ -144,4 +145,4 @@ public class TestController {
 }
 ~~~
 
-![](http://pic.ztianzeng.com/20190614224053.png)
+
