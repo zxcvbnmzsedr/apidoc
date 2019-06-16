@@ -1,0 +1,40 @@
+<idea-plugin>
+    <id>com.your.company.unique.plugin.id</id>
+    <name>ApiDoc-OpenApi</name>
+    <version>1.0</version>
+    <vendor email="tianzneg@gmail.com" url="https://github.com/zxcvbnmzsedr/apidoc">ApiDoc-OpenApi</vendor>
+
+    <description><![CDATA[
+     通过扫描Java注释生成OpenApi文档，相比与Swagger更轻量级，对代码无任何侵入
+    ]]></description>
+
+    <change-notes><![CDATA[
+      <a href="https://github.com/zxcvbnmzsedr/apidoc">使用方式</a> <br>
+      0.0.1:通过扫描Java上的注释生成代码。。<br>
+      <a href="https://github.com/zxcvbnmzsedr/apidoc">使用方式</a> <br>
+      0.0.1:通过扫描Java上的注释生成代码。。<br>
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="173.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="ApiDoc" class="com.ztianzeng.apidoc.idea.ScanAction" text="ApiDoc-OpenApi"
+                description="ApiDoc-OpenApi">
+            <add-to-group group-id="EditorLangPopupMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="alt F"/>
+        </action>
+    </actions>
+
+</idea-plugin>
