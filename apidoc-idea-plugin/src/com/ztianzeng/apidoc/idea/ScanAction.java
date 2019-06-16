@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.ModelConverters;
-import com.ztianzeng.apidoc.ModelResolver;
 import com.ztianzeng.apidoc.Reader;
 import com.ztianzeng.apidoc.SourceBuilder;
 import com.ztianzeng.apidoc.models.OpenAPI;

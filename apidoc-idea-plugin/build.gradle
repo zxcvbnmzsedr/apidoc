@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
+            url 'http://dl.bintray.com/jetbrains/intellij-plugin-service'
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+
+    }
+    dependencies {
+        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.4.9"
+    }
+}
+
+
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+intellij {
+    //此处版本需要按照后面的配置一致，否则此处报错！！！！(IC-version)
+    version '191.7479.19' //这个是你要下载的源码的版本,参考此处https://www.jetbrains.com/intellij-repository/releases
+    plugins 'coverage' //Bundled plugin dependencies
+    pluginName 'apidoc-openapi'//插件的名称
+}
+dependencies {
+    implementation 'com.ztianzeng.apidoc:apidoc-yapi-plugin:0.0.1-release'
+}
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['src']
+        }
+    }
+}
