@@ -3,13 +3,10 @@ package com.ztianzeng.apidoc.converter;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.models.media.Schema;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class ModelConverterContextImpl implements ModelConverterContext {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelConverterContextImpl.class);
 
     private final List<ModelConverter> converters;
     private final Map<String, Schema> modelByName;
@@ -75,7 +72,6 @@ public class ModelConverterContextImpl implements ModelConverterContext {
         Schema resolved = null;
         if (converters.hasNext()) {
             ModelConverter converter = converters.next();
-            LOGGER.trace("trying extension " + converter);
             resolved = converter.resolve(type, this, converters);
         }
         if (resolved != null) {

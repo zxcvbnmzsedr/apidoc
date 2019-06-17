@@ -30,7 +30,6 @@ import static com.ztianzeng.apidoc.utils.RefUtils.constructRef;
  * @version V1.0
  * @date 2019-06-06 13:00
  */
-@Slf4j
 public class ModelResolver implements ModelConverter {
     private JavaProjectBuilder builder;
 

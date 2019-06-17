@@ -25,7 +25,7 @@ public class ModelConverters {
         return SINGLETON;
     }
 
-    private ModelConverters() {
+    public ModelConverters() {
         SourceBuilder sourceBuilder = new SourceBuilder();
         converters = new CopyOnWriteArrayList<>();
         converters.add(new ModelResolver(sourceBuilder));
