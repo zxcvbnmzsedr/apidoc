@@ -6,7 +6,6 @@ import com.ztianzeng.apidoc.converter.ModelConverter;
 import com.ztianzeng.apidoc.converter.ModelConverterContextImpl;
 import com.ztianzeng.apidoc.converter.ResolvedSchema;
 import com.ztianzeng.apidoc.models.media.Schema;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -16,7 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version V1.0
  * @date 2019-06-05 22:04
  */
-@Slf4j
 public class ModelConverters {
     private static final ModelConverters SINGLETON = new ModelConverters();
     private final List<ModelConverter> converters;
@@ -27,7 +25,7 @@ public class ModelConverters {
         return SINGLETON;
     }
 
-    public ModelConverters() {
+    private ModelConverters() {
         SourceBuilder sourceBuilder = new SourceBuilder();
         converters = new CopyOnWriteArrayList<>();
         converters.add(new ModelResolver(sourceBuilder));
