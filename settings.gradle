@@ -5,3 +5,5 @@
 rootProject.name = 'apidoc'
 include(':apidoc-core')
 include(':apidoc-yapi-plugin')
+include 'apidoc-idea-plugin'
+

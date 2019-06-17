@@ -4,17 +4,37 @@
 
 allprojects {
     group = 'com.ztianzeng.apidoc'
-    version = '0.0.1-release'
+    version = '0.0.2'
 }
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
+    apply plugin: 'maven' // 引入maven插件
 
     repositories {
         mavenLocal()
         maven {
             url = 'http://repo.maven.apache.org/maven2'
+        }
+    }
+// 指定上传的路径
+    def localMavenRepo = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+
+// 上传Task，Gradle会生成并上传pom.xml文件。
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: localMavenRepo)
+
+                //构造项目的Pom文件
+                pom.project {
+                    name = project.name
+                    packaging = 'jar'
+                    description = 'description'
+                }
+            }
+
         }
     }
 
@@ -26,7 +46,7 @@ subprojects {
         testCompile 'junit:junit:4.12'
         testCompile 'org.hibernate.validator:hibernate-validator:6.0.16.Final'
         testCompile 'org.springframework:spring-web:5.0.10.RELEASE'
-        
+
         testCompileOnly 'org.projectlombok:lombok:1.18.8'
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.8'
     }
@@ -54,3 +74,4 @@ subprojects {
         options.encoding = 'UTF-8'
     }
 }
+
