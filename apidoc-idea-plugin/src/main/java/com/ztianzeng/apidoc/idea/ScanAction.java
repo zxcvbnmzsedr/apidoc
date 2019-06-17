@@ -32,7 +32,6 @@ public class ScanAction extends AnAction {
         SourceBuilder sourceBuilder = new SourceBuilder(project.getBasePath());
         Set<JavaClass> controllerData = sourceBuilder.getControllerData();
         Reader reader = new Reader(new OpenAPI());
-        new ModelConverters();
         OpenAPI openAPI = reader.read(controllerData);
         Info info = new Info();
         info.title("dddd");
