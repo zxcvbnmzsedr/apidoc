@@ -1,12 +1,12 @@
 package com.ztianzeng.apidoc.converter;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.JavaType;
 import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaType;
 import com.ztianzeng.apidoc.models.media.Schema;
+import com.ztianzeng.apidoc.utils.DocUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +26,7 @@ public class AnnotatedType {
     private boolean skipSchemaName;
     private boolean skipJsonIdentity;
     private String propertyName;
+    private JavaType javaType;
 
     public AnnotatedType() {
     }
@@ -175,6 +176,15 @@ public class AnnotatedType {
         return this;
     }
 
+    public JavaType getJavaType() {
+        return javaType;
+    }
+
+    public AnnotatedType javaType(JavaType javaType) {
+        this.javaType = javaType;
+        return this;
+    }
+
     /**
      * @since 2.0.4
      */
@@ -208,8 +218,11 @@ public class AnnotatedType {
         AnnotatedType that = (AnnotatedType) o;
 
 
-
         if (javaClass != null && that.javaClass != null && !javaClass.equals(that.javaClass)) {
+            return false;
+        }
+        JavaClass aClass = DocUtils.genericityContentType(javaClass);
+        if (aClass != null && that.javaClass != null && !aClass.equals(that.javaClass)) {
             return false;
         }
         return Arrays.equals(this.ctxAnnotations, that.ctxAnnotations);
