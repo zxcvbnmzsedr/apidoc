@@ -26,7 +26,6 @@ public class ModelConverterTest {
         assertEqualsToJson(readAll(classByName), "Pet.json");
     }
 
-    @Test
     public void convertModel() throws IOException {
         JavaClass classByName = TestBase.builder.getClassByName(Person.class.getName());
 

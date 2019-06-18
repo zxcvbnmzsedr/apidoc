@@ -1,5 +1,8 @@
 package com.ztianzeng.apidoc;
 
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
@@ -13,10 +16,12 @@ import com.ztianzeng.apidoc.models.media.MapSchema;
 import com.ztianzeng.apidoc.models.media.PrimitiveType;
 import com.ztianzeng.apidoc.models.media.Schema;
 import com.ztianzeng.apidoc.utils.DocUtils;
+import com.ztianzeng.apidoc.utils.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.ztianzeng.apidoc.utils.DocUtils.genericityContentType;
 import static com.ztianzeng.apidoc.utils.DocUtils.genericityCount;
@@ -34,9 +39,11 @@ import static com.ztianzeng.apidoc.utils.RefUtils.constructRef;
 public class ModelResolver implements ModelConverter {
     private JavaProjectBuilder builder;
 
+    private final ObjectMapper mapper;
 
     public ModelResolver(SourceBuilder sourceBuilder) {
         builder = sourceBuilder.getBuilder();
+        mapper = Json.mapper();
     }
 
     @Override
@@ -164,8 +171,16 @@ public class ModelResolver implements ModelConverter {
             schema = new ArraySchema().items(items);
         }
 
+        com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(DocUtils.getTypeForName(targetClass.getBinaryName()));
+        BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
 
-        for (JavaField field : fields) {
+        Map<String, JavaField> collect = fields.stream().collect(Collectors.toMap(JavaField::getName, r -> r, (r1, r2) -> r1));
+
+        for (BeanPropertyDefinition propertyDef : beanDesc.findProperties()) {
+            JavaField field = collect.get(propertyDef.getName());
+            if (field == null) {
+                continue;
+            }
             if (DocUtils.isPrimitive(field.getName())) {
                 continue;
             }
@@ -229,7 +244,8 @@ public class ModelResolver implements ModelConverter {
                         if (propSchema.get$ref() == null) {
                             if ("object".equals(propSchema.getType())) {
                                 // create a reference for the property
-                                if (context.getDefinedModels().containsKey(typeName)) {
+                                if (!StringUtils.equals(propSchema.getName(), typeName)
+                                        && context.getDefinedModels().containsKey(typeName)) {
                                     propSchema.set$ref(constructRef(typeName));
                                 }
                             }

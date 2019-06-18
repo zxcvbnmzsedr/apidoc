@@ -7,7 +7,7 @@
     <groupId>com.ztianzeng.apidoc</groupId>
     <artifactId>apidoc</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1-release</version>
+    <version>0.02-SNAPSHOT</version>
     <name>apidoc</name>
     <description>use java annotation generate the document</description>
     <url>https://github.com/zxcvbnmzsedr/apidoc.git</url>
@@ -53,7 +53,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.9.9</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -64,11 +64,6 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>2.9.9</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
