@@ -19,6 +19,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -46,8 +47,11 @@ public class DocMojo extends AbstractMojo {
 
     @Parameter(property = "version", defaultValue = "1.0")
     private String version;
-
-
+    /**
+     * The output directory into which to copy the resources.
+     */
+    @Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+    private File outputDirectory;
 
 
     @Override
@@ -91,6 +95,11 @@ public class DocMojo extends AbstractMojo {
         openAPI.setInfo(info);
 
         Json.prettyPrint(openAPI);
+        try {
+            Json.pretty(outputDirectory.getPath() +"/"+ title + ".json", openAPI);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
