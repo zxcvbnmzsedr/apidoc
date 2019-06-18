@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.thoughtworks.qdox.JavaProjectBuilder;
+import com.thoughtworks.qdox.library.JavaClassContext;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaType;
@@ -57,22 +58,25 @@ public class ModelResolver implements ModelConverter {
 
         // 分析目标类信息
         JavaClass targetClass = annotatedType.getJavaClass();
+        com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(DocUtils.getTypeForName(targetClass.getBinaryName()));
 
+
+        if (annotatedType.getJavaType() != null) {
+            targetType = annotatedType.getJavaType();
+        }
+        BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
 
         Schema schema = new Schema();
 
-        String parentName = annotatedType.getName();
-        if (StringUtils.isBlank(parentName)) {
-            parentName = findName(targetClass, new StringBuilder());
-        }
-
-
+        String parentName = findAnnotatedTypeName(annotatedType);
+        // 看有没有被解析过，解析过直接返回
         Schema resolvedModel = context.resolve(annotatedType);
         if (resolvedModel != null) {
             if (parentName.equals(resolvedModel.getName())) {
                 return resolvedModel;
             }
         }
+
 
         JavaClass genericityContentType = null;
         // 如果泛型大于0
@@ -157,7 +161,7 @@ public class ModelResolver implements ModelConverter {
             JavaType javaType = tar.get(0);
             // 处理集合
             Schema items = context.resolve(new AnnotatedType()
-                    .javaClass(builder.getClassByName(javaType.getFullyQualifiedName()))
+                    .javaClass(builder.getClassByName(javaType.getBinaryName()))
                     .schemaProperty(annotatedType.isSchemaProperty())
                     .skipSchemaName(true)
                     .resolveAsRef(annotatedType.isResolveAsRef())
@@ -171,8 +175,6 @@ public class ModelResolver implements ModelConverter {
             schema = new ArraySchema().items(items);
         }
 
-        com.fasterxml.jackson.databind.JavaType targetType = mapper.constructType(DocUtils.getTypeForName(targetClass.getBinaryName()));
-        BeanDescription beanDesc = mapper.getSerializationConfig().introspect(targetType);
 
         Map<String, JavaField> collect = fields.stream().collect(Collectors.toMap(JavaField::getName, r -> r, (r1, r2) -> r1));
 
@@ -190,6 +192,7 @@ public class ModelResolver implements ModelConverter {
             String typeName = findName(genericityContentType == null ? type : genericityContentType);
             AnnotatedType aType = new AnnotatedType()
                     .javaClass(type)
+                    .javaType(propertyDef.getPrimaryType())
                     .parent(schema)
                     .resolveAsRef(annotatedType.isResolveAsRef())
                     .jsonViewAnnotation(annotatedType.getJsonViewAnnotation())
@@ -292,6 +295,20 @@ public class ModelResolver implements ModelConverter {
             }
         }
         return stringBuilder.toString();
+    }
+
+    /**
+     * 获取类型上面的对应的名字
+     *
+     * @param annotatedType
+     * @return
+     */
+    private String findAnnotatedTypeName(AnnotatedType annotatedType) {
+        String parentName = annotatedType.getName();
+        if (StringUtils.isBlank(parentName)) {
+            parentName = findName(annotatedType.getJavaClass(), new StringBuilder());
+        }
+        return parentName;
     }
 
 }
