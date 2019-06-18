@@ -1,5 +1,6 @@
 package com.ztianzeng.apidoc.test;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -50,6 +51,16 @@ public class TestController {
     public Result<CreateVO> get(@RequestParam(value = "userId", required = false) String userId,
                                 @RequestParam(value = "sex2") String sex) {
         return new Result<>();
+    }
+
+    /**
+     * 分页对象
+     *
+     * @return
+     */
+    @GetMapping(value = "/page")
+    public Page<CreateVO> pageInfo() {
+        return new Page<>();
     }
 
 

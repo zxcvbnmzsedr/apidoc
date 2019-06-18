@@ -27,7 +27,7 @@ public class DocMojo extends AbstractMojo {
     /**
      * @parameter expression="${src}" default-value="src"
      */
-    @Parameter(property = "src")
+    @Parameter(property = "src", defaultValue = "src")
     private String src;
 
     @Parameter(property = "title", defaultValue = "doc")
@@ -38,7 +38,7 @@ public class DocMojo extends AbstractMojo {
 
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() {
         getLog().info("扫描地址 " + src);
         execute(src);
     }

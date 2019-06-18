@@ -16,6 +16,16 @@
             <artifactId>spring-web</artifactId>
             <version>5.1.6.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-core</artifactId>
+            <version>3.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+            <version>3.0.6</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
