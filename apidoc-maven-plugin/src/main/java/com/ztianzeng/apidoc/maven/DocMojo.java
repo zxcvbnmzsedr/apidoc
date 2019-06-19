@@ -31,11 +31,11 @@ import java.util.Set;
  * @goal apidoc
  * @requiresDependencyResolution runtime
  */
-@Mojo(name = "openapi", defaultPhase = LifecyclePhase.COMPILE,
+@Mojo(name = "openapi", defaultPhase = LifecyclePhase.PACKAGE,
         requiresDependencyResolution = ResolutionScope.COMPILE)
 public class DocMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
-    MavenProject mavenProject;
+    private MavenProject mavenProject;
     /**
      * @parameter expression="${src}" default-value="src"
      */
@@ -96,7 +96,7 @@ public class DocMojo extends AbstractMojo {
 
         Json.prettyPrint(openAPI);
         try {
-            Json.pretty(outputDirectory.getPath() +"/"+ title + ".json", openAPI);
+            Json.pretty(outputDirectory.getPath() + "/" + title + ".json", openAPI);
         } catch (IOException e) {
             e.printStackTrace();
         }
