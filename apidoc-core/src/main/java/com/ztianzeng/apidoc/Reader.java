@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 import static com.ztianzeng.apidoc.constants.HtmlRex.HTML_P_PATTERN;
+import static com.ztianzeng.apidoc.constants.SpringMvcConstants.REQUEST_BODY_FULLY;
 import static com.ztianzeng.apidoc.utils.DocUtils.*;
 import static com.ztianzeng.apidoc.utils.RefUtils.constructRef;
 
@@ -317,12 +318,25 @@ public class Reader {
             if (isContentBody(parameter.getAnnotations())) {
                 return;
             }
+            boolean required = true;
+            String name = parameter.getName();
+            for (JavaAnnotation javaAnnotation : parameter.getAnnotations()) {
+                String annotationName = javaAnnotation.getType().getFullyQualifiedName();
+                if (REQUEST_BODY_FULLY.equals(annotationName)) {
+                    if (StringUtils.isNotEmpty((String) javaAnnotation.getNamedParameter("name"))) {
+                        name = (String) javaAnnotation.getNamedParameter("name");
+                    }
+                    required = (Boolean) javaAnnotation.getNamedParameter("required");
+                }
+            }
             // 如果是私有属性直接便利
             if (DocUtils.isPrimitive(parameter.getType().getBinaryName())) {
                 Parameter inputParameter = new Parameter();
                 inputParameter.in("query");
-                inputParameter.setName(parameter.getName());
+                inputParameter.setName(name);
+                inputParameter.setRequired(required);
                 Schema schema = new Schema();
+
                 inputParameter.setDescription(paramDesc.get(parameter.getName()));
                 inputParameter.setSchema(schema);
                 apiMethodDoc.addParametersItem(inputParameter);

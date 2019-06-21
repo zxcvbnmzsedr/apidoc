@@ -205,6 +205,8 @@ public final class DocUtils {
         return false;
     }
 
+
+
     public static String findTypeName(JavaType type, BeanDescription beanDesc) {
         ObjectMapper mapper = Json.mapper();
         // First, handle container types; they require recursion
