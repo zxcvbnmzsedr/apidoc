@@ -8,6 +8,7 @@ import com.thoughtworks.qdox.library.JavaClassContext;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaType;
+import com.thoughtworks.qdox.model.impl.DefaultJavaClass;
 import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverter;
@@ -119,8 +120,12 @@ public class ModelResolver implements ModelConverter {
         }
 
         if (targetClass.isA(Map.class.getName())) {
+            List<JavaType> tar = new LinkedList<>();
+            if (targetClass instanceof DefaultJavaParameterizedType) {
+                tar = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
+            }
             // 泛型信息
-            List<JavaType> tar = ((DefaultJavaParameterizedType) targetClass).getActualTypeArguments();
+
             if (tar.isEmpty()) {
                 return null;
             }
