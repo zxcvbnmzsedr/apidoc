@@ -47,7 +47,6 @@
         <module>apidoc-core</module>
         <module>apidoc-yapi-plugin</module>
         <module>apidoc-maven-plugin</module>
-        <module>apidoc-test</module>
     </modules>
 
     <dependencyManagement>

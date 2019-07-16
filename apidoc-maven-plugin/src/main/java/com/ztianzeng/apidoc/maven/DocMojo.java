@@ -103,7 +103,7 @@ public class DocMojo extends AbstractMojo {
         execute(src);
     }
 
-    public void execute(String url) {
+    private void execute(String url) {
 
         SourceBuilder sourceBuilder = new SourceBuilder(url);
 
@@ -143,42 +143,7 @@ public class DocMojo extends AbstractMojo {
         return resources;
     }
 
-    public MavenProject getMavenProject() {
-        return mavenProject;
-    }
-
-    public String getSrc() {
-        return src;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
     public File getOutputDirectory() {
         return outputDirectory;
     }
-
-//    /**
-//     * @return The combined filters.
-//     */
-//    protected List<String> getCombinedFiltersList() {
-//        if (filters == null || filters.isEmpty()) {
-//            return useBuildFilters ? buildFilters : null;
-//        } else {
-//            List<String> result = new ArrayList<String>();
-//
-//            if (useBuildFilters && buildFilters != null && !buildFilters.isEmpty()) {
-//                result.addAll(buildFilters);
-//            }
-//
-//            result.addAll(filters);
-//
-//            return result;
-//        }
-//    }
 }

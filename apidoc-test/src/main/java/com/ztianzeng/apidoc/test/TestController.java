@@ -18,40 +18,40 @@ import java.util.List;
 @RestController
 public class TestController {
 
-//
-//    /**
-//     * 新增一个实例
-//     *
-//     * @param createParam 创建对象
-//     * @return 创建后的信息
-//     */
-//    @PostMapping(value = "/create")
-//    public CreateVO add(@RequestBody @Valid CreateParam createParam) {
-//        return new CreateVO();
-//    }
-//
-//    /**
-//     * 新增一个实例2
-//     *
-//     * @param createParam2 创建对象2
-//     */
-//    @PostMapping(value = "/create2")
-//    public List<CreateVO> create2(@Valid @RequestBody List<CreateParam> createParam2) {
-//        return new LinkedList<>();
-//    }
-//
-//    /**
-//     * 获取一个实例
-//     *
-//     * @param userId 用户ID
-//     * @param sex    性别
-//     * @return 返回信息
-//     */
-//    @GetMapping(value = "/get")
-//    public Result<CreateVO> get(@RequestParam(value = "userId", required = false) String userId,
-//                                @RequestParam(value = "sex2") String sex) {
-//        return new Result<>();
-//    }
+
+    /**
+     * 新增一个实例
+     *
+     * @param createParam 创建对象
+     * @return 创建后的信息
+     */
+    @PostMapping(value = "/create")
+    public CreateVO add(@RequestBody @Valid CreateParam createParam) {
+        return new CreateVO();
+    }
+
+    /**
+     * 新增一个实例2
+     *
+     * @param createParam2 创建对象2
+     */
+    @PostMapping(value = "/create2")
+    public List<CreateVO> create2(@Valid @RequestBody List<CreateParam> createParam2) {
+        return new LinkedList<>();
+    }
+
+    /**
+     * 获取一个实例
+     *
+     * @param userId 用户ID
+     * @param sex    性别
+     * @return 返回信息
+     */
+    @GetMapping(value = "/get")
+    public Result<CreateVO> get(@RequestParam(value = "userId", required = false) String userId,
+                                @RequestParam(value = "sex2") String sex) {
+        return new Result<>();
+    }
 
     /**
      * 分页对象
