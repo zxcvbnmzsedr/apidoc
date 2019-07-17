@@ -18,8 +18,7 @@ public class DocController {
     @GetMapping("/api")
     public String api() throws IOException {
         InputStream resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream("doc.json");
-        byte[] bytes = new byte[0];
-        bytes = new byte[resourceAsStream.available()];
+        byte[] bytes = new byte[resourceAsStream.available()];
         resourceAsStream.read(bytes);
         return new String(bytes);
     }
