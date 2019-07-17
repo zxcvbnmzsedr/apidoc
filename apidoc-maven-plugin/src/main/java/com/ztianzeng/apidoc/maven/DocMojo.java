@@ -19,6 +19,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
+import org.apache.maven.shared.utils.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -117,14 +118,25 @@ public class DocMojo extends AbstractMojo {
 
 
         try {
-            Json.pretty(outputDirectory.getPath() + "/" + title + ".json", openAPI);
+            String filePath = outputDirectory.getPath() + "/" + title + ".json";
+            Json.pretty(filePath, openAPI);
+            getLog().info("target" + project.getBuild().getOutputDirectory());
+            FileUtils.copyDirectoryStructure(
+                    new File(outputDirectory.getPath() + "/" + title + ".json"),
+                    new File(project.getBuild().getOutputDirectory()));
 
             List<String> combinedFilters = Collections.emptyList();
+            List<Resource> resources = getResources();
+            Resource resource = new Resource();
+            resource.setIncludes(Collections.singletonList(title+".json"));
+            resource.setDirectory(project.getBuild().getOutputDirectory());
+            resources.add(resource);
+
             MavenResourcesExecution mavenResourcesExecution =
-                    new MavenResourcesExecution(getResources(),
+                    new MavenResourcesExecution(resources,
                             getOutputDirectory(), project, encoding, combinedFilters,
                             Collections.emptyList(), session);
-
+            getLog().info("打包到jar中");
             mavenResourcesFiltering.filterResources(mavenResourcesExecution);
         } catch (IOException | MavenFilteringException e) {
             e.printStackTrace();

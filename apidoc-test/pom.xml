@@ -45,7 +45,7 @@
                 <executions>
                     <execution>
                         <id>doc-dependencies</id>
-                        <phase>package</phase>    <!-- 绑定到default生命周期的package阶段 -->
+                        <phase>prepare-package</phase>    <!-- 绑定到default生命周期的package阶段 -->
                         <goals>
                             <goal>openapi</goal>      <!-- 指定目标：复制外部依赖 -->
                         </goals>
