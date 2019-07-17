@@ -77,6 +77,46 @@ UploadToYapi uploadToYapi = new UploadToYapi("token", "http://127.0.0.1:3000");
 uploadToYapi.upload(openAPI, true);
 ~~~
 
+### maven支持
+~~~
+<build>
+    <plugins>
+        <plugin>
+            <artifactId>apidoc-maven-plugin</artifactId>
+            <groupId>com.ztianzeng.apidoc</groupId>
+            <version>0.02-SNAPSHOT</version>
+            <executions>
+                <execution>
+                    <id>doc-dependencies</id>
+                    <phase>package</phase>    <!-- 绑定到default生命周期的package阶段 -->
+                    <goals>
+                        <goal>openapi</goal>      <!-- 指定目标：复制外部依赖 -->
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+~~~
+在POM里面添加apidoc插件，绑定到package中。
+
+在package过程中会形成一个doc.json文件一起打包到jar中，用户在运行时可以自己对这个doc.json文件进行控制。
+
+比如直接解析文件并提供接口给swagger访问
+~~~
+@CrossOrigin(maxAge = 3600)
+@RestController
+public class DocController {
+    @GetMapping("/api")
+    public String api() throws IOException {
+        InputStream resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream("doc.json");
+        byte[] bytes = new byte[resourceAsStream.available()];
+        resourceAsStream.read(bytes);
+        return new String(bytes);
+    }
+}
+~~~
+
 ## 例子
 
 展示了一个简单的controller的解析
