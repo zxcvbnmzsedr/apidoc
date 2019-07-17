@@ -33,7 +33,7 @@ import java.util.*;
  * @goal apidoc
  * @requiresDependencyResolution runtime
  */
-@Mojo(name = "openapi", defaultPhase = LifecyclePhase.PACKAGE,
+@Mojo(name = "openapi", defaultPhase = LifecyclePhase.PREPARE_PACKAGE,
         requiresDependencyResolution = ResolutionScope.COMPILE)
 public class DocMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)

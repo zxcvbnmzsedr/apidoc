@@ -109,7 +109,7 @@ uploadToYapi.upload(openAPI, true);
 public class DocController {
     @GetMapping("/api")
     public String api() throws IOException {
-        InputStream resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream("doc.json");
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("doc.json");
         byte[] bytes = new byte[resourceAsStream.available()];
         resourceAsStream.read(bytes);
         return new String(bytes);

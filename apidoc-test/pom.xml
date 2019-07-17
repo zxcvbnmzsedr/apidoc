@@ -39,6 +39,10 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <artifactId>apidoc-maven-plugin</artifactId>
                 <groupId>com.ztianzeng.apidoc</groupId>
                 <version>0.02-SNAPSHOT</version>
