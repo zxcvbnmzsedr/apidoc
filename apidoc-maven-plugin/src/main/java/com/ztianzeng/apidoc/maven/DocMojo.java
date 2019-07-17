@@ -37,11 +37,6 @@ import java.util.*;
 public class DocMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject mavenProject;
-    /**
-     * @parameter expression="${src}" default-value="src"
-     */
-    @Parameter(property = "src", defaultValue = "src")
-    private String src;
 
     @Parameter(property = "title", defaultValue = "doc")
     private String title;
@@ -99,8 +94,8 @@ public class DocMojo extends AbstractMojo {
         } catch (DependencyResolutionRequiredException | MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        getLog().info("扫描地址 " + src);
-        execute(src);
+        getLog().info("扫描地址 " + mavenProject.getBasedir().getPath());
+        execute(mavenProject.getBasedir().getPath());
     }
 
     private void execute(String url) {
@@ -120,7 +115,6 @@ public class DocMojo extends AbstractMojo {
 
         openAPI.setInfo(info);
 
-        Json.prettyPrint(openAPI);
 
         try {
             Json.pretty(outputDirectory.getPath() + "/" + title + ".json", openAPI);
