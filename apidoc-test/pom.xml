@@ -39,13 +39,17 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <artifactId>apidoc-maven-plugin</artifactId>
                 <groupId>com.ztianzeng.apidoc</groupId>
                 <version>0.02-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>doc-dependencies</id>
-                        <phase>package</phase>    <!-- 绑定到default生命周期的package阶段 -->
+                        <phase>prepare-package</phase>    <!-- 绑定到default生命周期的package阶段 -->
                         <goals>
                             <goal>openapi</goal>      <!-- 指定目标：复制外部依赖 -->
                         </goals>

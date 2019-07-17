@@ -88,7 +88,7 @@ uploadToYapi.upload(openAPI, true);
             <executions>
                 <execution>
                     <id>doc-dependencies</id>
-                    <phase>package</phase>    <!-- 绑定到default生命周期的package阶段 -->
+                    <phase>prepare-package</phase>    <!-- 绑定到default生命周期的package阶段 -->
                     <goals>
                         <goal>openapi</goal>      <!-- 指定目标：复制外部依赖 -->
                     </goals>
@@ -98,7 +98,7 @@ uploadToYapi.upload(openAPI, true);
     </plugins>
 </build>
 ~~~
-在POM里面添加apidoc插件，绑定到package中。
+在POM里面添加apidoc插件，绑定到prepare-package中。
 
 在package过程中会形成一个doc.json文件一起打包到jar中，用户在运行时可以自己对这个doc.json文件进行控制。
 
@@ -109,7 +109,7 @@ uploadToYapi.upload(openAPI, true);
 public class DocController {
     @GetMapping("/api")
     public String api() throws IOException {
-        InputStream resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream("doc.json");
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("doc.json");
         byte[] bytes = new byte[resourceAsStream.available()];
         resourceAsStream.read(bytes);
         return new String(bytes);
