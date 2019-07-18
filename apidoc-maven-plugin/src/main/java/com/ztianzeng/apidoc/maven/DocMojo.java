@@ -66,7 +66,7 @@ public class DocMojo extends AbstractMojo {
     /**
      * 指定scp目标地址
      */
-    @Parameter(property = "ssh",defaultValue = "null")
+    @Parameter(property = "ssh")
     private SSHConfig ssh;
 
     /**
