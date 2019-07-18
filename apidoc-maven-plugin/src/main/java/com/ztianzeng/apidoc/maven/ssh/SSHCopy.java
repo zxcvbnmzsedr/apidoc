@@ -4,6 +4,7 @@ import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.SCPOutputStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +24,9 @@ public final class SSHCopy {
     }
 
     public static void put(SSHConfig connection, File file) throws IOException {
+        if (StringUtils.isBlank(connection.getHost())) {
+            return;
+        }
         String hostname = connection.getHost();
         Connection conn = new Connection(hostname, 22);
         conn.connect();
