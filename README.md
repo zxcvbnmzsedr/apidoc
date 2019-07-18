@@ -79,29 +79,51 @@ uploadToYapi.upload(openAPI, true);
 
 ### maven支持
 ~~~
-<build>
-    <plugins>
-        <plugin>
-            <artifactId>apidoc-maven-plugin</artifactId>
-            <groupId>com.ztianzeng.apidoc</groupId>
-            <version>0.02-SNAPSHOT</version>
-            <executions>
-                <execution>
-                    <id>doc-dependencies</id>
-                    <phase>prepare-package</phase>    <!-- 绑定到default生命周期的package阶段 -->
-                    <goals>
-                        <goal>openapi</goal>      <!-- 指定目标：复制外部依赖 -->
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-    </plugins>
-</build>
+<plugin>
+    <artifactId>apidoc-maven-plugin</artifactId>
+    <groupId>com.ztianzeng.apidoc</groupId>
+    <version>0.02-SNAPSHOT</version>
+    <configuration>
+        <title>测试项目</title>
+        <version>1.0.3</version>
+        <outFileName>测试项目.json</outFileName>
+        <toJar>false</toJar>
+        <ssh>
+            <host>192.168.5.100</host>
+            <user>root</user>
+            <publicKeyFile>${project.basedir}/id_rsa</publicKeyFile>
+            <scp>
+                <remoteTargetDirectory>/root</remoteTargetDirectory>
+                <model>0600</model>
+            </scp>
+        </ssh>
+    </configuration>
+    <executions>
+        <execution>
+            <id>doc-dependencies</id>
+            <phase>prepare-package</phase>    <!-- 绑定到default生命周期的package阶段 -->
+            <goals>
+                <goal>openapi</goal>      <!-- 指定目标：复制外部依赖 -->
+            </goals>
+        </execution>
+    </executions>
+</plugin>
 ~~~
 在POM里面添加apidoc插件，绑定到prepare-package中。
 
-在package过程中会形成一个doc.json文件一起打包到jar中，用户在运行时可以自己对这个doc.json文件进行控制。
+configuration说明:
 
+title:生成的swaager title
+
+version: 生成的swagger version
+
+outFileName: 生成的文件名，默认为doc.json
+
+ssh配置: 可以配置指定的传输目录，将生成出的json文件传输到对应的服务器上。
+
+
+toJar: 在package过程中会形成一个doc.json文件一起打包到jar中，用户在运行时可以自己对这个outFileName文件进行控制。
+  
 比如直接解析文件并提供接口给swagger访问
 ~~~
 @CrossOrigin(maxAge = 3600)

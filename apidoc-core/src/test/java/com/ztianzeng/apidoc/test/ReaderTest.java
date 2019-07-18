@@ -189,10 +189,10 @@ public class ReaderTest {
                 "  schemas:\n" +
                 "    CreateParam:\n" +
                 "      required:\n" +
-                "      - username\n" +
+                "      - user\n" +
                 "      type: object\n" +
                 "      properties:\n" +
-                "        username:\n" +
+                "        user:\n" +
                 "          type: string\n" +
                 "          description: 用户名\n" +
                 "        mobile:\n" +

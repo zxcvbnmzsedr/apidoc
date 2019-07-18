@@ -46,6 +46,21 @@
                 <artifactId>apidoc-maven-plugin</artifactId>
                 <groupId>com.ztianzeng.apidoc</groupId>
                 <version>0.02-SNAPSHOT</version>
+                <configuration>
+                    <title>测试项目</title>
+                    <version>1.0.3</version>
+                    <outFileName>测试项目.json</outFileName>
+                    <toJar>false</toJar>
+                    <ssh>
+                        <host>192.168.5.100</host>
+                        <user>root</user>
+                        <publicKeyFile>${project.basedir}/id_rsa</publicKeyFile>
+                        <scp>
+                            <remoteTargetDirectory>/root</remoteTargetDirectory>
+                            <model>0600</model>
+                        </scp>
+                    </ssh>
+                </configuration>
                 <executions>
                     <execution>
                         <id>doc-dependencies</id>
