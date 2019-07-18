@@ -100,7 +100,7 @@ public class ContainerTest extends TestBase {
         assertNotNull(createParam);
         final Map<String, Schema> innerProps = createParam.getProperties();
         assertEquals(innerProps.size(), 2);
-        final Schema foo = innerProps.get("username");
+        final Schema foo = innerProps.get("user");
         assertEquals(foo.getType(), "string");
         final Schema name = innerProps.get("mobile");
         assertEquals(name.getType(), "string");

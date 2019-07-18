@@ -7,6 +7,8 @@ package com.ztianzeng.apidoc.maven;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.ztianzeng.apidoc.Reader;
 import com.ztianzeng.apidoc.SourceBuilder;
+import com.ztianzeng.apidoc.maven.ssh.SSHConfig;
+import com.ztianzeng.apidoc.maven.ssh.SSHCopy;
 import com.ztianzeng.apidoc.models.OpenAPI;
 import com.ztianzeng.apidoc.models.info.Info;
 import com.ztianzeng.apidoc.utils.Json;
@@ -19,7 +21,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
-import org.apache.maven.shared.utils.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,21 +40,41 @@ public class DocMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject mavenProject;
 
+    /**
+     * 标题
+     */
     @Parameter(property = "title", defaultValue = "doc")
     private String title;
 
+    /**
+     * 版本
+     */
     @Parameter(property = "version", defaultValue = "1.0")
     private String version;
+
+    /**
+     * 输出的文件名称
+     */
+    @Parameter(property = "outFileName", defaultValue = "doc.json")
+    private String outFileName;
+
+    /**
+     * 输出的文件名称
+     */
+    @Parameter(property = "toJar", defaultValue = "true")
+    private Boolean toJar;
+    /**
+     * 指定scp目标地址
+     */
+    @Parameter(property = "ssh")
+    private SSHConfig ssh;
+
     /**
      * The output directory into which to copy the resources.
      */
     @Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
     private File outputDirectory;
-    /**
-     * The list of resources we want to transfer.
-     */
-    @Parameter(defaultValue = "${project.resources}", required = true, readonly = true)
-    private List<Resource> resources;
+
     /**
      *
      */
@@ -74,6 +95,7 @@ public class DocMojo extends AbstractMojo {
      */
     @Component(role = MavenResourcesFiltering.class, hint = "default")
     protected MavenResourcesFiltering mavenResourcesFiltering;
+
 
     @Override
     public void execute() {
@@ -109,44 +131,45 @@ public class DocMojo extends AbstractMojo {
         controllerData = sourceBuilder.getControllerData();
 
 
-        OpenAPI openAPI = reader.read(controllerData);
+        OpenAPI open = reader.read(controllerData);
         Info info = new Info();
         info.title(title);
         info.setVersion(version);
 
-        openAPI.setInfo(info);
+        open.setInfo(info);
 
 
         try {
-            String filePath = outputDirectory.getPath() + "/" + title + ".json";
-            Json.pretty(filePath, openAPI);
+
+            String filePath = outputDirectory.getPath() + "/" + outFileName;
+            File file = new File(filePath);
+            Json.mapper().writeValue(file, open);
             getLog().info("target" + project.getBuild().getOutputDirectory());
-            FileUtils.copyDirectoryStructure(
-                    new File(outputDirectory.getPath() + "/" + title + ".json"),
-                    new File(project.getBuild().getOutputDirectory()));
 
-            List<String> combinedFilters = Collections.emptyList();
-            List<Resource> resources = getResources();
-            Resource resource = new Resource();
-            resource.setIncludes(Collections.singletonList(title+".json"));
-            resource.setDirectory(project.getBuild().getOutputDirectory());
-            resources.add(resource);
+            if (ssh != null) {
+                getLog().info("输出到远程目录" + ssh);
+                SSHCopy.put(ssh, file);
+            }
+            if (toJar) {
+                getLog().info("打包到jar中");
+                List<String> combinedFilters = Collections.emptyList();
+                List<Resource> resources = new ArrayList<>();
+                Resource resource = new Resource();
+                resource.setIncludes(Collections.singletonList(outFileName));
+                resource.setDirectory(project.getBuild().getOutputDirectory());
+                resources.add(resource);
 
-            MavenResourcesExecution mavenResourcesExecution =
-                    new MavenResourcesExecution(resources,
-                            getOutputDirectory(), project, encoding, combinedFilters,
-                            Collections.emptyList(), session);
-            getLog().info("打包到jar中");
-            mavenResourcesFiltering.filterResources(mavenResourcesExecution);
+                MavenResourcesExecution mavenResourcesExecution =
+                        new MavenResourcesExecution(resources,
+                                getOutputDirectory(), project, encoding, combinedFilters,
+                                Collections.emptyList(), session);
+                mavenResourcesFiltering.filterResources(mavenResourcesExecution);
+            }
         } catch (IOException | MavenFilteringException e) {
             e.printStackTrace();
         }
 
 
-    }
-
-    public List<Resource> getResources() {
-        return resources;
     }
 
     public File getOutputDirectory() {
