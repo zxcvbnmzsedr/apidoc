@@ -100,6 +100,9 @@ public class DocMojo extends AbstractMojo {
     @Override
     public void execute() {
 
+        if (!mavenProject.getModules().isEmpty()){
+            return;
+        }
         try {
             // 加载classloader
             Set<URL> urls = new HashSet<>();

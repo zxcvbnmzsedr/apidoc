@@ -79,7 +79,7 @@ uploadToYapi.upload(openAPI, true);
 
 ### maven支持
 
-目前不支持多模块扫描。
+支持多模块扫描。
 ~~~
 <plugin>
     <artifactId>apidoc-maven-plugin</artifactId>
