@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.thoughtworks.qdox.JavaProjectBuilder;
-import com.thoughtworks.qdox.library.JavaClassContext;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaType;
-import com.thoughtworks.qdox.model.impl.DefaultJavaClass;
 import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
 import com.ztianzeng.apidoc.converter.AnnotatedType;
 import com.ztianzeng.apidoc.converter.ModelConverter;
@@ -96,9 +94,18 @@ public class ModelResolver implements ModelConverter {
             }
         }
 
-        // 转换成OpenApi定义的字段信息
-        PrimitiveType parentType = PrimitiveType.fromType(targetClass.getBinaryName());
-        schema.setType(Optional.ofNullable(parentType).orElse(PrimitiveType.OBJECT).getCommonName());
+        if (targetClass.isEnum()) {
+            for (JavaField enumConstant : targetClass.getEnumConstants()) {
+                schema.addEnumItemObject(enumConstant.getComment() +" "+ enumConstant.getName());
+            }
+
+            schema.setType(PrimitiveType.STRING.getCommonName());
+        } else {
+            // 转换成OpenApi定义的字段信息
+            PrimitiveType parentType = PrimitiveType.fromType(targetClass.getBinaryName());
+            schema.setType(Optional.ofNullable(parentType).orElse(PrimitiveType.OBJECT).getCommonName());
+        }
+
         if (DocUtils.isPrimitive(targetClass.getName())) {
             if (targetClass.isArray()) {
                 Schema array = new Schema();
