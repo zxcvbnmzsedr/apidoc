@@ -90,24 +90,26 @@ public class Reader {
 		
 		// 处理方法
 		for (JavaMethod method : classByName.getMethods()) {
-			boolean isRquestMapping = false;
-			RequestMethod methodType = null;
+			RequestMethod methodType;
 			boolean deprecated = !QdoxUtils.getAnnotation(method, Deprecated.class).isPresent();
 			
-			String url = null;
+			;
 			List<JavaAnnotation> annotations = method.getAnnotations();
 			
+			JavaAnnotation requestMapping = null;
 			for (JavaAnnotation annotation : annotations) {
 				if (isRequestMapping(annotation)) {
-					url = getRequestMappingUrl(annotation);
-					methodType = getRequestMappingMethod(annotation);
-					isRquestMapping = true;
+					requestMapping = annotation;
+					break;
 				}
-				
 			}
-			if (!isRquestMapping) {
+			if (requestMapping == null) {
 				continue;
 			}
+			
+			String url = getRequestMappingUrl(requestMapping);
+			methodType = getRequestMappingMethod(requestMapping);
+			
 			
 			if (url != null) {
 				url = url.replaceAll("\"", "").trim();
